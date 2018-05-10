@@ -1,0 +1,14 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,config,notes,setter_inputs,getter_inputs,needs_development
+function,FUNC,,TRUE,str,TRUE,str,"['SIN', 'SQU', 'RAMP', 'PULS', 'NOIS', 'DC', 'USER']",output function,output,TRUE,,,,
+freq,FREQ,,TRUE,float,TRUE,float,"[0, 20e6]",output frequency in Hz,output,TRUE,,,,
+v,VOLT,,TRUE,float,TRUE,float,"[10e-3, 10]",voltage amplitude,output,TRUE,,,,
+offset,VOLT:OFFS,,TRUE,float,TRUE,float,"[-4.99, 4.99]","voltage offset, range depends on amplitude ",output,TRUE,,,,
+v_low,VOLT:LOW,,TRUE,float,TRUE,float,"[0,1]",need to check this one,output,TRUE,,,,yes
+v_high,VOLT:HIGH,,TRUE,float,TRUE,float,"[0,1]",need to check this one,output,TRUE,,,,yes
+unit,VOLT:UNIT,,TRUE,str,TRUE,str,"['VPP', 'VRMS', 'DBM']",voltage unit,output,TRUE,,,,
+output,OUTP,,TRUE,str,TRUE,str,"['OFF', 'ON']",turn output on or off,output,TRUE,,,,
+duty_cycle,FUNC:SQU:DCYC,,TRUE,float,TRUE,float,"[0, 100]",square wave,output,TRUE,,,,"yes, check limits"
+symmetry,FUNC:RAMP:SYMM,,TRUE,float,TRUE,float,"[0,100]",ramp,output,TRUE,,,,"yes, check limits"
+load,OUTP:LOAD,,TRUE,str,TRUE,str,"['MIN', 'MAX', 'INF']",output load (I guess 50 Ohm or High-Z),output,TRUE,,,,yes
+polarity,OUTP:POL,,TRUE,str,TRUE,str,"['NORM', 'INV']",invert the output or not,output,TRUE,,,,
+sync,OUTP:SYNC,,TRUE,str,TRUE,str,"['OFF', 'ON']",sync to external reference,output,TRUE,,,,

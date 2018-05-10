@@ -1,0 +1,65 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,config,notes,setter_inputs,getter_inputs,needs_development
+phase,PHAS ,,TRUE,float,TRUE,float,"[-360.0, 729.99]",Phase shift in degrees,ref_phase,TRUE,,,,
+fmode,FMOD,,TRUE,int,TRUE,int,"[0,1]",reference frequency source: internal = 1; external = 0,ref_phase,TRUE,,,,
+freq,FREQ,,TRUE,float,TRUE,float,"[0.001, 102000]",reference frequency. Set only in Internal reference mode,ref_phase,TRUE,,,,
+ref_slope,RSLP,,TRUE,int,TRUE,int,"[0,1,2]","External reference slope Sine(0), TTL Rising (1) TTL Falling (2)",ref_phase,TRUE,,,,
+harm,HARM,,TRUE,int,TRUE,int ,"[1,19999]",Detection harmonic,ref_phase,TRUE,range depends upon frequency,,,yes
+slvl,SLVL,,TRUE,float,TRUE,float,"[0.004, 5.0]",Sine Output Amplitude,ref_phase,TRUE,,,,
+in_config,ISRC,,TRUE,int,TRUE,int,"[0, 3]","Input configuration. A(0), A-B(1), I (2) (1 Mohm), I (3) (100 Mohm)",input_filter,TRUE,,,,
+in_gnd,IGND,,TRUE,int,TRUE,int,"[0,1]",Input shield grounding float(0) ground(1),input_filter,TRUE,,,,
+in_couple,ICPL,,TRUE,int,TRUE,int,"[0,1]",input coupling AC(0) DC(1),input_filter,TRUE,,,,
+line_filter,ILIN,,TRUE,int,TRUE,int,"[0,1,2,3]","Line notch filters Out(0), Line In (1), 2x Line in(2), Both In (3)",input_filter,TRUE,,,,
+sensitivity,SENS,,TRUE,int,TRUE,int,"[0,26]",Sensitivity to 2 nV (0) through 1 V (26) rms full scale,gain_tau,TRUE,needs lookup table,,,
+res_mode,RMOD,,TRUE,int,TRUE,int,"[0,1,2]","Dynamic Reserve Mode to HighReserve (0), Normal (1), or Low Noise (2)",gain_tau,TRUE,,,,
+tau,OFLT,,TRUE,int,TRUE,int,"[0,13]",Time Constant to 10 µs (0) through 30 ks (19),gain_tau,TRUE,needs lookup table,,,
+filt_slope,OFSL,,TRUE,int,TRUE,int,"[0, 3]","Low Pass Filter Slope to 6 (0), 12 (1), 18 (2) or 24 (3) dB/oct",gain_tau,TRUE,,,,
+sync_filt,SYNC,,TRUE,int,TRUE,int,"[0,1]",Synchronous Filter to Off (0) or On below 200 Hz (1),gain_tau,TRUE,,,,
+ch1_disp,DDEF {value} {ratio},DDEF?,TRUE,string,TRUE,int,"[0, 4]","CH1 display to X, R, Xn, Aux 1or Aux 2 (j=0..4) and ratio the display to None, Aux1or Aux 2 (k=0,1,2).",disp_out,TRUE,,2,,yes
+ch1_out_select,FPOP,,TRUE,int,TRUE,int,"[0,1]",CH1Output Source to X (j=1) or Display (j=0),disp_out,TRUE,,,,
+off_exp,OEXP {value} {offset} {expand},OEXP? {chan},TRUE,int,TRUE,int,"[1,2,3]","X, Y, R (i=1,2,3) Offset to x percent ( -105.00 ≤ x ≤ 105.00) and Expand to 1, 10 or 100 (j=0,1,2)",disp_out,TRUE,,3,1,yes
+aux_output,AUXV {value} {chan},AUXV? {chan},TRUE,float,TRUE,int,"[1,4]","voltage of Aux Output i (1,2,3,4) to x Volts. -10.500 ≤ x ≤ 10.500",aux,FALSE,,2,1,yes
+out_interface,OUTX,,TRUE,int,TRUE,int,"[0,1]",Output interface to RS-232(0) or GPIB(1),setup,TRUE,,,,
+gpib_override,OVRM,,TRUE,int,TRUE,int,"[0,1]",GPIB Overide Remote state to Off (0) or On (1),setup,TRUE,,,,
+key_click,KCLK,,TRUE,int,TRUE,int,"[0,1]",Key Click to Off (0) or On (1),setup,TRUE,,,,
+alarm,ALRM,,TRUE,int,TRUE,int,"[0,1]",Alarms to Off (0) or On (1),setup,TRUE,,,,
+save_setup,SSET,,FALSE,none,TRUE,int,"[1,9]",save current setup to setting buffer,setup,FALSE,,,,
+recall_setup,RSET,,FALSE,none,TRUE,int,"[1,9]",recall setup from setting buffer,setup,FALSE,,,,
+auto_gain,AGAN,,FALSE,none,TRUE,none,None,Auto Gain function. Same as pressing the [AUTO GAIN] key.,auto,FALSE,,,,
+auto_reserve,ARSV,,FALSE,none,TRUE,none,None,Auto Reserve function. Same as pressing the [AUTO RESERVE] key.,auto,FALSE,,,,
+auto_phase,APHS,,FALSE,none,TRUE,none,None,Auto Phase function. Same as pressing the [AUTO PHASE] key.,auto,FALSE,,,,
+auto_off,AOFF,,FALSE,int,TRUE,int,"[1,2,3]","Auto Offset X, Y, R (i=1,2,3)",auto,FALSE,,,,
+sample_rate,SRAT,,TRUE,int,TRUE,int,"[0,14]",DataSample Rate to 62.5 mHz (0) through 512 Hz (13) or Trigger (14).,data_storage,TRUE,,,,
+scan_mode,SEND,,TRUE,int,TRUE,int,"[0,1]",one-shot(0) or loop(1),data_storage,TRUE,,,,
+trigger,TRIG,,FALSE,none,TRUE,none,None,software trigger command,data_storage,FALSE,,,,
+trigger_start,TSTR,,TRUE,int,TRUE,int,"[0,1]",trigger starts scan mode No(0) or Yes(0),data_storage,TRUE,,,,
+start_scan,STRT,,FALSE,none,TRUE,none,None,start or continue a scan ,data_storage,FALSE,,,,
+pause_scan,PAUS,,FALSE,none,TRUE,none,None,pause a scan. Does not reset a paused or done scan.,data_storage,FALSE,,,,
+reset_scan,REST,,FALSE,none,TRUE,none,None,Reset a scan,data_storage,FALSE,,,,
+val,OUTP,OUTP? {chan},TRUE,float,FALSE,none,None,"Query the value of X (1), Y (2), R (3) or θ (4). Returns ASCII floating point value",data_transfer,FALSE,,,1,yes
+disp_val,OUTR,,TRUE,float,FALSE,none,None,Query the value of CH1 Display. Returns ASCII floating point value,data_transfer,FALSE,,,,
+all_val,SNAP,"SNAP? {i}, {j}, {k}, {l}, {m}, {n}",TRUE,float,FALSE,none,None,Query the value of 2 thru 6 paramters at once.,data_transfer,FALSE,,,2,yes
+aux_input,OAUX,OAUX? {chan},TRUE,int ,FALSE,none,"[1,4]","Query the value of Aux Input i (1,2,3,4) in volts. Insturment has 4 AUX channels",data_transfer,FALSE,,,1,yes
+data_stored,SPTS,,TRUE,int,FALSE,none,None,"Query the number of points stored in Display i buffer (1,2)",data_transfer,FALSE,,,,
+read_buffer,TRCA,"TRCA? {j},{k}",TRUE,float,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in ASCII floating point,data_transfer,FALSE,,,2,yes
+read_buffer_float,TRCB,"TRCB? {j},{k}",TRUE,float,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in IEEE binary floating point,data_transfer,FALSE,,,2,yes
+read_buffer_nonnorm,TRCL,"TRCL? {j},{k}",TRUE,float,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in nonnormalized binary floating point.,data_transfer,FALSE,,,2,yes
+fast_transfer,FAST,,TRUE,int,TRUE,int,"[0,2]",Fast Data Transfer Mode On (1 or 2) or Off (0).On will transfer binary X and Y every sample during a scan over the GPIB interface.,data_transfer,TRUE,,,,
+start_delay,STRD,,FALSE,none,TRUE,none,None,Start a scan after 0.5sec delay. Use with Fast Data Transfer Mode,data_transfer,FALSE,,,,
+reset,*RST,,FALSE,none,TRUE,none,None,Reset the unit to its default configurations,interface,,,,,
+id,*IDN,,TRUE,string,FALSE,none,None, Read the SR810 device identification string.,interface,,,,,
+local_remote,LOCL,,TRUE,int,TRUE,int,"[0,2]"," Set (Query) the Local/Remote state to LOCAL (0), REMOTE (1), or LOCAL LOCKOUT (2).",interface,,,,,
+clear_status,*CLS,,FALSE,none,TRUE,none,None, Clear all status bytes.,status,,,,,
+event_status_enable,*ESE,,TRUE,int,TRUE,int,"[0,255]","Set (Query) the Standard Event Status Byte Enable Register to the
+decimal value i (0-255). *ESE i,j sets bit i (0-7) to j (0 or 1). *ESE?
+queries the byte. *ESE?i queries only bit i.",status,,,,,
+event_status,*ESR,,TRUE,int,FALSE,none,None,"Query the Standard Event Status Byte. If i is included, only bit i is
+queried.",status,,,,,
+serial_poll_enable,*SRE,,TRUE,int,TRUE,int,"[0,255]","Set (Query) the Serial Poll Enable Register to the decimal value i (0-
+255). *SRE i,j sets bit i (0-7) to j (0 or 1). *SRE? queries the byte,
+*SRE?i queries only bit i.",status,,,,,
+serial_poll,*STB,,TRUE,int,FALSE,none,None,"Query the Serial Poll Status Byte. If i is included, only bit i is queried.",status,,,,,
+power_on_status,*PSC,,TRUE,int,TRUE,int,"[0,1]",Set (Query) the Power On Status Clear bit to Set (1) or Clear (0).,status,,,,,
+error_status_enable,ERRE,,TRUE,int,TRUE,int,"[0,255]","Set (Query) the Error Status Enable Register to the decimal value I (0-255). ERRE i,j sets bit i (0-7) to j (0 or 1). ERRE? queries the byte, ERRE?i queries only bit i.",status,,,,,
+error_status,ERRS,,TRUE,int,FALSE,none,None,"Query the Error Status Byte. If i is included, only bit i is queried.",status,,,,,
+lia_status_enable,LIAE,,TRUE,int,TRUE,int,"[0,255]","Set (Query) the LIA Status Enable Register to the decimal value i (0-255). LIAE i,j sets bit i (0-7) to j (0 or 1). LIAE? queries the byte, LIAE? i queries only bit i.",status,,,,,
+lia_status,LIAS,,TRUE,int,FALSE,none,None,"Query the LIA Status Byte. If i is included, only bit i is queried.",status,,,,,
