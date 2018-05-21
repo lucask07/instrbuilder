@@ -17,13 +17,6 @@ TODO correct docstring format
 
 """
 
-# TODO:
-#   instrument error log lookup: (import as csv?)
-#   automatic checker: send values out of range and read-back, note precisions, etc.
-#   organization of classes, what inherits from what? Override RS232 init stuff
-#   help print to HTML:
-
-
 class Command(object):
     """
     A command to be sent to an instrument 
@@ -78,8 +71,6 @@ class Command(object):
         E.g. lookup = `{'SLOW': 0, 'FAST': 1}`
         The keys are the human-readable values, the dictionary values are what is sent and 
         received from the instrument. 
-
-
     """
 
     def __init__(self, name, ascii_str='', ascii_str_get='',

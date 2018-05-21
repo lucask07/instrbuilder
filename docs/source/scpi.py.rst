@@ -3,20 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-instrbuilder: INSTRUMENT BUILDER
+instrbuilder: INSTRUMENT BUILDER -- EASY INSTRUMENT CONTROL
 ========================================================
 
 
-Instrbuilder is a python library for quickly generating easy to use instrument drivers. The
+Instrbuilder is a python library for quickly generating eas-to-use instrument high-level "drivers". The
 library targets instruments that use `SCPI <https://en.wikipedia.org/wiki/Standard_Commands_for_Programmable_Instruments>`_ (Standard Commands for Programmable Instruments) 
-and are interfaced to with packages such as pyvisa or pyserial. 
+and are interfaced to with python packages such as pyvisa or pyserial. 
 
 * **Generate a new driver** without writing python code.
-* **Rich Metadata:** Captured and organized to facilitate reproducibility and
-  searchability.
+* Automatic **command testing** creates reports of communication errors or unexpected return values
+* **Help** sorted by subsytem 
+* One-line command to capture and **save complete instrument configuration**
 
-::fg.set(0, 'offset')
 
+Example 
+=========
 
 .. code-block:: python
 
@@ -27,12 +29,22 @@ and are interfaced to with packages such as pyvisa or pyserial.
        print('...but this one is.')
 
 
-.. ipython:: python
+CSV Command List
+===============
 
-    def t(a, b):
-        return a + b
 
-    t(14, 2)
+
+Index
+-----
+
+.. toctree::
+   :caption: User Documentation
+   :maxdepth: 1
+
+   command
+   conf
+   scpi
+
 
 .. ipython:: python
 
@@ -45,13 +57,13 @@ and are interfaced to with packages such as pyvisa or pyserial.
 	import scpi
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
+
+   command
 
 
 .. todo:: This is a simple, stand-alone todo not linked to code
-
-.. class:: Commmand
 
 
 .. module:: scpi
@@ -62,12 +74,6 @@ and are interfaced to with packages such as pyvisa or pyserial.
 
 
 .. autoclass:: SCPI     
-   :members: 
-
-.. module:: command
-
-
-.. autoclass:: Command     
    :members: 
 
 

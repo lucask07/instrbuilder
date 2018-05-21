@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>instrbuilder: INSTRUMENT BUILDER &mdash; instrbuilder 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="instrbuilder.py.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">instrbuilder: INSTRUMENT BUILDER</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="instrbuilder.py.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="instrbuilder.py.html">Docs</a> &raquo;</li>
+        
+      <li>instrbuilder: INSTRUMENT BUILDER</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/command.py.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="instrbuilder-instrument-builder">
+<h1>instrbuilder: INSTRUMENT BUILDER<a class="headerlink" href="#instrbuilder-instrument-builder" title="Permalink to this headline">¶</a></h1>
+<p>Instrbuilder is a python library for quickly generating easy to use instrument drivers. The
+library targets instruments that use <a class="reference external" href="https://en.wikipedia.org/wiki/Standard_Commands_for_Programmable_Instruments">SCPI</a> (Standard Commands for Programmable Instruments)
+and are interfaced to with packages such as <a class="reference external" href="https://pyvisa.readthedocs.io/en/stable/">pyvisa</a> or <a class="reference external" href="https://pythonhosted.org/pyserial/">pyserial</a>.</p>
+<ul class="simple">
+<li><strong>Generate a new driver</strong> without writing python code.</li>
+<li><strong>Rich Metadata:</strong> Captured and organized to facilitate reproducibility and
+searchability.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-command"></span><dl class="class">
+<dt id="command.Command">
+<em class="property">class </em><code class="descclassname">command.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>name</em>, <em>ascii_str=''</em>, <em>ascii_str_get=''</em>, <em>getter=True</em>, <em>getter_type=&lt;class 'float'&gt;</em>, <em>setter=True</em>, <em>setter_range=None</em>, <em>setter_type=&lt;class 'float'&gt;</em>, <em>doc=''</em>, <em>subsystem=None</em>, <em>getter_inputs=None</em>, <em>setter_inputs=None</em>, <em>lookup={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/command.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#command.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>A command to be sent to an instrument</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Determine if the command is a SCPI comms error flag</li>
+<li>Add a switch to enable or disable the lookup table</li>
+<li>defaults for long getters and setters</li>
+<li>long getters/setters: need range requirements and names for 2nd and beyond getter inputs</li>
+<li>long getter returns:  have custom getter_type functions, need to test</li>
+<li>input files: 1) extra getter/setter inputs; 2) range for extra inputs</li>
+</ul>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
+<blockquote>
+<div><p>The name of the command, used as lookup key 
+to the instrument’s dictionary of commands</p>
+</div></blockquote>
+<p><strong>ascii_str</strong> : string</p>
+<blockquote>
+<div><p>What is sent to the instrument</p>
+</div></blockquote>
+<p><strong>ascii_str_get</strong> : string, optional</p>
+<blockquote>
+<div><p>What is sent to the instrument when getting a value.
+If not specified ascii_str will be used</p>
+</div></blockquote>
+<p><strong>getter</strong> : Boolean</p>
+<blockquote>
+<div><p>Is this command a getter?</p>
+</div></blockquote>
+<p><strong>getter_type</strong> : function, float</p>
+<blockquote>
+<div><p>Converts the instrument returned value to a new type for processing
+Example: float</p>
+</div></blockquote>
+<p><strong>setter</strong> : Boolean</p>
+<blockquote>
+<div><p>Is this command a setter?</p>
+</div></blockquote>
+<p><strong>setter_range</strong> : list</p>
+<blockquote>
+<div><p>Minimum and maximum allowed values for the set operation</p>
+</div></blockquote>
+<p><strong>setter_type</strong> : function, float</p>
+<blockquote>
+<div><p>Currently not used; may be used to check if set value is the proper type</p>
+</div></blockquote>
+<p><strong>doc</strong> : string, optional</p>
+<blockquote>
+<div><p>Documentation for this command; will be printed with help</p>
+</div></blockquote>
+<p><strong>subsystem</strong> : string, optional</p>
+<blockquote>
+<div><p>The subsystem (of the instrument) that this command fits into
+Used for organization help information</p>
+</div></blockquote>
+<p><strong>getter_inputs</strong> : list (of strings)</p>
+<blockquote>
+<div><p>For non-conventional get functions (long getters) that send extra parameters.
+This is a list of the input parameters that are needed. These are keys to 
+the config dictionary</p>
+</div></blockquote>
+<p><strong>setter_inputs</strong> : list (of strings)</p>
+<blockquote>
+<div><p>For non-conventional set functions (long setters) that send extra parameters (beyond ‘value’).
+This is a list of the input parameters that are needed. These are keys to 
+the config dictionary</p>
+</div></blockquote>
+<p><strong>lookup</strong> : dictionary</p>
+<blockquote class="last">
+<div><p>A lookup table for values that can be mapped to more human-readable results. 
+E.g. lookup = <cite>{‘SLOW’: 0, ‘FAST’: 1}</cite>
+The keys are the human-readable values, the dictionary values are what is sent and 
+received from the instrument.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

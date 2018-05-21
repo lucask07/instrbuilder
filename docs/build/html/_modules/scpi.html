@@ -47,7 +47,7 @@
           
 
           
-            <a href="../scpi.py.html" class="icon icon-home"> instrbuilder
+            <a href="../instrbuilder.py.html" class="icon icon-home"> instrbuilder
           
 
           
@@ -91,7 +91,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../scpi.py.html">instrbuilder</a>
+          <a href="../instrbuilder.py.html">instrbuilder</a>
         
       </nav>
 
@@ -120,7 +120,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../scpi.py.html">Docs</a> &raquo;</li>
+      <li><a href="../instrbuilder.py.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">Module code</a> &raquo;</li>
         
@@ -153,22 +153,15 @@
 <span class="kn">import</span> <span class="nn">serial</span>
 <span class="kn">import</span> <span class="nn">visa</span>
 <span class="kn">from</span> <span class="nn">command</span> <span class="k">import</span> <span class="n">Command</span>
+<span class="kn">import</span> <span class="nn">utils</span> 
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Lucas Koerner, 2018/4/17</span>
 <span class="sd">TODO correct docstring format</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="c1"># TODO:</span>
-<span class="c1">#   instrument error log lookup: (import as csv?)</span>
-<span class="c1">#   automatic checker: send values out of range and read-back, note precisions, etc.</span>
-<span class="c1">#   automatic documentation generator: just as Bluesky? (Sphinx)</span>
-<span class="c1">#   organization of classes, what inherits from what? Override RS232 init stuff</span>
-<span class="c1">#   help for each method</span>
-<span class="c1">#</span>
-
-<span class="c1">#   help print to HTML:</span>
-
+<span class="c1"># a dictionary of functions that are used to convert </span>
+<span class="c1"># return values from getters </span>
 <span class="n">convert_lookup</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;string&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
@@ -177,31 +170,37 @@
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;nan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
 
-
 <span class="k">def</span> <span class="nf">conv_arr_str</span><span class="p">(</span><span class="n">str_in</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; convert string such as &#39;2.3&#39;, &#39;5.4&#39;, &#39;9.9&#39; to a list of floats &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">str_in</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
 
 <span class="k">def</span> <span class="nf">str_strip</span><span class="p">(</span><span class="n">str_in</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; wrap string rstrip method into function &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">str_in</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-
 
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">str_strip</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv_arr_str</span>
 
 <span class="n">divider_string</span> <span class="o">=</span> <span class="s1">&#39;=====================================</span><span class="se">\n</span><span class="s1">&#39;</span>
 
-<span class="c1"># will want to find byte for certain bit</span>
-<span class="c1"># will want to find bit for certain name</span>
-<span class="c1"># will want to find name of certain bit</span>
+<span class="c1"># Dictionary of status register - bytes and bits</span>
+<span class="c1"># Need to find a byte for certain bit, bit for certain name, name of certain bit</span>
 <span class="n">lia_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;serial_poll&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;SCN&#39;</span><span class="p">,</span> <span class="s1">&#39;IFC&#39;</span><span class="p">,</span> <span class="s1">&#39;ERR&#39;</span><span class="p">,</span> <span class="s1">&#39;LIA&#39;</span><span class="p">,</span> <span class="s1">&#39;MAV&#39;</span><span class="p">,</span> <span class="s1">&#39;ESB&#39;</span><span class="p">,</span> <span class="s1">&#39;SRQ&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">],</span>
               <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RSRV/INPT&#39;</span><span class="p">,</span> <span class="s1">&#39;FILTR&#39;</span><span class="p">,</span> <span class="s1">&#39;OUTPT&#39;</span><span class="p">,</span> <span class="s1">&#39;UNLK&#39;</span><span class="p">,</span> <span class="s1">&#39;RANGE&#39;</span><span class="p">,</span> <span class="s1">&#39;TC&#39;</span><span class="p">,</span> <span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">],</span>
               <span class="s1">&#39;event_status&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;INP&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;QRY&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;EXE&#39;</span><span class="p">,</span> <span class="s1">&#39;CMD&#39;</span><span class="p">,</span> <span class="s1">&#39;URQ&#39;</span><span class="p">,</span> <span class="s1">&#39;PON&#39;</span><span class="p">],</span>
               <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;BACKUP&#39;</span><span class="p">,</span> <span class="s1">&#39;RAM&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;ROM&#39;</span><span class="p">,</span> <span class="s1">&#39;GPIB&#39;</span><span class="p">,</span> <span class="s1">&#39;DSP&#39;</span><span class="p">,</span> <span class="s1">&#39;MATH&#39;</span><span class="p">]}</span>
 
+<span class="n">getter_debug_value</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span> <span class="c1"># when running headless (no instruments attached) all getters return this</span>
+
 
 <div class="viewcode-block" id="SCPI"><a class="viewcode-back" href="../scpi.py.html#scpi.SCPI">[docs]</a><span class="k">class</span> <span class="nc">SCPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A SCPI instrument with a list of commands. The instrument has methods to get and set info of each command.</span>
+
+<span class="sd">    .. todo::</span>
+<span class="sd">        * Instrument error log lookup. How to load? Import as csv?</span>
+<span class="sd">        * Automatic checker: send values out of range and read-back, note precisions, etc.</span>
+<span class="sd">        * Organization of classes, what inherits from what? Override RS232 initialization stuff</span>
+<span class="sd">        * Create docstrings for each method of SCPI class</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -226,7 +225,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;id command not configured. Name set to: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ID command not returned by instrument. Name set to: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instrument_name</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -301,9 +300,9 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter_type</span><span class="p">(</span><span class="n">ret_val</span><span class="p">)</span>
+
             <span class="c1"># check if a lookup table exists</span>
-            <span class="c1"># TODO: input parameter to skip converting to the lookup table?</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">):</span> <span class="c1"># bool(dict) --&gt; checks if dictionary is empty</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># check if this value matches a key in the lookup table</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
@@ -449,17 +448,7 @@
 <div class="viewcode-block" id="SCPI.read_comm_err"><a class="viewcode-back" href="../scpi.py.html#scpi.SCPI.read_comm_err">[docs]</a>    <span class="k">def</span> <span class="nf">read_comm_err</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg_name</span><span class="o">=</span><span class="s1">&#39;event_status&#39;</span><span class="p">,</span> <span class="n">bit_name</span><span class="o">=</span><span class="s1">&#39;CMD&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; This is specific to SRS810 and must be over-riden by each instrument &#39;&#39;&#39;</span>
         <span class="n">reg_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reg_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_bit</span><span class="p">(</span><span class="n">reg_val</span><span class="p">,</span> <span class="n">lia_status</span><span class="p">[</span><span class="n">reg_name</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bit_name</span><span class="p">)))</span></div>
-
-    <span class="k">def</span> <span class="nf">get_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">bit</span><span class="p">):</span>
-        <span class="n">bit_val</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">bit</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="n">bit_val</span>
-
-    <span class="k">def</span> <span class="nf">set_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">bit</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">|</span> <span class="mi">2</span><span class="o">**</span><span class="n">bit</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">clear_bit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">bit</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">bit</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_bit</span><span class="p">(</span><span class="n">reg_val</span><span class="p">,</span> <span class="n">lia_status</span><span class="p">[</span><span class="n">reg_name</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bit_name</span><span class="p">)))</span></div>
 
     <span class="k">def</span> <span class="nf">test_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">set_vals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
@@ -731,12 +720,20 @@
         <span class="n">inst_comm</span> <span class="o">=</span> <span class="n">USB</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
         <span class="n">inst</span> <span class="o">=</span> <span class="n">SCPI</span><span class="p">(</span><span class="n">cmd_list</span><span class="p">,</span> <span class="n">inst_comm</span><span class="o">.</span><span class="n">write</span><span class="p">,</span> <span class="n">inst_comm</span><span class="o">.</span><span class="n">ask</span><span class="p">)</span>
 
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># allow for debugging without instruments attached: use print to stdout, always return &#39;7&#39;</span>
+    <span class="k">else</span><span class="p">:</span>  
+    <span class="c1"># allow for debugging without instruments attached: </span>
+    <span class="c1">#   print command to stdout, always return getter_debug_value</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">divider_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>     
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Note!! Running in debug mode without instrument attached&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All commands sent to the instrument will be printed to stdout&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Getters will always return </span><span class="si">{}</span><span class="s1"> (set by variable getter_debug_value)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">getter_debug_value</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">divider_string</span><span class="p">)</span>     
+
         <span class="n">inst_comm</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">def</span> <span class="nf">ask</span><span class="p">(</span><span class="n">str_input</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-            <span class="k">return</span> <span class="s1">&#39;7&#39;</span>
+            <span class="k">return</span> <span class="n">getter_debug_value</span>
 
         <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">str_input</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
@@ -744,21 +741,6 @@
         <span class="n">inst</span> <span class="o">=</span> <span class="n">SCPI</span><span class="p">(</span><span class="n">cmd_list</span><span class="p">,</span> <span class="n">write</span><span class="p">,</span> <span class="n">ask</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">inst</span><span class="p">,</span> <span class="n">inst_comm</span>
-
-<span class="c1"># -------------------- JUNK CODE ------------------</span>
-<span class="c1"># scpi.set_with_dict(scpi._cmds) &lt;--- nice to have tab-complete, but</span>
-
-
-<span class="c1"># check to see if these header values are populated</span>
-<span class="c1"># for now remove this and require that these column headers are populated</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">]</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">subsystem</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;subsystem&#39;</span><span class="p">]</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="n">subsystem</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 
            </div>

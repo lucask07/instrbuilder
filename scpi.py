@@ -11,22 +11,15 @@ import sys
 import serial
 import visa
 from command import Command
+import utils 
 
 '''
 Lucas Koerner, 2018/4/17
 TODO correct docstring format
 '''
 
-# TODO:
-#   instrument error log lookup: (import as csv?)
-#   automatic checker: send values out of range and read-back, note precisions, etc.
-#   automatic documentation generator: just as Bluesky? (Sphinx)
-#   organization of classes, what inherits from what? Override RS232 init stuff
-#   help for each method
-#
-
-#   help print to HTML:
-
+# a dictionary of functions that are used to convert 
+# return values from getters 
 convert_lookup = defaultdict(lambda: str)
 convert_lookup['str'] = str
 convert_lookup['string'] = str
@@ -35,31 +28,37 @@ convert_lookup['double'] = float
 convert_lookup['int'] = int
 convert_lookup['nan'] = str
 
-
 def conv_arr_str(str_in):
     """ convert string such as '2.3', '5.4', '9.9' to a list of floats """
     return list(map(lambda x: float(x), str_in.split(',')))
 
 def str_strip(str_in):
+    """ wrap string rstrip method into function """
     return str_in.rstrip()
-
 
 convert_lookup['str'] = str_strip
 convert_lookup['array'] = conv_arr_str
 
 divider_string = '=====================================\n'
 
-# will want to find byte for certain bit
-# will want to find bit for certain name
-# will want to find name of certain bit
+# Dictionary of status register - bytes and bits
+# Need to find a byte for certain bit, bit for certain name, name of certain bit
 lia_status = {'serial_poll': ['SCN', 'IFC', 'ERR', 'LIA', 'MAV', 'ESB', 'SRQ', 'unused'],
               'status': ['RSRV/INPT', 'FILTR', 'OUTPT', 'UNLK', 'RANGE', 'TC', 'TRIG', 'unused'],
               'event_status': ['INP', 'unused', 'QRY', 'unused', 'EXE', 'CMD', 'URQ', 'PON'],
               'error': ['unused', 'BACKUP', 'RAM', 'unused', 'ROM', 'GPIB', 'DSP', 'MATH']}
 
+getter_debug_value = '7' # when running headless (no instruments attached) all getters return this
+
 
 class SCPI(object):
     """A SCPI instrument with a list of commands. The instrument has methods to get and set info of each command.
+
+    .. todo::
+        * Instrument error log lookup. How to load? Import as csv?
+        * Automatic checker: send values out of range and read-back, note precisions, etc.
+        * Organization of classes, what inherits from what? Override RS232 initialization stuff
+        * Create docstrings for each method of SCPI class
 
     Parameters
     ----------
@@ -84,7 +83,7 @@ class SCPI(object):
         try:
             name = self.get('id')
         except:
-            print('id command not configured. Name set to: {}'.format(name))
+            print('ID command not returned by instrument. Name set to: {}'.format(name))
         self.instrument_name = name
 
     def __dir__(self):
@@ -159,9 +158,9 @@ class SCPI(object):
 
         try:
             val = self._cmds[name].getter_type(ret_val)
+
             # check if a lookup table exists
-            # TODO: input parameter to skip converting to the lookup table?
-            if self._cmds[name].lookup is not None:
+            if bool(self._cmds[name].lookup): # bool(dict) --> checks if dictionary is empty
                 try:
                     # check if this value matches a key in the lookup table
                     val = list(self._cmds[name].lookup.keys())[
@@ -307,17 +306,7 @@ class SCPI(object):
     def read_comm_err(self, reg_name='event_status', bit_name='CMD'):
         ''' This is specific to SRS810 and must be over-riden by each instrument '''
         reg_val = self.get(reg_name)
-        return bool(self.get_bit(reg_val, lia_status[reg_name].index(bit_name)))
-
-    def get_bit(self, value, bit):
-        bit_val = 1 if (value & 2**(bit) != 0) else 0
-        return bit_val
-
-    def set_bit(self, value, bit):
-        return (value | 2**bit)
-
-    def clear_bit(self, value, bit):
-        return (value & ((2**8 - 1) - bit**2))
+        return bool(utils.get_bit(reg_val, lia_status[reg_name].index(bit_name)))
 
     def test_command(self, name, set_vals=None):
 
@@ -528,16 +517,38 @@ class RS232(object):
         return bytes(line)
 
 
-def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None):
+def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
+                    lookup = None):
 
-    # Read CSV file and
+    # Read CSV file of commands
     df = pd.read_csv(cmd_map)
-    df = df.rename(columns=lambda x: x.strip())  # strip column headers only
-
+    # strip white space and end-of-line from column headers
+    df = df.rename(columns=lambda x: x.strip())  
+    # strip white space and end-of-line from string inputs 
     df['setter_type'] = df['setter_type'].str.strip()
     df['getter_type'] = df['getter_type'].str.strip()
 
-    # TODO read lookup table CSV
+    # Read CSV file of lookups 
+    if lookup:
+        df_look = pd.read_csv(lookup)
+        # strip white space and end-of-line from column headers
+        df_look = df_look.rename(columns=lambda x: x.strip())  
+
+        # make a dictionary for each command 
+        cmd_lookups = {}
+        for index, row in df_look.iterrows():
+            try: 
+                if math.isnan(row['command']) == False:
+                    current_cmd = current_cmd # shouldn't get here 
+            except:
+                current_cmd = row['command']
+
+            if current_cmd in cmd_lookups.keys():
+                cmd_lookups[current_cmd][row['name']] = row['value']
+            else:
+                # initialize the dictionary
+                cmd_lookups[current_cmd] = {}
+                cmd_lookups[current_cmd][row['name']] = row['value']
 
     cmd_list = []
     for index, row in df.iterrows():
@@ -559,42 +570,64 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None):
                 row['setter_range'] = None
 
         # pandas read default value is nan. Convert to None or 0 depending upon column
-        def mod_default(row_el, default_value):
+        def modify_default(row_el, default_value):
             try:
                 row_el = default_value if math.isnan(row_el) else row_el
             except TypeError:
                 row_el = row_el
-
             return row_el
 
-        row['setter_inputs'] = mod_default(row['setter_inputs'], None)
-        row['getter_inputs'] = mod_default(row['getter_inputs'], 0)
-        row['ascii_str_get'] = mod_default(row['ascii_str_get'], None)
+        row['setter_inputs'] = modify_default(row['setter_inputs'], None)
+        row['getter_inputs'] = modify_default(row['getter_inputs'], 0)
+        row['ascii_str_get'] = modify_default(row['ascii_str_get'], None)
+
+        print('---')
+        print(row['name'])
+        print(cmd_lookups.keys())
+        print('---')
+
+        if row['name'] in cmd_lookups.keys():
+            lookup_dict = cmd_lookups[row['name']]
+            print('Have a lookup dict: ')
+            print(lookup_dict)
+        else:
+            lookup_dict = {}
 
         cmd = Command(name=row['name'], ascii_str=row['ascii_str'], ascii_str_get=row['ascii_str_get'],
                       getter=row['getter'], getter_type=convert_lookup[row['getter_type']],
                       setter=row['setter'], setter_type=convert_lookup[row['setter_type']],
                       setter_range=row['setter_range'],
                       doc=row['doc'], subsystem=row['subsystem'],
-                      getter_inputs=row['getter_inputs'], setter_inputs=row['setter_inputs'])
+                      getter_inputs=row['getter_inputs'], setter_inputs=row['setter_inputs'],
+                      lookup = lookup_dict)
 
         cmd_list.append(cmd)
 
     if use_serial:
+        # pySerial, RS232
         inst_comm = RS232(addr)
         inst_comm.ser.flush()
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
 
     elif use_usb:
+        # pyvisa, USB
         inst_comm = USB(addr)
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
 
-    else:  # allow for debugging without instruments attached: use print to stdout, always return '7'
+    else:  
+        # allow for debugging without instruments attached: 
+        # print command to stdout, always return getter_debug_value
+        print(divider_string, end='')     
+        print('Note!! Running in debug mode without instrument attached')
+        print('All commands sent to the instrument will be printed to stdout')
+        print('Getters will always return {} (set by variable getter_debug_value)'.format(getter_debug_value))
+        print(divider_string)     
+
         inst_comm = None
 
         def ask(str_input):
             print(str_input)
-            return '7'
+            return getter_debug_value
 
         def write(str_input):
             print(str_input)
@@ -602,18 +635,3 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None):
         inst = SCPI(cmd_list, write, ask)
 
     return inst, inst_comm
-
-# -------------------- JUNK CODE ------------------
-# scpi.set_with_dict(scpi._cmds) <--- nice to have tab-complete, but
-
-
-# check to see if these header values are populated
-# for now remove this and require that these column headers are populated
-try:
-    doc = row['doc']
-except:
-    doc = None
-try:
-    subsystem = row['subsystem']
-except:
-    subsystem = None
