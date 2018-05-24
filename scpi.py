@@ -1,46 +1,68 @@
-import pandas as pd
-import ast
-from collections import defaultdict
-import colorama
-import math
-import re
+# Lucas J. Koerner
+# 05/2018
+# koerner.lucas@stthomas.edu
+# University of St. Thomas
+
+# standard library imports 
 import warnings
 import time
-import numpy as np
 import sys
+import math
+import re
+import ast
+from collections import defaultdict
+import functools
+# imports that may need installation
+import pandas as pd
+import colorama
+import numpy as np
 import serial
 import visa
+# local package imports 
 from command import Command
 import utils 
 
 '''
-Lucas Koerner, 2018/4/17
-TODO correct docstring format
+The SCPI module includes the SCPI class, functions to convert return values, and builds 
+a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.
 '''
 
-# a dictionary of functions that are used to convert 
-# return values from getters 
+#### -----------------------------------------
+# a dictionary of functions that are used to convert return values from getters 
 convert_lookup = defaultdict(lambda: str)
-convert_lookup['str'] = str
 convert_lookup['string'] = str
 convert_lookup['float'] = float
 convert_lookup['double'] = float
 convert_lookup['int'] = int
 convert_lookup['nan'] = str
 
-def conv_arr_str(str_in):
+def arr_str(str_in):
     """ convert string such as '2.3', '5.4', '9.9' to a list of floats """
     return list(map(lambda x: float(x), str_in.split(',')))
 
+def arr_bytes(bytes_in):
+    """ convert array of bytes such as "b'1,0\\r'" to a list of floats """
+    str_in = bytes_in.decode('utf-8').rstrip()
+    return list(map(lambda x: float(x), str_in.split(',')))
+
 def str_strip(str_in):
-    """ wrap string rstrip method into function """
+    """ strip whitespace at right of string. Wrap string rstrip method into function """
     return str_in.rstrip()
 
 convert_lookup['str'] = str_strip
-convert_lookup['array'] = conv_arr_str
+convert_lookup['str_array_to_numarray'] = arr_str
+convert_lookup['byte_array_to_numarray'] = arr_bytes
 
+# getter conversion function to determine if a single bit is set. Returns True or False
+for i in range(8):
+    convert_lookup['bit{}_set'.format(i)] = lambda x: bool(functools.partial(utils.get_bit, bit = i)(int(x)))
+# getter conversion function to determine if a single bit is cleared. Returns True or False
+for i in range(8):
+    convert_lookup['bit{}_cleared'.format(i)] = lambda x: not bool(functools.partial(utils.get_bit, bit = i)(int(x)))
+#### -----------------------------------------
 divider_string = '=====================================\n'
 
+# TODO -- this lia_status needs to go somewhere else 
 # Dictionary of status register - bytes and bits
 # Need to find a byte for certain bit, bit for certain name, name of certain bit
 lia_status = {'serial_poll': ['SCN', 'IFC', 'ERR', 'LIA', 'MAV', 'ESB', 'SRQ', 'unused'],
@@ -199,6 +221,9 @@ class SCPI(object):
 
     def check_set_range(self, value, name):
         ''' check if the value to be set is within range '''
+        if self._cmds[name].setter_range is None:
+            return True
+
         if (len(self._cmds[name].setter_range) == 2) and (type(self._cmds[name].setter_range) is not str):
             # numeric, check if less than or greater than
             if (value >= self._cmds[name].setter_range[0]) and (value <= self._cmds[name].setter_range[1]):
@@ -208,8 +233,8 @@ class SCPI(object):
                 self.out_of_range_warning(value, name)
                 return False
 
-        else:  # could be a list of strings, check if strings
-            if type(self._cmds[name].setter_range[0]) is str:
+        else:  # could be a list of strings or list if ints
+            if (type(self._cmds[name].setter_range[0]) is str) or (type(self._cmds[name].setter_range[0]) is int):
                 # check if value is a member
                 if value in self._cmds[name].setter_range:
                     return True
@@ -223,12 +248,6 @@ class SCPI(object):
     def out_of_range_warning(self, value, name):
         warnings.warn('\n  {} value of {} is out of the range of {}'.format(
             name, value, self._cmds[name].setter_range), UserWarning)
-
-    def set_with_dict(self, D):
-        # TODO: remove?
-        """ set attributes with a dict """
-        for k in D.keys():
-            self.__setattr__(k, D[k])
 
     def list_cmds(self):
         for key in self._cmds:
@@ -303,21 +322,21 @@ class SCPI(object):
 
         return dict(zip(keys, results))
 
-    def read_comm_err(self, reg_name='event_status', bit_name='CMD'):
-        ''' This is specific to SRS810 and must be over-riden by each instrument '''
-        reg_val = self.get(reg_name)
-        return bool(utils.get_bit(reg_val, lia_status[reg_name].index(bit_name)))
+    def read_comm_err(self):
+        ''' Read if the instrument has flagged a communciation error 
+            The csv command file must have a getter with name comm_error that returns a bool '''
+        return self.get('comm_error')
 
     def test_command(self, name, set_vals=None):
 
         ok = True
-        allowed_err = 0.02
+        allowed_err = 0.02 # TODO: determine error magnitude that is allowed 
 
         if (len(self._cmds[name].get_config_keys) > 0) or (len(self._cmds[name].set_config_keys) > 0):
-            print('Skipping test of {}'.format(name))
+            print('Skipping test of: {}'.format(name))
             print(
-                '  Test of getters or setters that require a configuration input are not yet implemented')
-            return False
+                '  Test of getters or setters that require a configuration input is not yet implemented')
+            return 'NotTested'
 
         # if getter and setter
         if (self._cmds[name].getter and self._cmds[name].setter):
@@ -332,6 +351,12 @@ class SCPI(object):
                 self.set(set_val, name)
                 ok |= self.read_comm_err()
                 ret = self.get(name)
+                # if present remove lookup table modification
+                try:
+                    ret = self._cmds[name].lookup[ret]
+                except:
+                    pass
+
                 ok |= self.read_comm_err()
                 if self._cmds[name].getter_type == float:
                     try:
@@ -361,7 +386,7 @@ class SCPI(object):
                 set_val = self._cmds[name].setter_range[0]
             else:
                 print('Skipping test of setter {}'.format(name))
-                return False
+                return 'NotTested'
 
             self.set(set_val, name)
             ok |= self.read_comm_err()
@@ -423,8 +448,8 @@ def open_visa(addr):
         print('Trying to open the device even though it was not found by the resource manager')
         obj = mgr.open_resource(addr)
     else:
-        print('This address {} was not recognized'.format(addr), file=sys.stderr)
-        print('Returning an empty handle', file=sys.stderr)
+        print('This address {} was not recognized'.format(addr), file = sys.stderr)
+        print('Returning an empty handle', file = sys.stderr)
         obj = None
     return obj
 
@@ -463,19 +488,23 @@ class USB(object):
 class RS232(object):
 
     # TODO: make the Lock-in specific stuff inherit the RS232 object
-    def __init__(self, ser_port):
+    def __init__(self, ser_port, **kwargs):
         self.ser = serial.Serial(
-            port=ser_port,
-            baudrate=9600,
-            parity=serial.PARITY_NONE,
-            bytesize=serial.EIGHTBITS)
-        self.terminator = ' \n'
-        self.ser_port = ser_port
+            port = ser_port,
+            baudrate = kwargs.get('baudrate', 9600),
+            parity = kwargs.get('parity', serial.PARITY_NONE),
+            bytesize = kwargs.get('bytesize', serial.EIGHTBITS))
+        self.terminator = kwargs.get('terminator', ' \n')
         self.open()
 
         # lock-in specific
-        self.write('OUTX 0')  # set to RS232
-        print(self.ask("*IDN?").decode('utf-8'))
+        init_write = kwargs.get('init_write')
+        if init_write is not None: 
+            self.write(init_write)  # set to RS232 'OUTX 0'
+        try:
+            print(self.get('id'))
+        except:
+            'Device ID get failed'
 
     def open(self):
         self.ser.close()
@@ -518,7 +547,7 @@ class RS232(object):
 
 
 def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
-                    lookup = None):
+                    lookup = None, **kwargs):
 
     # Read CSV file of commands
     df = pd.read_csv(cmd_map)
@@ -581,15 +610,14 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
         row['getter_inputs'] = modify_default(row['getter_inputs'], 0)
         row['ascii_str_get'] = modify_default(row['ascii_str_get'], None)
 
-        print('---')
-        print(row['name'])
-        print(cmd_lookups.keys())
-        print('---')
+        if False: 
+            print('---')
+            print(row['name'])
+            print(cmd_lookups.keys())
+            print('---')
 
         if row['name'] in cmd_lookups.keys():
             lookup_dict = cmd_lookups[row['name']]
-            print('Have a lookup dict: ')
-            print(lookup_dict)
         else:
             lookup_dict = {}
 
@@ -605,7 +633,7 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
 
     if use_serial:
         # pySerial, RS232
-        inst_comm = RS232(addr)
+        inst_comm = RS232(addr, **kwargs)
         inst_comm.ser.flush()
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
 

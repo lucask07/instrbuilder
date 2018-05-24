@@ -1,26 +1,32 @@
-import pandas as pd
+# Lucas J. Koerner
+# 05/2018
+# koerner.lucas@stthomas.edu
+# University of St. Thomas
+
+
+# standard library imports 
 import ast
-from collections import defaultdict
-import colorama
 import math
 import re
 import warnings
 import time
-import numpy as np
+from collections import defaultdict
 import sys
+
+# imports that may need installation
+import colorama
+import pandas as pd
+import numpy as np
 import serial
 import visa
 
 """
-Lucas J. Koerner, 2018/4/17
-TODO correct docstring format
 
 """
 
 class Command(object):
     """
     A command to be sent to an instrument 
-
 
     .. todo::
 
@@ -69,7 +75,7 @@ class Command(object):
     lookup : dictionary 
         A lookup table for values that can be mapped to more human-readable results. 
         E.g. lookup = `{'SLOW': 0, 'FAST': 1}`
-        The keys are the human-readable values, the dictionary values are what is sent and 
+        The keys are the human-readable names, the dictionary values are what is sent and 
         received from the instrument. 
     """
 
