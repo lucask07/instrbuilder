@@ -61,15 +61,6 @@ for i in range(8):
     convert_lookup['bit{}_cleared'.format(i)] = lambda x: not bool(functools.partial(utils.get_bit, bit = i)(int(x)))
 #### -----------------------------------------
 divider_string = '=====================================\n'
-
-# TODO -- this lia_status needs to go somewhere else 
-# Dictionary of status register - bytes and bits
-# Need to find a byte for certain bit, bit for certain name, name of certain bit
-lia_status = {'serial_poll': ['SCN', 'IFC', 'ERR', 'LIA', 'MAV', 'ESB', 'SRQ', 'unused'],
-              'status': ['RSRV/INPT', 'FILTR', 'OUTPT', 'UNLK', 'RANGE', 'TC', 'TRIG', 'unused'],
-              'event_status': ['INP', 'unused', 'QRY', 'unused', 'EXE', 'CMD', 'URQ', 'PON'],
-              'error': ['unused', 'BACKUP', 'RAM', 'unused', 'ROM', 'GPIB', 'DSP', 'MATH']}
-
 getter_debug_value = '7' # when running headless (no instruments attached) all getters return this
 
 
@@ -224,7 +215,7 @@ class SCPI(object):
         if self._cmds[name].setter_range is None:
             return True
 
-        if (len(self._cmds[name].setter_range) == 2) and (type(self._cmds[name].setter_range) is not str):
+        if (len(self._cmds[name].setter_range) == 2) and (type(self._cmds[name].setter_range[0]) is not str):
             # numeric, check if less than or greater than
             if (value >= self._cmds[name].setter_range[0]) and (value <= self._cmds[name].setter_range[1]):
                 return True
@@ -232,19 +223,15 @@ class SCPI(object):
                 # throw out of range warning
                 self.out_of_range_warning(value, name)
                 return False
-
-        else:  # could be a list of strings or list if ints
-            if (type(self._cmds[name].setter_range[0]) is str) or (type(self._cmds[name].setter_range[0]) is int):
-                # check if value is a member
-                if value in self._cmds[name].setter_range:
-                    return True
-                else:
-                    return False
+        else: 
+            # check if value is a member
+            if value in self._cmds[name].setter_range:
+                return True
             else:
                 # throw out of range warning
                 self.out_of_range_warning(value, name)
                 return False
-
+    
     def out_of_range_warning(self, value, name):
         warnings.warn('\n  {} value of {} is out of the range of {}'.format(
             name, value, self._cmds[name].setter_range), UserWarning)

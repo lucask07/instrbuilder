@@ -11,7 +11,7 @@ yaml_config = open('config.yaml', 'r')
 configs = yaml.load(yaml_config)
 
 use_serial = True
-use_usb = False
+use_usb = True
 
 # get lockin amplifier SCPI object 
 commands = 'commands.csv'
@@ -39,12 +39,14 @@ print()
 # Set the display to show "R" -- magnitude
 lia.set(value = 1, name = 'ch1_disp', configs = {'ratio': 0})
 
-
 ## Function generator 
-
-# cmd_map = 'instruments/fg_3320a/commands.csv'
-# fg_addr = 'USB0::0x0957::0x0407::MY44060286::INSTR'
-# fg, fg_usb = init_instrument(cmd_map, use_serial = False, use_usb = use_usb, addr = fg_addr)
+instrument = 'fg_3320a'
+cmd_map = os.path.join(configs['base_directory'], configs['csv_directory'], 
+						instrument, commands)
+lookup_file = os.path.join(configs['base_directory'], configs['csv_directory'], 
+						instrument, lookups)
+addr = 'USB0::0x0957::0x0407::MY44060286::INSTR'
+fg, fg_usb = init_instrument(cmd_map, use_serial = False, use_usb = use_usb, addr = addr, lookup = lookup_file)
 
 # fg.set(0, 'offset')
 # fg.set('INF', 'load')

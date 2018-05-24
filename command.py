@@ -3,7 +3,6 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-
 # standard library imports 
 import ast
 import math
@@ -117,11 +116,20 @@ class Command(object):
         self.getter_type = getter_type
         self.setter = setter            # is this a setter? True or False
         self.setter_type = setter_type  # TODO: checks that the value matches this type
+        
+        # lookup table support (dictionary)
+        self.lookup = lookup
+
+        # we want to store the acceptable range as the value -- if its lookups convert it
+        if setter_range is not None:
+            if setter_range[0] in lookup:
+                for idx, s in enumerate(setter_range):
+                    setter_range[idx] = lookup[s]
+
         self.setter_range = setter_range
+
         self.doc = doc
         self.subsystem = subsystem
         self.getter_inputs = getter_inputs
         self.setter_inputs = setter_inputs
 
-        # lookup table support (dictionary)
-        self.lookup = lookup
