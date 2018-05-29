@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; instrbuilder 0.1a documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example Instrument" href="example_instrument.html" />
+    <link rel="prev" title="Instrbuilder: Easy Instrument Control with Python" href="instrbuilder.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="instrbuilder.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="instrbuilder.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="instrbuilder.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Import needed modules and configure paths to the csv files of each command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">scpi</span>
+
+<span class="kn">from</span> <span class="nn">scpi</span> <span class="kn">import</span> <span class="n">init_instrument</span>
+
+<span class="n">yaml_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">configs</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_config</span><span class="p">)</span>
+
+<span class="n">use_serial</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="c1"># get lockin amplifier SCPI object</span>
+<span class="n">commands</span> <span class="o">=</span> <span class="s1">&#39;commands.csv&#39;</span>
+<span class="n">lookups</span> <span class="o">=</span> <span class="s1">&#39;lookup.csv&#39;</span>
+
+<span class="n">instrument</span> <span class="o">=</span> <span class="s1">&#39;srs810&#39;</span>
+<span class="n">cmd_map</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;base_directory&#39;</span><span class="p">],</span> <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+            <span class="n">instrument</span><span class="p">,</span> <span class="n">commands</span><span class="p">)</span>
+<span class="n">lookup_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;base_directory&#39;</span><span class="p">],</span> <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+            <span class="n">instrument</span><span class="p">,</span> <span class="n">lookups</span><span class="p">)</span>
+
+<span class="n">lockin_addr</span> <span class="o">=</span> <span class="s1">&#39;/dev/tty.USA19H14112434P1.1&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">lia</span><span class="p">,</span> <span class="n">lia_serial</span> <span class="o">=</span> <span class="n">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span> <span class="o">=</span> <span class="n">use_serial</span><span class="p">,</span>
+<span class="gp">   ...: </span>          <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">lockin_addr</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup_file</span><span class="p">,</span> <span class="n">init_write</span> <span class="o">=</span> <span class="s1">&#39;OUTX 0&#39;</span><span class="p">)</span>
+<span class="gp">   ...: </span>
+<span class="go">=====================================</span>
+<span class="go">Note!! Running in debug mode without instrument attached</span>
+<span class="go">All commands sent to the instrument will be printed to stdout</span>
+<span class="go">Getters will always return 7 (set by variable getter_debug_value)</span>
+<span class="go">=====================================</span>
+
+<span class="go">*IDN?</span>
+<span class="go">ID command not returned by instrument. Name set to: not named</span>
+
+<span class="gp">In [2]: </span><span class="n">lia</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                          PHAS?</span>
+<span class="gh">Out[2]: </span><span class="go">7.0</span>
+
+<span class="gp">In [3]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                            PHAS 0.1</span>
+
+<span class="gp">In [4]: </span><span class="n">lia</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                     Help for command [32mphase[0m in subsystem: ref_phase:</span>
+<span class="go">    Phase shift in degrees</span>
+<span class="go">    Allowable range is: [-360.0, 729.99]</span>
+<span class="go">    Returns: float</span>
+</pre></div>
+</div>
+<p>A more complex Lock-in Amplifier set. This example requires an input dictionary configs. Here we set the lock-in display to show “R” – magnitude.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ch1_disp&#39;</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+<span class="go">DDEF 1 0</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_instrument.html" class="btn btn-neutral float-right" title="Example Instrument" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="instrbuilder.html" class="btn btn-neutral" title="Instrbuilder: Easy Instrument Control with Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1a',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -12,9 +12,9 @@ library targets instruments that use `SCPI <https://en.wikipedia.org/wiki/Standa
 and are interfaced to with python packages such as pyvisa or pyserial. 
 
 * **Generate a new driver** without writing python code.
-* Automatic **command testing** creates reports of communication errors or unexpected return values
+* **Automatic command testing** creates reports of communication errors or unexpected return values
 * **Help** sorted by subsytem 
-* One-line command to capture and **save complete instrument configuration**
+* **Capture and save complete instrument configuration** with one-line 
 
 
 Example 

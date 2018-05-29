@@ -1,6 +1,0 @@
-canonical: 12345
-decimal: +12345
-octal: 0o14
-hexadecimal: 0xC
-csv_directory: 'instruments'
-base_directory: '/Users/koer2434/Google Drive/UST/research/instrbuilder/'

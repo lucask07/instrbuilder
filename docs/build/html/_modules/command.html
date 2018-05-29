@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>command &mdash; instrbuilder 1 documentation</title>
+  <title>command &mdash; instrbuilder 0.1a documentation</title>
   
 
   
@@ -47,7 +47,7 @@
           
 
           
-            <a href="../instrbuilder.py.html" class="icon icon-home"> instrbuilder
+            <a href="../instrbuilder.html" class="icon icon-home"> instrbuilder
           
 
           
@@ -55,6 +55,10 @@
 
           
             
+            
+              <div class="version">
+                0.1
+              </div>
             
           
 
@@ -77,8 +81,23 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../command_testing.html">Command Testing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
             
           
         </div>
@@ -91,7 +110,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../instrbuilder.py.html">instrbuilder</a>
+          <a href="../instrbuilder.html">instrbuilder</a>
         
       </nav>
 
@@ -120,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../instrbuilder.py.html">Docs</a> &raquo;</li>
+      <li><a href="../instrbuilder.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">Module code</a> &raquo;</li>
         
@@ -165,19 +184,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../command.py.html#command.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../command.html#command.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A command to be sent to an instrument </span>
 
 <span class="sd">    .. todo::</span>
 
-<span class="sd">       * Determine if the command is a SCPI comms error flag</span>
 <span class="sd">       * Add a switch to enable or disable the lookup table </span>
 <span class="sd">       * defaults for long getters and setters</span>
 <span class="sd">       * long getters/setters: need range requirements and names for 2nd and beyond getter inputs</span>
-<span class="sd">       * long getter returns:  have custom getter_type functions, need to test</span>
-<span class="sd">       * input files: 1) extra getter/setter inputs; 2) range for extra inputs</span>
-
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -185,39 +200,41 @@
 <span class="sd">        The name of the command, used as lookup key </span>
 <span class="sd">        to the instrument&#39;s dictionary of commands</span>
 <span class="sd">    ascii_str : string</span>
-<span class="sd">        What is sent to the instrument</span>
+<span class="sd">        What is sent to the instrument.</span>
 <span class="sd">    ascii_str_get : string, optional</span>
 <span class="sd">        What is sent to the instrument when getting a value.</span>
-<span class="sd">        If not specified ascii_str will be used </span>
+<span class="sd">        If not specified &#39;ascii_str&#39; will be used.</span>
 <span class="sd">    getter : Boolean </span>
 <span class="sd">        Is this command a getter?</span>
 <span class="sd">    getter_type : function, float</span>
-<span class="sd">        Converts the instrument returned value to a new type for processing</span>
+<span class="sd">        Converts the instrument returned value to a new type for processing.</span>
 <span class="sd">        Example: float</span>
 <span class="sd">    setter : Boolean </span>
 <span class="sd">        Is this command a setter?</span>
 <span class="sd">    setter_range : list</span>
-<span class="sd">        Minimum and maximum allowed values for the set operation</span>
+<span class="sd">        Minimum and maximum allowed values for the set operation.</span>
 <span class="sd">    setter_type : function, float</span>
 <span class="sd">        Currently not used; may be used to check if set value is the proper type </span>
 <span class="sd">    doc : string, optional</span>
-<span class="sd">        Documentation for this command; will be printed with help</span>
+<span class="sd">        Documentation for this command; will be printed with help.</span>
 <span class="sd">    subsystem : string, optional</span>
 <span class="sd">        The subsystem (of the instrument) that this command fits into</span>
-<span class="sd">        Used for organization help information</span>
+<span class="sd">        Used for organization help information.</span>
 <span class="sd">    getter_inputs : list (of strings)</span>
 <span class="sd">        For non-conventional get functions (long getters) that send extra parameters.</span>
 <span class="sd">        This is a list of the input parameters that are needed. These are keys to </span>
-<span class="sd">        the config dictionary</span>
+<span class="sd">        the config dictionary.</span>
 <span class="sd">    setter_inputs : list (of strings)</span>
 <span class="sd">        For non-conventional set functions (long setters) that send extra parameters (beyond &#39;value&#39;).</span>
 <span class="sd">        This is a list of the input parameters that are needed. These are keys to </span>
-<span class="sd">        the config dictionary</span>
+<span class="sd">        the config dictionary.</span>
 <span class="sd">    lookup : dictionary </span>
 <span class="sd">        A lookup table for values that can be mapped to more human-readable results. </span>
 <span class="sd">        E.g. lookup = `{&#39;SLOW&#39;: 0, &#39;FAST&#39;: 1}`</span>
 <span class="sd">        The keys are the human-readable names, the dictionary values are what is sent and </span>
 <span class="sd">        received from the instrument. </span>
+<span class="sd">    is_config : is a &quot;configuration&quot; variable that should be measured and logged at </span>
+<span class="sd">        start and end of experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ascii_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ascii_str_get</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -225,7 +242,7 @@
                  <span class="n">setter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">setter_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                  <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">subsystem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">getter_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">lookup</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">lookup</span><span class="o">=</span><span class="p">{},</span> <span class="n">is_config</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -273,8 +290,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsystem</span> <span class="o">=</span> <span class="n">subsystem</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getter_inputs</span> <span class="o">=</span> <span class="n">getter_inputs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setter_inputs</span> <span class="o">=</span> <span class="n">setter_inputs</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setter_inputs</span> <span class="o">=</span> <span class="n">setter_inputs</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_config</span> <span class="o">=</span> <span class="n">is_config</span></div>
 </pre></div>
 
            </div>
@@ -309,7 +327,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1',
+            VERSION:'0.1a',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

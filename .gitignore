@@ -2,3 +2,4 @@
 *.DS_Store
 *.swp
 scratch_code.py
+*./*scratch_code.py
