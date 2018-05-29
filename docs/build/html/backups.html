@@ -47,7 +47,7 @@
           
 
           
-            <a href="instrbuilder.html" class="icon icon-home"> instrbuilder
+            <a href="index.html" class="icon icon-home"> instrbuilder
           
 
           
@@ -86,6 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
 </ul>
 <p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
 <ul>
@@ -109,7 +110,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="instrbuilder.html">instrbuilder</a>
+          <a href="index.html">instrbuilder</a>
         
       </nav>
 
@@ -138,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="instrbuilder.html">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
       <li>&lt;no title&gt;</li>
     
@@ -159,80 +160,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-scpi"></span><dl class="function">
-<dt id="scpi.open_visa">
-<code class="descclassname">scpi.</code><code class="descname">open_visa</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#open_visa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.open_visa" title="Permalink to this definition">¶</a></dt>
-<dd><p>open a VISA object</p>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<ul class="last simple">
-<li>determine if error flag</li>
-<li>enable or disable of lookup table</li>
-</ul>
-</div>
-</dd></dl>
-
-<dl class="class">
-<dt id="scpi.SCPI">
-<em class="property">class </em><code class="descclassname">scpi.</code><code class="descname">SCPI</code><span class="sig-paren">(</span><em>cmd_list</em>, <em>write</em>, <em>ask</em>, <em>name='not named'</em>, <em>unconnected=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>A SCPI instrument with a list of commands. The instrument has methods to get and set info of each command.</p>
-<div class="admonition-todo admonition" id="index-1">
-<p class="first admonition-title">Todo</p>
-<ul class="last simple">
-<li>Instrument error log lookup. How to load? Import as csv?</li>
-<li>Automatic checker: send values out of range and read-back, note precisions, etc.</li>
-<li>Organization of classes, what inherits from what? Override RS232 initialization stuff</li>
-<li>Create docstrings for each method of SCPI class</li>
-</ul>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cmd_list</strong> : Command</p>
-<blockquote>
-<div><p>A list of commands. Each command is an object of the class Command</p>
-</div></blockquote>
-<p><strong>write</strong> : method</p>
-<blockquote>
-<div><p>A function that writes data to the hardware interface.
-Examples are pySerial write() or pyvisa inst.write()</p>
-</div></blockquote>
-<p><strong>ask</strong> : method</p>
-<blockquote>
-<div><p>a function that queries data from the hardware interface (typically a sequence of write and then read).
-Examples are pySerial ask() and pyvisa inst.query()</p>
-</div></blockquote>
-<p><strong>name</strong> : str, optional</p>
-<blockquote class="last">
-<div><p>Name of the instrument</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="scpi.SCPI.check_set_range">
-<code class="descname">check_set_range</code><span class="sig-paren">(</span><em>value</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.check_set_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.check_set_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>check if the value to be set is within range</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.read_comm_err">
-<code class="descname">read_comm_err</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.read_comm_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.read_comm_err" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read if the instrument has flagged a communciation error 
-The csv command file must have a getter with name comm_error that returns a bool</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.test_all">
-<code class="descname">test_all</code><span class="sig-paren">(</span><em>skip_subsystem=['setup', 'status'], skip_commands=['fast_transfer', 'reset']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.test_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.test_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>test all commands</p>
-</dd></dl>
-
-</dd></dl>
-
-<p>Failed attempts to get color</p>
+  <span class="target" id="module-scpi"></span><p>Failed attempts to get color</p>
 
 
            </div>

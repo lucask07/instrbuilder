@@ -49,7 +49,7 @@
           
 
           
-            <a href="instrbuilder.html" class="icon icon-home"> instrbuilder
+            <a href="index.html" class="icon icon-home"> instrbuilder
           
 
           
@@ -125,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="instrbuilder.html">instrbuilder</a>
+          <a href="index.html">instrbuilder</a>
         
       </nav>
 
@@ -154,7 +154,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="instrbuilder.html">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
           <li><a href="example_instrument.html">Example Instrument</a> &raquo;</li>
         
@@ -311,95 +311,6 @@ digital lock-in amplifier are used to explain the format of an instrument <cite>
 </div>
 <div class="section" id="module-command">
 <span id="actual-class"></span><h2>Actual Class<a class="headerlink" href="#module-command" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="command.Command">
-<em class="property">class </em><code class="descclassname">command.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>name</em>, <em>ascii_str=''</em>, <em>ascii_str_get=''</em>, <em>getter=True</em>, <em>getter_type=&lt;class 'float'&gt;</em>, <em>setter=True</em>, <em>setter_range=None</em>, <em>setter_type=&lt;class 'float'&gt;</em>, <em>doc=''</em>, <em>subsystem=None</em>, <em>getter_inputs=None</em>, <em>setter_inputs=None</em>, <em>lookup={}</em>, <em>is_config=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/command.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#command.Command" title="Permalink to this definition">¶</a></dt>
-<dd><p>A command to be sent to an instrument</p>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<ul class="last simple">
-<li>Add a switch to enable or disable the lookup table</li>
-<li>defaults for long getters and setters</li>
-<li>long getters/setters: need range requirements and names for 2nd and beyond getter inputs</li>
-</ul>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>The name of the command, used as lookup key 
-to the instrument’s dictionary of commands</p>
-</div></blockquote>
-<p><strong>ascii_str</strong> : string</p>
-<blockquote>
-<div><p>What is sent to the instrument.</p>
-</div></blockquote>
-<p><strong>ascii_str_get</strong> : string, optional</p>
-<blockquote>
-<div><p>What is sent to the instrument when getting a value.
-If not specified ‘ascii_str’ will be used.</p>
-</div></blockquote>
-<p><strong>getter</strong> : Boolean</p>
-<blockquote>
-<div><p>Is this command a getter?</p>
-</div></blockquote>
-<p><strong>getter_type</strong> : function, float</p>
-<blockquote>
-<div><p>Converts the instrument returned value to a new type for processing.
-Example: float</p>
-</div></blockquote>
-<p><strong>setter</strong> : Boolean</p>
-<blockquote>
-<div><p>Is this command a setter?</p>
-</div></blockquote>
-<p><strong>setter_range</strong> : list</p>
-<blockquote>
-<div><p>Minimum and maximum allowed values for the set operation.</p>
-</div></blockquote>
-<p><strong>setter_type</strong> : function, float</p>
-<blockquote>
-<div><p>Currently not used; may be used to check if set value is the proper type</p>
-</div></blockquote>
-<p><strong>doc</strong> : string, optional</p>
-<blockquote>
-<div><p>Documentation for this command; will be printed with help.</p>
-</div></blockquote>
-<p><strong>subsystem</strong> : string, optional</p>
-<blockquote>
-<div><p>The subsystem (of the instrument) that this command fits into
-Used for organization help information.</p>
-</div></blockquote>
-<p><strong>getter_inputs</strong> : list (of strings)</p>
-<blockquote>
-<div><p>For non-conventional get functions (long getters) that send extra parameters.
-This is a list of the input parameters that are needed. These are keys to 
-the config dictionary.</p>
-</div></blockquote>
-<p><strong>setter_inputs</strong> : list (of strings)</p>
-<blockquote>
-<div><p>For non-conventional set functions (long setters) that send extra parameters (beyond ‘value’).
-This is a list of the input parameters that are needed. These are keys to 
-the config dictionary.</p>
-</div></blockquote>
-<p><strong>lookup</strong> : dictionary</p>
-<blockquote>
-<div><p>A lookup table for values that can be mapped to more human-readable results. 
-E.g. lookup = <cite>{‘SLOW’: 0, ‘FAST’: 1}</cite>
-The keys are the human-readable names, the dictionary values are what is sent and 
-received from the instrument.</p>
-</div></blockquote>
-<p><strong>is_config</strong> : is a “configuration” variable that should be measured and logged at</p>
-<blockquote class="last">
-<div><p>start and end of experiment.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 </div>
 
