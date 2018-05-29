@@ -140,29 +140,34 @@
            <div itemprop="articleBody">
             
   <h1>Source code for command</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span></span><span class="c1"># Lucas J. Koerner</span>
+<span class="c1"># 05/2018</span>
+<span class="c1"># koerner.lucas@stthomas.edu</span>
+<span class="c1"># University of St. Thomas</span>
+
+<span class="c1"># standard library imports </span>
 <span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">colorama</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># imports that may need installation</span>
+<span class="kn">import</span> <span class="nn">colorama</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">serial</span>
 <span class="kn">import</span> <span class="nn">visa</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Lucas J. Koerner, 2018/4/17</span>
-<span class="sd">TODO correct docstring format</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Command"><a class="viewcode-back" href="../command.py.html#command.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A command to be sent to an instrument </span>
-
 
 <span class="sd">    .. todo::</span>
 
@@ -211,10 +216,8 @@
 <span class="sd">    lookup : dictionary </span>
 <span class="sd">        A lookup table for values that can be mapped to more human-readable results. </span>
 <span class="sd">        E.g. lookup = `{&#39;SLOW&#39;: 0, &#39;FAST&#39;: 1}`</span>
-<span class="sd">        The keys are the human-readable values, the dictionary values are what is sent and </span>
+<span class="sd">        The keys are the human-readable names, the dictionary values are what is sent and </span>
 <span class="sd">        received from the instrument. </span>
-
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ascii_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ascii_str_get</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -255,14 +258,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">getter_type</span> <span class="o">=</span> <span class="n">getter_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setter</span> <span class="o">=</span> <span class="n">setter</span>            <span class="c1"># is this a setter? True or False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setter_type</span> <span class="o">=</span> <span class="n">setter_type</span>  <span class="c1"># TODO: checks that the value matches this type</span>
+        
+        <span class="c1"># lookup table support (dictionary)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup</span>
+
+        <span class="c1"># we want to store the acceptable range as the value -- if its lookups convert it</span>
+        <span class="k">if</span> <span class="n">setter_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">setter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">setter_range</span><span class="p">):</span>
+                    <span class="n">setter_range</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">setter_range</span> <span class="o">=</span> <span class="n">setter_range</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsystem</span> <span class="o">=</span> <span class="n">subsystem</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getter_inputs</span> <span class="o">=</span> <span class="n">getter_inputs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setter_inputs</span> <span class="o">=</span> <span class="n">setter_inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setter_inputs</span> <span class="o">=</span> <span class="n">setter_inputs</span></div>
 
-        <span class="c1"># lookup table support (dictionary)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup</span></div>
 </pre></div>
 
            </div>

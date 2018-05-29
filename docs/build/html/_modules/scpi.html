@@ -140,56 +140,72 @@
            <div itemprop="articleBody">
             
   <h1>Source code for scpi</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">colorama</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span></span><span class="c1"># Lucas J. Koerner</span>
+<span class="c1"># 05/2018</span>
+<span class="c1"># koerner.lucas@stthomas.edu</span>
+<span class="c1"># University of St. Thomas</span>
+
+<span class="c1"># standard library imports </span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="c1"># imports that may need installation</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">colorama</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">serial</span>
 <span class="kn">import</span> <span class="nn">visa</span>
+<span class="kn">import</span> <span class="nn">sphinx.quickstart</span>
+<span class="n">colorama</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+<span class="c1"># local package imports </span>
 <span class="kn">from</span> <span class="nn">command</span> <span class="k">import</span> <span class="n">Command</span>
 <span class="kn">import</span> <span class="nn">utils</span> 
 
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Lucas Koerner, 2018/4/17</span>
-<span class="sd">TODO correct docstring format</span>
+<span class="sd">The SCPI module includes the SCPI class, functions to convert return values, and builds </span>
+<span class="sd">a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="c1"># a dictionary of functions that are used to convert </span>
-<span class="c1"># return values from getters </span>
+<span class="c1">#### -----------------------------------------</span>
+<span class="c1"># a dictionary of functions that are used to convert return values from getters </span>
 <span class="n">convert_lookup</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
-<span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;string&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;float&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;double&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span>
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;nan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
 
-<span class="k">def</span> <span class="nf">conv_arr_str</span><span class="p">(</span><span class="n">str_in</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">arr_str</span><span class="p">(</span><span class="n">str_in</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; convert string such as &#39;2.3&#39;, &#39;5.4&#39;, &#39;9.9&#39; to a list of floats &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">str_in</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
 
+<span class="k">def</span> <span class="nf">arr_bytes</span><span class="p">(</span><span class="n">bytes_in</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; convert array of bytes such as &quot;b&#39;1,0\\r&#39;&quot; to a list of floats &quot;&quot;&quot;</span>
+    <span class="n">str_in</span> <span class="o">=</span> <span class="n">bytes_in</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">str_in</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)))</span>
+
 <span class="k">def</span> <span class="nf">str_strip</span><span class="p">(</span><span class="n">str_in</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; wrap string rstrip method into function &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; strip whitespace at right of string. Wrap string rstrip method into function &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">str_in</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
 <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">str_strip</span>
-<span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv_arr_str</span>
+<span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;str_array_to_numarray&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr_str</span>
+<span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;byte_array_to_numarray&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr_bytes</span>
 
+<span class="c1"># getter conversion function to determine if a single bit is set. Returns True or False</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+    <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;bit</span><span class="si">{}</span><span class="s1">_set&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_bit</span><span class="p">,</span> <span class="n">bit</span> <span class="o">=</span> <span class="n">i</span><span class="p">)(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+<span class="c1"># getter conversion function to determine if a single bit is cleared. Returns True or False</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+    <span class="n">convert_lookup</span><span class="p">[</span><span class="s1">&#39;bit</span><span class="si">{}</span><span class="s1">_cleared&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_bit</span><span class="p">,</span> <span class="n">bit</span> <span class="o">=</span> <span class="n">i</span><span class="p">)(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+<span class="c1">#### -----------------------------------------</span>
 <span class="n">divider_string</span> <span class="o">=</span> <span class="s1">&#39;=====================================</span><span class="se">\n</span><span class="s1">&#39;</span>
-
-<span class="c1"># Dictionary of status register - bytes and bits</span>
-<span class="c1"># Need to find a byte for certain bit, bit for certain name, name of certain bit</span>
-<span class="n">lia_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;serial_poll&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;SCN&#39;</span><span class="p">,</span> <span class="s1">&#39;IFC&#39;</span><span class="p">,</span> <span class="s1">&#39;ERR&#39;</span><span class="p">,</span> <span class="s1">&#39;LIA&#39;</span><span class="p">,</span> <span class="s1">&#39;MAV&#39;</span><span class="p">,</span> <span class="s1">&#39;ESB&#39;</span><span class="p">,</span> <span class="s1">&#39;SRQ&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">],</span>
-              <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;RSRV/INPT&#39;</span><span class="p">,</span> <span class="s1">&#39;FILTR&#39;</span><span class="p">,</span> <span class="s1">&#39;OUTPT&#39;</span><span class="p">,</span> <span class="s1">&#39;UNLK&#39;</span><span class="p">,</span> <span class="s1">&#39;RANGE&#39;</span><span class="p">,</span> <span class="s1">&#39;TC&#39;</span><span class="p">,</span> <span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">],</span>
-              <span class="s1">&#39;event_status&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;INP&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;QRY&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;EXE&#39;</span><span class="p">,</span> <span class="s1">&#39;CMD&#39;</span><span class="p">,</span> <span class="s1">&#39;URQ&#39;</span><span class="p">,</span> <span class="s1">&#39;PON&#39;</span><span class="p">],</span>
-              <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;BACKUP&#39;</span><span class="p">,</span> <span class="s1">&#39;RAM&#39;</span><span class="p">,</span> <span class="s1">&#39;unused&#39;</span><span class="p">,</span> <span class="s1">&#39;ROM&#39;</span><span class="p">,</span> <span class="s1">&#39;GPIB&#39;</span><span class="p">,</span> <span class="s1">&#39;DSP&#39;</span><span class="p">,</span> <span class="s1">&#39;MATH&#39;</span><span class="p">]}</span>
-
 <span class="n">getter_debug_value</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span> <span class="c1"># when running headless (no instruments attached) all getters return this</span>
 
 
@@ -341,7 +357,10 @@
 
 <div class="viewcode-block" id="SCPI.check_set_range"><a class="viewcode-back" href="../scpi.py.html#scpi.SCPI.check_set_range">[docs]</a>    <span class="k">def</span> <span class="nf">check_set_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; check if the value to be set is within range &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># numeric, check if less than or greater than</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="kc">True</span>
@@ -349,28 +368,18 @@
                 <span class="c1"># throw out of range warning</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">out_of_range_warning</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># could be a list of strings, check if strings</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-                <span class="c1"># check if value is a member</span>
-                <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="c1"># check if value is a member</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># throw out of range warning</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">out_of_range_warning</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span></div>
-
+    
     <span class="k">def</span> <span class="nf">out_of_range_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> value of </span><span class="si">{}</span><span class="s1"> is out of the range of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
-
-<div class="viewcode-block" id="SCPI.set_with_dict"><a class="viewcode-back" href="../scpi.py.html#scpi.SCPI.set_with_dict">[docs]</a>    <span class="k">def</span> <span class="nf">set_with_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
-        <span class="c1"># TODO: remove?</span>
-        <span class="sd">&quot;&quot;&quot; set attributes with a dict &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">D</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></div>
 
     <span class="k">def</span> <span class="nf">list_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">:</span>
@@ -445,21 +454,21 @@
 
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span>
 
-<div class="viewcode-block" id="SCPI.read_comm_err"><a class="viewcode-back" href="../scpi.py.html#scpi.SCPI.read_comm_err">[docs]</a>    <span class="k">def</span> <span class="nf">read_comm_err</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg_name</span><span class="o">=</span><span class="s1">&#39;event_status&#39;</span><span class="p">,</span> <span class="n">bit_name</span><span class="o">=</span><span class="s1">&#39;CMD&#39;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; This is specific to SRS810 and must be over-riden by each instrument &#39;&#39;&#39;</span>
-        <span class="n">reg_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reg_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_bit</span><span class="p">(</span><span class="n">reg_val</span><span class="p">,</span> <span class="n">lia_status</span><span class="p">[</span><span class="n">reg_name</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bit_name</span><span class="p">)))</span></div>
+<div class="viewcode-block" id="SCPI.read_comm_err"><a class="viewcode-back" href="../scpi.py.html#scpi.SCPI.read_comm_err">[docs]</a>    <span class="k">def</span> <span class="nf">read_comm_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Read if the instrument has flagged a communciation error </span>
+<span class="sd">            The csv command file must have a getter with name comm_error that returns a bool &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;comm_error&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">test_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">set_vals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">allowed_err</span> <span class="o">=</span> <span class="mf">0.02</span>
+        <span class="n">allowed_err</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="c1"># TODO: determine error magnitude that is allowed </span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get_config_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skipping test of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skipping test of: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s1">&#39;  Test of getters or setters that require a configuration input are not yet implemented&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+                <span class="s1">&#39;  Test of getters or setters that require a configuration input is not yet implemented&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;NotTested&#39;</span>
 
         <span class="c1"># if getter and setter</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter</span><span class="p">):</span>
@@ -474,6 +483,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">set_val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                 <span class="n">ok</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_comm_err</span><span class="p">()</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="c1"># if present remove lookup table modification</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">[</span><span class="n">ret</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
                 <span class="n">ok</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_comm_err</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter_type</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -503,7 +518,7 @@
                 <span class="n">set_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Skipping test of setter </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-                <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">return</span> <span class="s1">&#39;NotTested&#39;</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">set_val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
             <span class="n">ok</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_comm_err</span><span class="p">()</span>
@@ -565,8 +580,8 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Trying to open the device even though it was not found by the resource manager&#39;</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This address </span><span class="si">{}</span><span class="s1"> was not recognized&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Returning an empty handle&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This address </span><span class="si">{}</span><span class="s1"> was not recognized&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span> <span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Returning an empty handle&#39;</span><span class="p">,</span> <span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">obj</span></div>
 
@@ -605,19 +620,23 @@
 <span class="k">class</span> <span class="nc">RS232</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="c1"># TODO: make the Lock-in specific stuff inherit the RS232 object</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_port</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_port</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span>
-            <span class="n">port</span><span class="o">=</span><span class="n">ser_port</span><span class="p">,</span>
-            <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
-            <span class="n">parity</span><span class="o">=</span><span class="n">serial</span><span class="o">.</span><span class="n">PARITY_NONE</span><span class="p">,</span>
-            <span class="n">bytesize</span><span class="o">=</span><span class="n">serial</span><span class="o">.</span><span class="n">EIGHTBITS</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">terminator</span> <span class="o">=</span> <span class="s1">&#39; </span><span class="se">\n</span><span class="s1">&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ser_port</span> <span class="o">=</span> <span class="n">ser_port</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">ser_port</span><span class="p">,</span>
+            <span class="n">baudrate</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;baudrate&#39;</span><span class="p">,</span> <span class="mi">9600</span><span class="p">),</span>
+            <span class="n">parity</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;parity&#39;</span><span class="p">,</span> <span class="n">serial</span><span class="o">.</span><span class="n">PARITY_NONE</span><span class="p">),</span>
+            <span class="n">bytesize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bytesize&#39;</span><span class="p">,</span> <span class="n">serial</span><span class="o">.</span><span class="n">EIGHTBITS</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;terminator&#39;</span><span class="p">,</span> <span class="s1">&#39; </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
 
         <span class="c1"># lock-in specific</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;OUTX 0&#39;</span><span class="p">)</span>  <span class="c1"># set to RS232</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">init_write</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;init_write&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">init_write</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">init_write</span><span class="p">)</span>  <span class="c1"># set to RS232 &#39;OUTX 0&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="s1">&#39;Device ID get failed&#39;</span>
 
     <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -659,16 +678,38 @@
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_usb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_usb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">lookup</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
-    <span class="c1"># Read CSV file and</span>
+    <span class="c1"># Read CSV file of commands</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  <span class="c1"># strip column headers only</span>
-
+    <span class="c1"># strip white space and end-of-line from column headers</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  
+    <span class="c1"># strip white space and end-of-line from string inputs </span>
     <span class="n">df</span><span class="p">[</span><span class="s1">&#39;setter_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;setter_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="n">df</span><span class="p">[</span><span class="s1">&#39;getter_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;getter_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="c1"># TODO read lookup table CSV</span>
+    <span class="c1"># Read CSV file of lookups </span>
+    <span class="k">if</span> <span class="n">lookup</span><span class="p">:</span>
+        <span class="n">df_look</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">lookup</span><span class="p">)</span>
+        <span class="c1"># strip white space and end-of-line from column headers</span>
+        <span class="n">df_look</span> <span class="o">=</span> <span class="n">df_look</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>  
+
+        <span class="c1"># make a dictionary for each command </span>
+        <span class="n">cmd_lookups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_look</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">current_cmd</span> <span class="o">=</span> <span class="n">current_cmd</span> <span class="c1"># shouldn&#39;t get here </span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">current_cmd</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">current_cmd</span> <span class="ow">in</span> <span class="n">cmd_lookups</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">cmd_lookups</span><span class="p">[</span><span class="n">current_cmd</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># initialize the dictionary</span>
+                <span class="n">cmd_lookups</span><span class="p">[</span><span class="n">current_cmd</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">cmd_lookups</span><span class="p">[</span><span class="n">current_cmd</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
 
     <span class="n">cmd_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
@@ -690,39 +731,52 @@
                 <span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># pandas read default value is nan. Convert to None or 0 depending upon column</span>
-        <span class="k">def</span> <span class="nf">mod_default</span><span class="p">(</span><span class="n">row_el</span><span class="p">,</span> <span class="n">default_value</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">modify_default</span><span class="p">(</span><span class="n">row_el</span><span class="p">,</span> <span class="n">default_value</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">row_el</span> <span class="o">=</span> <span class="n">default_value</span> <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row_el</span><span class="p">)</span> <span class="k">else</span> <span class="n">row_el</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                 <span class="n">row_el</span> <span class="o">=</span> <span class="n">row_el</span>
-
             <span class="k">return</span> <span class="n">row_el</span>
 
-        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_default</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_inputs&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_default</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_inputs&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;ascii_str_get&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_default</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;ascii_str_get&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modify_default</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_inputs&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modify_default</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_inputs&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;ascii_str_get&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modify_default</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;ascii_str_get&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="kc">False</span><span class="p">:</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">cmd_lookups</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">cmd_lookups</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">lookup_dict</span> <span class="o">=</span> <span class="n">cmd_lookups</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">Command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">ascii_str</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;ascii_str&#39;</span><span class="p">],</span> <span class="n">ascii_str_get</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;ascii_str_get&#39;</span><span class="p">],</span>
                       <span class="n">getter</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter&#39;</span><span class="p">],</span> <span class="n">getter_type</span><span class="o">=</span><span class="n">convert_lookup</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_type&#39;</span><span class="p">]],</span>
                       <span class="n">setter</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter&#39;</span><span class="p">],</span> <span class="n">setter_type</span><span class="o">=</span><span class="n">convert_lookup</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_type&#39;</span><span class="p">]],</span>
                       <span class="n">setter_range</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_range&#39;</span><span class="p">],</span>
                       <span class="n">doc</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">],</span> <span class="n">subsystem</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;subsystem&#39;</span><span class="p">],</span>
-                      <span class="n">getter_inputs</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_inputs&#39;</span><span class="p">],</span> <span class="n">setter_inputs</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_inputs&#39;</span><span class="p">])</span>
+                      <span class="n">getter_inputs</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;getter_inputs&#39;</span><span class="p">],</span> <span class="n">setter_inputs</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;setter_inputs&#39;</span><span class="p">],</span>
+                      <span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup_dict</span><span class="p">)</span>
 
         <span class="n">cmd_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">use_serial</span><span class="p">:</span>
-        <span class="n">inst_comm</span> <span class="o">=</span> <span class="n">RS232</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="c1"># pySerial, RS232</span>
+        <span class="n">inst_comm</span> <span class="o">=</span> <span class="n">RS232</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">inst_comm</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">inst</span> <span class="o">=</span> <span class="n">SCPI</span><span class="p">(</span><span class="n">cmd_list</span><span class="p">,</span> <span class="n">inst_comm</span><span class="o">.</span><span class="n">write</span><span class="p">,</span> <span class="n">inst_comm</span><span class="o">.</span><span class="n">ask</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">use_usb</span><span class="p">:</span>
+        <span class="c1"># pyvisa, USB</span>
         <span class="n">inst_comm</span> <span class="o">=</span> <span class="n">USB</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
         <span class="n">inst</span> <span class="o">=</span> <span class="n">SCPI</span><span class="p">(</span><span class="n">cmd_list</span><span class="p">,</span> <span class="n">inst_comm</span><span class="o">.</span><span class="n">write</span><span class="p">,</span> <span class="n">inst_comm</span><span class="o">.</span><span class="n">ask</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>  
-    <span class="c1"># allow for debugging without instruments attached: </span>
-    <span class="c1">#   print command to stdout, always return getter_debug_value</span>
+        <span class="c1"># allow for debugging without instruments attached: </span>
+        <span class="c1"># print command to stdout, always return getter_debug_value</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">divider_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>     
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Note!! Running in debug mode without instrument attached&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All commands sent to the instrument will be printed to stdout&#39;</span><span class="p">)</span>

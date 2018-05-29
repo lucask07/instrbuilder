@@ -76,6 +76,8 @@ class Command(object):
         E.g. lookup = `{'SLOW': 0, 'FAST': 1}`
         The keys are the human-readable names, the dictionary values are what is sent and 
         received from the instrument. 
+    is_config : is a "configuration" variable that should be measured and logged at 
+        start and end of experiment 
     """
 
     def __init__(self, name, ascii_str='', ascii_str_get='',
@@ -83,7 +85,7 @@ class Command(object):
                  setter=True, setter_range=None, setter_type=float,
                  doc='', subsystem=None,
                  getter_inputs=None, setter_inputs=None,
-                 lookup={}):
+                 lookup={}, is_config = False):
 
         self.name = name
 
@@ -133,3 +135,4 @@ class Command(object):
         self.getter_inputs = getter_inputs
         self.setter_inputs = setter_inputs
 
+        self.is_config = is_config

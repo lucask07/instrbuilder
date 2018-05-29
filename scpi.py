@@ -18,6 +18,7 @@ import colorama
 import numpy as np
 import serial
 import visa
+
 # local package imports 
 from command import Command
 import utils 
@@ -41,9 +42,9 @@ def arr_str(str_in):
     return list(map(lambda x: float(x), str_in.split(',')))
 
 def arr_bytes(bytes_in):
-    """ convert array of bytes such as "b'1,0\\r'" to a list of floats """
+    """ convert array of bytes such as b'1,0\r' to a list of floats """
     str_in = bytes_in.decode('utf-8').rstrip()
-    return list(map(lambda x: float(x), str_in.split(',')))
+    return list(map(lambda x: int(x), str_in.split(',')))
 
 def str_strip(str_in):
     """ strip whitespace at right of string. Wrap string rstrip method into function """
@@ -87,7 +88,7 @@ class SCPI(object):
         Name of the instrument 
     """
 
-    def __init__(self, cmd_list, write, ask, name='not named'):
+    def __init__(self, cmd_list, write, ask, name='not named', unconnected = False):
         self._cmds = {}
         for cmd in cmd_list:
             self._cmds[cmd.name] = cmd
@@ -98,6 +99,7 @@ class SCPI(object):
         except:
             print('ID command not returned by instrument. Name set to: {}'.format(name))
         self.instrument_name = name
+        self.unconnected = unconnected
 
     def __dir__(self):
         # dir(lia) --> returns a list of the keys
@@ -105,60 +107,6 @@ class SCPI(object):
 
     def __len__(self):
         return len(self._cmds)
-
-    def __getitem__(self, index):
-        # TODO: keep or remove?
-        # check if this is actually a getter
-        if not self._cmds[index].getter:
-            # if its not a getter send the command
-            #   (i.e. this is a setter without an input parameter)
-            self.write(self._cmds[index].ascii_str)
-            return
-
-        if self._cmds[index].getter_inputs is not 0:
-            return  # TODO --> figure out what to do here
-
-        ret_val = self.ask(self._cmds[index].ascii_str + '?')
-
-        # convert to the specified getter_type (e.g number string to float)
-        try:
-            return self._cmds[index].getter_type(ret_val)
-        except ValueError:
-            print('Warning! getter {} returned unexpected type'.format(
-                self._cmds[index].name))
-            print('  Returned {}; with type = {}; expects = {}'.format(ret_val,
-                                                                       type(ret_val), self._cmds[index].getter_type))
-
-        return ret_val
-
-    def __setitem__(self, index, value=None):
-
-        # if value is None we just send the command (e.g. *IDN)
-        if value is None:
-            self.write(self._cmds[index].ascii_str)
-
-        # check range
-        ok = False
-        # store in variable to reduce typing
-        set_range = self._cmds[index].setter_range
-        if set_range is not None:
-            if len(set_range) < 2:
-                print('Error: Setter range length {} is less than 2'.format(
-                    self._cmds[index].name))
-                print(' if range check will not be used set to None')
-                return -1
-            if len(set_range) == 2:
-                if all((isinstance(x, float) or isinstance(x, int)) for x in set_range):
-                    # check inequalities
-                    ok = (set_range[0] <= value) and (set_range[1] >= value)
-            else:  # set_range is NOT a list of two numeric values, assume need to check for membership
-                ok = value in set_range
-        if ok:
-            self.write(self._cmds[index].ascii_str + ' {}'.format(value))
-            return
-        else:
-            print(f'Error: value of = {value} not in range ({set_range}) for {colorama.Fore.GREEN}{self._cmds[index].name}{colorama.Style.RESET_ALL} command')
-            return -1
 
     def get(self, name, configs={}):
 
@@ -168,6 +116,13 @@ class SCPI(object):
 
         cmd_str = self._cmds[name].ascii_str_get
         ret_val = self.ask(cmd_str.format(**configs))
+        
+        # if the instrument is not connected, check if the command has a specific return value
+        if self.unconnected == True: 
+            try:
+                ret_val = self._cmds[name]._unconnected_val
+            except:
+                pass 
 
         try:
             val = self._cmds[name].getter_type(ret_val)
@@ -533,7 +488,9 @@ class RS232(object):
         return bytes(line)
 
 
-def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
+# def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
+#                     lookup = None, **kwargs):
+def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
                     lookup = None, **kwargs):
 
     # Read CSV file of commands
@@ -614,17 +571,17 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
                       setter_range=row['setter_range'],
                       doc=row['doc'], subsystem=row['subsystem'],
                       getter_inputs=row['getter_inputs'], setter_inputs=row['setter_inputs'],
-                      lookup = lookup_dict)
+                      lookup = lookup_dict, is_config = row['is_config'])
 
         cmd_list.append(cmd)
 
-    if use_serial:
+    if serial_addr is not None:
         # pySerial, RS232
         inst_comm = RS232(addr, **kwargs)
         inst_comm.ser.flush()
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
 
-    elif use_usb:
+    if usb_addr is not None:
         # pyvisa, USB
         inst_comm = USB(addr)
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
@@ -636,7 +593,7 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
         print('Note!! Running in debug mode without instrument attached')
         print('All commands sent to the instrument will be printed to stdout')
         print('Getters will always return {} (set by variable getter_debug_value)'.format(getter_debug_value))
-        print(divider_string)     
+        print(divider_string)
 
         inst_comm = None
 
@@ -647,6 +604,6 @@ def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
         def write(str_input):
             print(str_input)
 
-        inst = SCPI(cmd_list, write, ask)
+        inst = SCPI(cmd_list, write, ask, unconnected = True)
 
     return inst, inst_comm

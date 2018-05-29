@@ -1,4 +1,4 @@
-﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,config,setter_inputs,getter_inputs,needs_development
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs,needs_development
 function,FUNC,,TRUE,str,TRUE,str,"['SIN', 'SQU', 'RAMP', 'PULS', 'NOIS', 'DC', 'USER']","output function, sin; square, etc.",output,TRUE,,,
 freq,FREQ,,TRUE,float,TRUE,float,"[0, 20e6]",output frequency in Hz,output,TRUE,,,
 v,VOLT,,TRUE,float,TRUE,float,"[10e-3, 10]",voltage amplitude,output,TRUE,,,

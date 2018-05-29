@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>instrbuilder: INSTRUMENT BUILDER – EASY INSTRUMENT CONTROL &mdash; instrbuilder 1 documentation</title>
+  <title>instrbuilder: Easy Instrument Control with Python &mdash; instrbuilder 1 documentation</title>
   
 
   
@@ -79,7 +79,8 @@
             
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">instrbuilder: INSTRUMENT BUILDER – EASY INSTRUMENT CONTROL</a><ul>
+<li><a class="reference internal" href="#">instrbuilder: Easy Instrument Control with Python</a></li>
+<li><a class="reference internal" href="#general-overview">General Overview</a><ul>
 <li><a class="reference internal" href="#index">Index</a></li>
 </ul>
 </li>
@@ -87,9 +88,7 @@
 <li><a class="reference internal" href="#help">Help</a></li>
 <li><a class="reference internal" href="#get">Get</a></li>
 <li><a class="reference internal" href="#set">Set</a></li>
-<li><a class="reference internal" href="#example">Example</a><ul>
-</ul>
-</li>
+<li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -136,7 +135,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>instrbuilder: INSTRUMENT BUILDER – EASY INSTRUMENT CONTROL</li>
+      <li>instrbuilder: Easy Instrument Control with Python</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,9 +154,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="instrbuilder-instrument-builder-easy-instrument-control">
-<h1>instrbuilder: INSTRUMENT BUILDER – EASY INSTRUMENT CONTROL<a class="headerlink" href="#instrbuilder-instrument-builder-easy-instrument-control" title="Permalink to this headline">¶</a></h1>
-<p>Instrbuilder is a python library for quickly generating eas-to-use instrument high-level “drivers”. The
+  <div class="section" id="instrbuilder-easy-instrument-control-with-python">
+<h1>instrbuilder: Easy Instrument Control with Python<a class="headerlink" href="#instrbuilder-easy-instrument-control-with-python" title="Permalink to this headline">¶</a></h1>
+<p>Instrbuilder is a python library for quickly generating easy-to-use instrument high-level “drivers”. The
 library targets instruments that use <a class="reference external" href="https://en.wikipedia.org/wiki/Standard_Commands_for_Programmable_Instruments">SCPI</a> (Standard Commands for Programmable Instruments)
 and are interfaced to with packages such as <a class="reference external" href="https://pyvisa.readthedocs.io/en/stable/">pyvisa</a> or <a class="reference external" href="https://pythonhosted.org/pyserial/">pyserial</a>.</p>
 <ul class="simple">
@@ -166,6 +165,9 @@ and are interfaced to with packages such as <a class="reference external" href="
 <li><strong>Help</strong> sorted by subsytem</li>
 <li>One-line command to capture and <strong>save complete instrument configuration</strong></li>
 </ul>
+</div>
+<div class="section" id="general-overview">
+<h1>General Overview<a class="headerlink" href="#general-overview" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="index">
 <h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -177,7 +179,6 @@ and are interfaced to with packages such as <a class="reference external" href="
 <table border="1" class="colwidths-given docutils" id="id1">
 <caption><span class="caption-text">Example Instrument and a Single Command</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="7%" />
 <col width="7%" />
 <col width="7%" />
 <col width="7%" />
@@ -205,7 +206,6 @@ and are interfaced to with packages such as <a class="reference external" href="
 <th class="head">doc</th>
 <th class="head">subsystem</th>
 <th class="head">config</th>
-<th class="head">notes</th>
 <th class="head">setter_inputs</th>
 <th class="head">getter_inputs</th>
 <th class="head">needs_development</th>
@@ -226,7 +226,6 @@ and are interfaced to with packages such as <a class="reference external" href="
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
 </tr>
 </tbody>
 </table>
@@ -242,21 +241,37 @@ and are interfaced to with packages such as <a class="reference external" href="
 </div>
 <div class="section" id="example">
 <h1>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h1>
-<p>Import needed modules and configure paths to the command csv files</p>
+<p>First, import needed modules and configure paths to the csv files of each command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">scpi</span>
+
 <span class="kn">from</span> <span class="nn">scpi</span> <span class="kn">import</span> <span class="n">init_instrument</span>
+
+<span class="n">yaml_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">configs</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_config</span><span class="p">)</span>
 
 <span class="n">use_serial</span> <span class="o">=</span> <span class="bp">False</span>
 <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span>
 
 <span class="c1"># get lockin amplifier SCPI object</span>
-<span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scpi</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
-<span class="n">cmd_map</span> <span class="o">=</span> <span class="s1">&#39;instruments/srs810/commands.csv&#39;</span>
+<span class="n">commands</span> <span class="o">=</span> <span class="s1">&#39;commands.csv&#39;</span>
+<span class="n">lookups</span> <span class="o">=</span> <span class="s1">&#39;lookup.csv&#39;</span>
+
+<span class="n">instrument</span> <span class="o">=</span> <span class="s1">&#39;srs810&#39;</span>
+<span class="n">cmd_map</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;base_directory&#39;</span><span class="p">],</span> <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+            <span class="n">instrument</span><span class="p">,</span> <span class="n">commands</span><span class="p">)</span>
+<span class="n">lookup_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;base_directory&#39;</span><span class="p">],</span> <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+            <span class="n">instrument</span><span class="p">,</span> <span class="n">lookups</span><span class="p">)</span>
+
 <span class="n">lockin_addr</span> <span class="o">=</span> <span class="s1">&#39;/dev/tty.USA19H14112434P1.1&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">lia</span><span class="p">,</span> <span class="n">lia_serial</span> <span class="o">=</span> <span class="n">init_instrument</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">cmd_map</span><span class="p">),</span> <span class="n">use_serial</span> <span class="o">=</span> <span class="n">use_serial</span><span class="p">,</span> <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">lockin_addr</span><span class="p">)</span>
+<p>Help for command [32mphase[0m in subsystem: ref_phase:
+x1b[31;1mthis is a bold red prompt&gt; x1b[m</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">lia</span><span class="p">,</span> <span class="n">lia_serial</span> <span class="o">=</span> <span class="n">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span> <span class="o">=</span> <span class="n">use_serial</span><span class="p">,</span>
+<span class="gp">   ...: </span>          <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">lockin_addr</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup_file</span><span class="p">,</span> <span class="n">init_write</span> <span class="o">=</span> <span class="s1">&#39;OUTX 0&#39;</span><span class="p">)</span>
+<span class="gp">   ...: </span>
 <span class="go">=====================================</span>
 <span class="go">Note!! Running in debug mode without instrument attached</span>
 <span class="go">All commands sent to the instrument will be printed to stdout</span>
@@ -279,23 +294,16 @@ and are interfaced to with packages such as <a class="reference external" href="
 <span class="go">    Returns: float</span>
 </pre></div>
 </div>
-<p>A more complex Lock-in Amplifier set. This example requires an input dictionary configs
-Here we set the lock-in display to show “R” – magnitude</p>
+<p>A more complex Lock-in Amplifier set. This example requires an input dictionary configs. Here we set the lock-in display to show “R” – magnitude.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ch1_disp&#39;</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
 <span class="go">DDEF 1 0</span>
 </pre></div>
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">This is a simple, stand-alone todo not linked to code</p>
 </div>
 <span class="target" id="module-scpi"></span><dl class="function">
 <dt id="scpi.open_visa">
 <code class="descclassname">scpi.</code><code class="descname">open_visa</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#open_visa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.open_visa" title="Permalink to this definition">¶</a></dt>
 <dd><p>open a VISA object</p>
-<div class="admonition-todo admonition" id="index-1">
+<div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
 <ul class="last simple">
 <li>determine if error flag</li>
@@ -308,7 +316,7 @@ Here we set the lock-in display to show “R” – magnitude</p>
 <dt id="scpi.SCPI">
 <em class="property">class </em><code class="descclassname">scpi.</code><code class="descname">SCPI</code><span class="sig-paren">(</span><em>cmd_list</em>, <em>write</em>, <em>ask</em>, <em>name='not named'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>A SCPI instrument with a list of commands. The instrument has methods to get and set info of each command.</p>
-<div class="admonition-todo admonition" id="index-2">
+<div class="admonition-todo admonition" id="index-1">
 <p class="first admonition-title">Todo</p>
 <ul class="last simple">
 <li>Instrument error log lookup. How to load? Import as csv?</li>
@@ -371,19 +379,16 @@ Examples are pySerial ask() and pyvisa inst.query()</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_of_range_warning</span></code>(value,&nbsp;name)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="scpi.py.html#scpi.SCPI.read_comm_err" title="scpi.SCPI.read_comm_err"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_comm_err</span></code></a>([reg_name,&nbsp;bit_name])</td>
-<td>This is specific to SRS810 and must be over-riden by each instrument</td>
+<tr class="row-even"><td><a class="reference internal" href="scpi.py.html#scpi.SCPI.read_comm_err" title="scpi.SCPI.read_comm_err"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_comm_err</span></code></a>()</td>
+<td>Read if the instrument has flagged a communciation error  The csv command file must have a getter with name comm_error that returns a bool</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code>(value,&nbsp;name[,&nbsp;configs])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="scpi.py.html#scpi.SCPI.set_with_dict" title="scpi.SCPI.set_with_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_with_dict</span></code></a>(D)</td>
-<td>set attributes with a dict</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="scpi.py.html#scpi.SCPI.test_all" title="scpi.SCPI.test_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_all</span></code></a>([skip_subsystem,&nbsp;skip_commands])</td>
+<tr class="row-even"><td><a class="reference internal" href="scpi.py.html#scpi.SCPI.test_all" title="scpi.SCPI.test_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_all</span></code></a>([skip_subsystem,&nbsp;skip_commands])</td>
 <td>test all commands</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_command</span></code>(name[,&nbsp;set_vals])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_command</span></code>(name[,&nbsp;set_vals])</td>
 <td></td>
 </tr>
 </tbody>
@@ -396,14 +401,9 @@ Examples are pySerial ask() and pyvisa inst.query()</p>
 
 <dl class="method">
 <dt id="scpi.SCPI.read_comm_err">
-<code class="descname">read_comm_err</code><span class="sig-paren">(</span><em>reg_name='event_status'</em>, <em>bit_name='CMD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.read_comm_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.read_comm_err" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is specific to SRS810 and must be over-riden by each instrument</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.set_with_dict">
-<code class="descname">set_with_dict</code><span class="sig-paren">(</span><em>D</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.set_with_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.set_with_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>set attributes with a dict</p>
+<code class="descname">read_comm_err</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.read_comm_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.read_comm_err" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read if the instrument has flagged a communciation error 
+The csv command file must have a getter with name comm_error that returns a bool</p>
 </dd></dl>
 
 <dl class="method">

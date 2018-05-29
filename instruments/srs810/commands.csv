@@ -1,4 +1,4 @@
-﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,config,setter_inputs,getter_inputs,needs_development
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs,needs_development
 phase,PHAS ,,TRUE,float,TRUE,float,"[-360.0, 729.99]",Phase shift in degrees,ref_phase,TRUE,,,
 fmode,FMOD,,TRUE,int,TRUE,int,"[0,1]",reference frequency source: internal = 1; external = 0,ref_phase,TRUE,,,
 freq,FREQ,,TRUE,float,TRUE,float,"[0.001, 102000]",reference frequency. Set only in Internal reference mode,ref_phase,TRUE,,,
