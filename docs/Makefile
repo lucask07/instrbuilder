@@ -8,6 +8,11 @@ SPHINXPROJ    = instrbuilder
 SOURCEDIR     = source
 BUILDDIR      = build
 
+# For auto gh-pages
+GH_PAGES_SOURCES = doc/Makefile doc/source 
+GH_PAGES_DIR := $(shell mktemp -d)
+GH_PAGES_BRANCH = cli_refactor
+
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
