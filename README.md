@@ -1,1 +1,1 @@
-https://lucask07.github.io/instrbuilder/
+https://lucask07.github.io/instrbuilder/build/html/
