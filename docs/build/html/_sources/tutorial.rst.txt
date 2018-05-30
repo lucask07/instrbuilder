@@ -7,8 +7,6 @@ Import needed modules and configure paths to the csv files of each command:
 
   import os
   import yaml
-  import scpi
-
   from scpi import init_instrument
 
   yaml_config = open('config.yaml', 'r')
@@ -31,17 +29,14 @@ Import needed modules and configure paths to the csv files of each command:
 
 
 .. ipython:: python
-  :suppress:
 
   import os
+  import sys
   import yaml
-  import scpi
-  import colorama  
-  import sphinx.quickstart
-  colorama.init()
+  sys.path.append('/Users/koer2434/Google Drive/UST/research/instrbuilder/instrbuilder')
   from scpi import init_instrument
 
-  yaml_config = open('../config.yaml', 'r')
+  yaml_config = open('../instrbuilder/config.yaml', 'r')
   configs = yaml.load(yaml_config)
 
   use_serial = False

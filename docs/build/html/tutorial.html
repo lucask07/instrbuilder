@@ -167,8 +167,6 @@
 <p>Import needed modules and configure paths to the csv files of each command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">scpi</span>
-
 <span class="kn">from</span> <span class="nn">scpi</span> <span class="kn">import</span> <span class="n">init_instrument</span>
 
 <span class="n">yaml_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
@@ -190,50 +188,71 @@
 <span class="n">lockin_addr</span> <span class="o">=</span> <span class="s1">&#39;/dev/tty.USA19H14112434P1.1&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">lia</span><span class="p">,</span> <span class="n">lia_serial</span> <span class="o">=</span> <span class="n">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span> <span class="o">=</span> <span class="n">use_serial</span><span class="p">,</span>
-<span class="gp">   ...: </span>          <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">lockin_addr</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup_file</span><span class="p">,</span> <span class="n">init_write</span> <span class="o">=</span> <span class="s1">&#39;OUTX 0&#39;</span><span class="p">)</span>
-<span class="gp">   ...: </span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-1-ad7c21b6f7f3&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">lia</span><span class="p">,</span> <span class="n">lia_serial</span> <span class="o">=</span> <span class="n">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span> <span class="o">=</span> <span class="n">use_serial</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>           <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">lockin_addr</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup_file</span><span class="p">,</span> <span class="n">init_write</span> <span class="o">=</span> <span class="s1">&#39;OUTX 0&#39;</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">os</span>
 
-<span class="ne">NameError</span>: name &#39;init_instrument&#39; is not defined
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="gp">In [2]: </span><span class="n">lia</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                       ---------------------------------------------------------------------------</span>
-<span class="go">NameError                                 Traceback (most recent call last)</span>
-<span class="go">&lt;ipython-input-2-399601ea1675&gt; in &lt;module&gt;()</span>
-<span class="go">----&gt; 1 lia.get(&#39;phase&#39;)</span>
+<span class="gp">In [3]: </span><span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="go">NameError: name &#39;lia&#39; is not defined</span>
+<span class="gp">In [4]: </span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/Users/koer2434/Google Drive/UST/research/instrbuilder/instrbuilder&#39;</span><span class="p">)</span>
 
-<span class="gp">In [3]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">)</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ---------------------------------------------------------------------------</span>
-<span class="go">NameError                                 Traceback (most recent call last)</span>
-<span class="go">&lt;ipython-input-3-dc979e2a591f&gt; in &lt;module&gt;()</span>
-<span class="go">----&gt; 1 lia.set(0.1, &#39;phase&#39;)</span>
+<span class="gp">In [5]: </span><span class="kn">from</span> <span class="nn">scpi</span> <span class="kn">import</span> <span class="n">init_instrument</span>
 
-<span class="go">NameError: name &#39;lia&#39; is not defined</span>
+<span class="gp">In [6]: </span><span class="n">yaml_config</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../instrbuilder/config.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 
-<span class="gp">In [4]: </span><span class="n">lia</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
-<span class="go">NameError                                 Traceback (most recent call last)</span>
-<span class="go">&lt;ipython-input-4-0f408c0f8890&gt; in &lt;module&gt;()</span>
-<span class="go">----&gt; 1 lia.help(&#39;phase&#39;)</span>
+<span class="gp">In [7]: </span><span class="n">configs</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_config</span><span class="p">)</span>
 
-<span class="go">NameError: name &#39;lia&#39; is not defined</span>
+<span class="gp">In [8]: </span><span class="n">use_serial</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="gp">In [9]: </span><span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="go"># get lockin amplifier SCPI object</span>
+<span class="gp">In [10]: </span><span class="n">commands</span> <span class="o">=</span> <span class="s1">&#39;commands.csv&#39;</span>
+
+<span class="gp">In [11]: </span><span class="n">lookups</span> <span class="o">=</span> <span class="s1">&#39;lookup.csv&#39;</span>
+
+<span class="gp">In [12]: </span><span class="n">instrument</span> <span class="o">=</span> <span class="s1">&#39;srs810&#39;</span>
+
+<span class="gp">In [13]: </span><span class="n">cmd_map</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;base_directory&#39;</span><span class="p">],</span> <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+<span class="gp">   ....: </span>            <span class="n">instrument</span><span class="p">,</span> <span class="n">commands</span><span class="p">)</span>
+<span class="gp">   ....: </span>
+
+<span class="gp">In [14]: </span><span class="n">lookup_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;base_directory&#39;</span><span class="p">],</span> <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+<span class="gp">   ....: </span>            <span class="n">instrument</span><span class="p">,</span> <span class="n">lookups</span><span class="p">)</span>
+<span class="gp">   ....: </span>
+
+<span class="gp">In [15]: </span><span class="n">lockin_addr</span> <span class="o">=</span> <span class="s1">&#39;/dev/tty.USA19H14112434P1.1&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">lia</span><span class="p">,</span> <span class="n">lia_serial</span> <span class="o">=</span> <span class="n">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">use_serial</span> <span class="o">=</span> <span class="n">use_serial</span><span class="p">,</span>
+<span class="gp">   ....: </span>          <span class="n">use_usb</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">lockin_addr</span><span class="p">,</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup_file</span><span class="p">,</span> <span class="n">init_write</span> <span class="o">=</span> <span class="s1">&#39;OUTX 0&#39;</span><span class="p">)</span>
+<span class="gp">   ....: </span>
+<span class="go">=====================================</span>
+<span class="go">Note!! Running in debug mode without instrument attached</span>
+<span class="go">All commands sent to the instrument will be printed to stdout</span>
+<span class="go">Getters will always return 7 (set by variable getter_debug_value)</span>
+<span class="go">=====================================</span>
+
+<span class="go">*IDN?</span>
+<span class="go">ID command not returned by instrument. Name set to: not named</span>
+
+<span class="gp">In [17]: </span><span class="n">lia</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                          PHAS?</span>
+<span class="gh">Out[17]: </span><span class="go">7.0</span>
+
+<span class="gp">In [18]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                             PHAS 0.1</span>
+
+<span class="gp">In [19]: </span><span class="n">lia</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                      Help for command [32mphase[0m in subsystem: ref_phase:</span>
+<span class="go">    Phase shift in degrees</span>
+<span class="go">    Allowable range is: [-360.0, 729.99]</span>
+<span class="go">    Returns: float</span>
 </pre></div>
 </div>
 <p>A more complex Lock-in Amplifier set. This example requires an input dictionary configs. Here we set the lock-in display to show “R” – magnitude.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ch1_disp&#39;</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-5-2a7c8ae587cd&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ch1_disp&#39;</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
-
-<span class="ne">NameError</span>: name &#39;lia&#39; is not defined
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="n">lia</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ch1_disp&#39;</span><span class="p">,</span> <span class="n">configs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+<span class="go">DDEF 1 0</span>
 </pre></div>
 </div>
 </div>
