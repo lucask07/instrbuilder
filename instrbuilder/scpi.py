@@ -107,8 +107,7 @@ class SCPI(object):
             print('ID command not returned by instrument. Vendor ID set to None')
             vendor_id = None
         self.vendor_id = vendor_id
-
-        self.instrument_name = name
+        self.nickname = name
 
     def __dir__(self):
         # dir(lia) --> returns a list of the keys
@@ -495,7 +494,7 @@ class RS232(object):
         return bytes(line)
 
 
-def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
+def init_instrument(cmd_map, addr,
                     lookup = None, **kwargs):
 
     # Read CSV file of commands
@@ -581,20 +580,24 @@ def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
 
         cmd_list.append(cmd)
 
-    if serial_addr is not None:
-        # pySerial, RS232
-        print('serial address = {}'.format(serial_addr))
-        inst_comm = RS232(serial_addr, **kwargs)
+    # check to ensure the dictionary only has 0 or 1 entry
+    if len(addr) > 1:
+        sys.exit('Multiple keys: {}'.format(list(addr.keys())))
+    # pySerial:RS232
+    if 'pyserial' in addr:
+        print('serial address = {}'.format(addr['pyserial']))
+        inst_comm = RS232(addr['pyserial'], **kwargs)
         inst_comm.ser.flush()
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
-    elif usb_addr is not None:
-        # pyvisa, USB
-        print('usb address = {}'.format(usb_addr))
-        inst_comm = USB(usb_addr)
+    # pyvisa:USB
+    elif 'pyvisa' in addr:
+        print('Pyvisa address = {}'.format(addr['pyvisa']))
+        inst_comm = USB(addr['pyvisa'])
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
+    # unattached instrument 
     else:  
         # allow for debugging without instruments attached: 
-        # print command to stdout, always return getter_debug_value
+        #   print command to stdout, always return getter_debug_value
         print(divider_string, end='')     
         print('Note!! Running in debug mode without instrument attached')
         print('All commands sent to the instrument will be printed to stdout')
