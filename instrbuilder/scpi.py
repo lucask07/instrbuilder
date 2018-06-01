@@ -18,6 +18,7 @@ import colorama
 import numpy as np
 import serial
 import visa
+from pyvisa.constants import StatusCode
 
 # local package imports 
 from command import Command
@@ -39,12 +40,12 @@ convert_lookup['nan'] = str
 
 def arr_str(str_in):
     """ convert string such as '2.3', '5.4', '9.9' to a list of floats """
-    return list(map(lambda x: float(x), str_in.split(',')))
+    return np.asarray(list(map(lambda x: float(x), str_in.split(','))))
 
 def arr_bytes(bytes_in):
     """ convert array of bytes such as b'1,0\r' to a list of floats """
     str_in = bytes_in.decode('utf-8').rstrip()
-    return list(map(lambda x: int(x), str_in.split(',')))
+    return np.asarray(list(map(lambda x: int(x), str_in.split(','))))
 
 def str_strip(str_in):
     """ strip whitespace at right of string. Wrap string rstrip method into function """
@@ -63,7 +64,6 @@ for i in range(8):
 #### -----------------------------------------
 divider_string = '=====================================\n'
 getter_debug_value = '7' # when running headless (no instruments attached) all getters return this
-
 
 class SCPI(object):
     """A SCPI instrument with a list of commands. The instrument has methods to get and set info of each command.
@@ -86,6 +86,9 @@ class SCPI(object):
         Examples are pySerial ask() and pyvisa inst.query()
     name : str, optional
         Name of the instrument 
+    unconnected : bool, optional
+        For simulation & testing without instruments
+        If true a "fake" ask and write command are configured. Ask always returns the same value (getter_debug_value).
     """
 
     def __init__(self, cmd_list, write, ask, name='not named', unconnected = False):
@@ -94,12 +97,18 @@ class SCPI(object):
             self._cmds[cmd.name] = cmd
         self.write = write
         self.ask = ask
-        try:
-            name = self.get('id')
-        except:
-            print('ID command not returned by instrument. Name set to: {}'.format(name))
-        self.instrument_name = name
         self.unconnected = unconnected
+
+        # get the vendor ID, which often includes firmware revision and other useful info.
+        try:
+            vendor_id = self.get('id')
+        except Exception as e: 
+            print(e)
+            print('ID command not returned by instrument. Vendor ID set to None')
+            vendor_id = None
+        self.vendor_id = vendor_id
+
+        self.instrument_name = name
 
     def __dir__(self):
         # dir(lia) --> returns a list of the keys
@@ -125,7 +134,6 @@ class SCPI(object):
                 pass 
         try:
             val = self._cmds[name].getter_type(ret_val)
-
             # check if a lookup table exists
             if bool(self._cmds[name].lookup): # bool(dict) --> checks if dictionary is empty
                 try:
@@ -162,16 +170,16 @@ class SCPI(object):
             cmd_str = cmd_str.format(value='').rstrip()
 
         # send the command to the instrument
-        self.write(cmd_str)
+        return self.write(cmd_str)
 
     def check_set_range(self, value, name):
         ''' check if the value to be set is within range '''
-        if self._cmds[name].setter_range is None:
+        if self._cmds[name].limits is None:
             return True
 
-        if (len(self._cmds[name].setter_range) == 2) and (type(self._cmds[name].setter_range[0]) is not str):
+        if (len(self._cmds[name].limits) == 2) and (type(self._cmds[name].limits[0]) is not str):
             # numeric, check if less than or greater than
-            if (value >= self._cmds[name].setter_range[0]) and (value <= self._cmds[name].setter_range[1]):
+            if (value >= self._cmds[name].limits[0]) and (value <= self._cmds[name].limits[1]):
                 return True
             else:
                 # throw out of range warning
@@ -179,7 +187,7 @@ class SCPI(object):
                 return False
         else: 
             # check if value is a member
-            if value in self._cmds[name].setter_range:
+            if value in self._cmds[name].limits:
                 return True
             else:
                 # throw out of range warning
@@ -188,7 +196,7 @@ class SCPI(object):
     
     def out_of_range_warning(self, value, name):
         warnings.warn('\n  {} value of {} is out of the range of {}'.format(
-            name, value, self._cmds[name].setter_range), UserWarning)
+            name, value, self._cmds[name].limits), UserWarning)
 
     def list_cmds(self):
         for key in self._cmds:
@@ -199,6 +207,7 @@ class SCPI(object):
         if subsystem_list is None:
             # get all subsystems
             subsystems = [self._cmds[d].subsystem for d in self._cmds]
+            subsystems = [s if s is not None else 'Unassigned' for s in subsystems]
             # create a list of unique subsystems
             subsystem_set = set(subsystems)
         else:
@@ -221,9 +230,9 @@ class SCPI(object):
 
         print(f'Help for command {colorama.Fore.GREEN}{self._cmds[index].name}{colorama.Style.RESET_ALL}{sub_sys}:')
         print('    {}'.format(self._cmds[index].doc))
-        if self._cmds[index].setter_range is not None:
+        if self._cmds[index].limits is not None:
             print('    Allowable range is: {}'.format(
-                self._cmds[index].setter_range))
+                self._cmds[index].limits))
             if len(self._cmds[index].set_config_keys) > 0:
                 print('    The setter needs a configuration dictionary with keys: {}'.format(
                     ', '.join(self._cmds[index].set_config_keys)))
@@ -285,8 +294,8 @@ class SCPI(object):
             ret = self.get(name)
             ok |= self.read_comm_err()
             if set_vals is None:
-                set_vals = [self._cmds[name].setter_range[0],
-                            self._cmds[name].setter_range[1]]
+                set_vals = [self._cmds[name].limits[0],
+                            self._cmds[name].limits[1]]
 
             for set_val in set_vals:
                 self.set(set_val, name)
@@ -321,10 +330,10 @@ class SCPI(object):
 
         # if setter only
         elif self._cmds[name].setter:
-            if (self._cmds[name].setter_range) is None:
+            if (self._cmds[name].limits) is None:
                 set_val = None
-            elif (len(self._cmds[name].setter_range) == 2):
-                set_val = self._cmds[name].setter_range[0]
+            elif (len(self._cmds[name].limits) == 2):
+                set_val = self._cmds[name].limits[0]
             else:
                 print('Skipping test of setter {}'.format(name))
                 return 'NotTested'
@@ -373,10 +382,8 @@ def open_visa(addr):
     """ open a VISA object 
 
     .. todo::
-
        * determine if error flag
        * enable or disable of lookup table   
-
     """
 
     mgr = visa.ResourceManager()
@@ -405,7 +412,8 @@ class USB(object):
         return res
 
     def write(self, cmd):
-        return self.instr.write(cmd)
+        ret = self.instr.write(cmd)
+        return (ret[1] == StatusCode.success, ret)
 
     def close(self):
         pass
@@ -487,8 +495,6 @@ class RS232(object):
         return bytes(line)
 
 
-# def init_instrument(cmd_map, use_serial=True, use_usb=False, addr=None,
-#                     lookup = None, **kwargs):
 def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
                     lookup = None, **kwargs):
 
@@ -552,6 +558,7 @@ def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
         row['setter_inputs'] = modify_default(row['setter_inputs'], None)
         row['getter_inputs'] = modify_default(row['getter_inputs'], 0)
         row['ascii_str_get'] = modify_default(row['ascii_str_get'], None)
+        row['subsystem'] = modify_default(row['subsystem'], None)
 
         if False: 
             print('---')
@@ -567,7 +574,7 @@ def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
         cmd = Command(name=row['name'], ascii_str=row['ascii_str'], ascii_str_get=row['ascii_str_get'],
                       getter=row['getter'], getter_type=convert_lookup[row['getter_type']],
                       setter=row['setter'], setter_type=convert_lookup[row['setter_type']],
-                      setter_range=row['setter_range'],
+                      limits=row['setter_range'],
                       doc=row['doc'], subsystem=row['subsystem'],
                       getter_inputs=row['getter_inputs'], setter_inputs=row['setter_inputs'],
                       lookup = lookup_dict, is_config = row['is_config'])
@@ -576,15 +583,15 @@ def init_instrument(cmd_map, serial_addr = None, usb_addr = None,
 
     if serial_addr is not None:
         # pySerial, RS232
-        inst_comm = RS232(addr, **kwargs)
+        print('serial address = {}'.format(serial_addr))
+        inst_comm = RS232(serial_addr, **kwargs)
         inst_comm.ser.flush()
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
-
-    if usb_addr is not None:
+    elif usb_addr is not None:
         # pyvisa, USB
-        inst_comm = USB(addr)
+        print('usb address = {}'.format(usb_addr))
+        inst_comm = USB(usb_addr)
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
-
     else:  
         # allow for debugging without instruments attached: 
         # print command to stdout, always return getter_debug_value

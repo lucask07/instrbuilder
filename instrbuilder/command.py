@@ -50,7 +50,7 @@ class Command(object):
         Example: float
     setter : Boolean 
         Is this command a setter?
-    setter_range : list
+    limits : list
         Minimum and maximum allowed values for the set operation.
     setter_type : function, float
         Currently not used; may be used to check if set value is the proper type 
@@ -78,7 +78,7 @@ class Command(object):
 
     def __init__(self, name, ascii_str='', ascii_str_get='',
                  getter=True, getter_type=float,
-                 setter=True, setter_range=None, setter_type=float,
+                 setter=True, limits=None, setter_type=float,
                  doc='', subsystem=None,
                  getter_inputs=None, setter_inputs=None,
                  lookup={}, is_config = False):
@@ -119,12 +119,12 @@ class Command(object):
         self.lookup = lookup
 
         # we want to store the acceptable range as the value -- if its lookups convert it
-        if setter_range is not None:
-            if setter_range[0] in lookup:
-                for idx, s in enumerate(setter_range):
-                    setter_range[idx] = lookup[s]
+        if limits is not None:
+            if limits[0] in lookup:
+                for idx, s in enumerate(limits):
+                    limits[idx] = lookup[s]
 
-        self.setter_range = setter_range
+        self.limits = limits
 
         self.doc = doc
         self.subsystem = subsystem
