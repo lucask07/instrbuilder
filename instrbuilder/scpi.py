@@ -377,34 +377,38 @@ class SCPI_Test(object):
     pass
 
 
-def open_visa(addr):
-    """ open a VISA object 
-
-    .. todo::
-       * determine if error flag
-       * enable or disable of lookup table   
-    """
-
-    mgr = visa.ResourceManager()
-    resources = mgr.list_resources()
-    if addr in resources:
-        # open device 
-        # TODO check return value 
-        obj = mgr.open_resource(addr)
-    elif addr not in resources:
-        print('Trying to open the device even though it was not found by the resource manager')
-        obj = mgr.open_resource(addr)
-    else:
-        print('This address {} was not recognized'.format(addr), file = sys.stderr)
-        print('Returning an empty handle', file = sys.stderr)
-        obj = None
-    return obj
-
-
 class USB(object):
 
     def __init__(self, address):
-        self.instr = open_visa(address)
+        self.instr = self.open_visa(address)
+        try:
+            print(self.get('id'))
+        except:
+            'Device ID get failed'
+
+    def open_visa(self, addr):
+        """ open a VISA object 
+
+        .. todo::
+           * determine if error flag
+           * enable or disable of lookup table   
+        """
+
+        mgr = visa.ResourceManager()
+        resources = mgr.list_resources()
+        if addr in resources:
+            # open device 
+            # TODO check return value 
+            obj = mgr.open_resource(addr)
+        elif addr not in resources:
+            print('Trying to open the device even though it was not found by the resource manager')
+            obj = mgr.open_resource(addr)
+        else:
+            print('This address {} was not recognized'.format(addr), file = sys.stderr)
+            print('Returning an empty handle', file = sys.stderr)
+            obj = None
+        return obj
+
 
     def ask(self, cmd):
         res = self.instr.query(cmd)
@@ -435,7 +439,6 @@ class USB(object):
 
 class RS232(object):
 
-    # TODO: make the Lock-in specific stuff inherit the RS232 object
     def __init__(self, ser_port, **kwargs):
         self.ser = serial.Serial(
             port = ser_port,
@@ -445,10 +448,11 @@ class RS232(object):
         self.terminator = kwargs.get('terminator', ' \n')
         self.open()
 
-        # lock-in specific
+        # some instruments need an initialization write, 
+        #   i.e. turn on remote interface mode
         init_write = kwargs.get('init_write')
         if init_write is not None: 
-            self.write(init_write)  # set to RS232 'OUTX 0'
+            self.write(init_write) 
         try:
             print(self.get('id'))
         except:
@@ -474,6 +478,7 @@ class RS232(object):
     def write(self, cmd):
         cmd = cmd + self.terminator
         self.ser.write(cmd.encode('utf-8'))
+        return (True, 'no-details') # pyserial does not return a success upon write 
 
     def close(self):
         self.ser.close()
@@ -494,8 +499,7 @@ class RS232(object):
         return bytes(line)
 
 
-def init_instrument(cmd_map, addr,
-                    lookup = None, **kwargs):
+def init_instrument(cmd_map, addr, lookup = None, **kwargs):
 
     # Read CSV file of commands
     df = pd.read_csv(cmd_map)

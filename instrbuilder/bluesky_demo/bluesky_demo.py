@@ -15,13 +15,14 @@ from bluesky.callbacks.best_effort import BestEffortCallback
 from bluesky.plans import scan, count
 from databroker import Broker
 
-sys.path.append('/Users/koer2434/Google Drive/UST/research/bluesky/my_ophyd/') # these 2 will become an import of my ophyd
-sys.path.append('/Users/koer2434/Google Drive/UST/research/bluesky/my_ophyd/my_ophyd/') # 
+sys.path.append('/Users/koer2434/Google Drive/UST/research/bluesky/new_ophyd/') # these 2 will become an import of my ophyd
+sys.path.append('/Users/koer2434/Google Drive/UST/research/bluesky/new_ophyd/ophyd/') # 
 sys.path.append('/Users/koer2434/Google Drive/UST/research/instrbuilder/instrbuilder/') # this will be the SCPI library
 
 # imports that require sys.path.append pointers 
-from my_ophyd.signal import ScpiSignal, ScpiBaseSignal
-from my_ophyd import Device
+from ophyd.signal import ScpiSignal, ScpiBaseSignal
+from ophyd import Device
+from ophyd.device import Kind
 from scpi import init_instrument
 
 plt.close('all')
@@ -73,7 +74,7 @@ addr = {'pyvisa': 'USB0::0x0957::0x0407::MY44060286::INSTR'}
 # addr = {}
 fg, fg_usb = init_instrument(cmd_map, addr = addr,
 		lookup = lookup_file)
-# Immediately add the function generator instrument id to the run-engine metadata
+# Immediately add the function generator vendor/instrument_id to the run-engine metadata
 RE.md['function_generator'] = fg.vendor_id
 
 # TODO: use bluesky to setup this initialization? 
@@ -89,6 +90,8 @@ freq_motor = ScpiSignal(fg, 'freq')
 freq_motor.delay = 0.1
 
 # Add the Bluesky "detector from the lock-in" 
+# 	TODO: the name of the SCPI command becomes the display name used by bluesky, 
+#	would like to be able to rename this 
 det = ScpiBaseSignal(lia, 'disp_val')
 
 # Add a few Bluesky "motors" for the lock-in that change configurations: 
@@ -150,6 +153,9 @@ for name in config_getters:
 	baseline_dets.append(b_det)
 
 b_det = ScpiBaseSignal(lia, 'ch1_disp', shape = (2,), dtype = 'array')
+# b_det.kind = Kind.normal
+b_det.kind = 'normal'
+
 baseline_dets.append(b_det)
 
 # TODO -- monitors? something that throws interrupt with update? 
