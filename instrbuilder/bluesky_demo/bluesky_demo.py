@@ -103,7 +103,7 @@ if len(addr) != 0:
 	for i in range(3):
 		# scan is a pre-configured Bluesky plan; return the uid
 		uid = RE(scan([det], freq_motor, 4997, 5005, 12), 
-			LiveTable([det]), sample_id='A', purpose='calibration', operator='me')
+			LiveTable([det]), attenuator='0dB', purpose='demo', operator='Lucas')
 	# get data into a pandas dataframe 
 	header = db[uid[0]]
 	print(header.table())

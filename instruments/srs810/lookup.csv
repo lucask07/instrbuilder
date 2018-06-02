@@ -87,3 +87,8 @@ sample_rate,0,6.25E-02
 ,12,2.56E+02
 ,13,5.12E+02
 ,14,Trigger
+ch1_disp,0,X
+,1,R
+,2,X Noise
+,3,Aux In 1
+,4,Aux In 2

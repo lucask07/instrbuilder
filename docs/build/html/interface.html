@@ -88,7 +88,11 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="example_instrument.html">Example Instrument</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="command.html">Command</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Instrument Interfaces</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Instrument Interfaces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#implemented">Implemented</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#to-be-developed">To-be Developed</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lookup.html">Lookup Tables</a></li>
 </ul>
 </li>
@@ -171,7 +175,25 @@
             
   <div class="section" id="instrument-interfaces">
 <h1>Instrument Interfaces<a class="headerlink" href="#instrument-interfaces" title="Permalink to this headline">¶</a></h1>
-<p>Pyvisa or pyserial</p>
+<div class="section" id="implemented">
+<h2>Implemented<a class="headerlink" href="#implemented" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://pyvisa.readthedocs.io/en/stable/">pyvisa</a>: for instruments that support VISA and communicate over USB, Ethernet and GPIB.</li>
+<li><a class="reference external" href="https://pythonhosted.org/pyserial/">pyserial</a>: for instruments that use RS-232 or USB-to-serial interface chips</li>
+</ul>
+<p>The interface and address to an instrument is passed to as a dictionary to <code class="code docutils literal notranslate"><span class="pre">init_instrument</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">addr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pyserial&#39;</span><span class="p">:</span> <span class="s1">&#39;/dev/tty.USA19H14112434P1.1&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="to-be-developed">
+<h2>To-be Developed<a class="headerlink" href="#to-be-developed" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html?">OpenCV</a> for cameras</li>
+<li><a class="reference external" href="https://www.opalkelly.com/">Opal Kelly Front Panel</a></li>
+<li><a class="reference external" href="https://www.totalphase.com/products/aardvark-software-api">Aardvark i2c controller</a></li>
+</ul>
+</div>
 </div>
 
 

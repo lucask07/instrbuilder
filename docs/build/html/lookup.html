@@ -171,10 +171,12 @@
             
   <div class="section" id="lookup-tables">
 <h1>Lookup Tables<a class="headerlink" href="#lookup-tables" title="Permalink to this headline">¶</a></h1>
-<p>Instrbuilder supports lookup tables that map values sent to and received from the instrument to more human-readable intrepretations.
+<p>Instrbuilder commands support lookup tables that map values sent to and received from the instrument to more human-readable intrepretations.
 Lookup tables are never required, but may ease development. The lookup table is read from <cite>lookup.csv</cite>.</p>
-<table border="1" class="colwidths-given docutils" id="id1">
-<caption><span class="caption-text">Example of lookup table entry for the SRS810 filter slope (<cite>filt_slope</cite>).</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<p>The value to be <strong>set</strong> can be passed as the <em>value</em> or the <em>name</em>.
+The value retrieved using <strong>get</strong> will always be returned as the <em>name</em>.</p>
+<table border="1" class="colwidths-given docutils align-center" id="id1">
+<caption><span class="caption-text">Example of a lookup table entry for the SRS810 filter slope (<cite>filt_slope</cite>).</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="33%" />
 <col width="33%" />

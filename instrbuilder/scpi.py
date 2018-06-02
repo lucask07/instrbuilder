@@ -244,7 +244,7 @@ class SCPI(object):
                     ', '.join(self._cmds[index].get_config_keys)))
 
         if len(self._cmds[index].lookup) > 0:
-            print('   This command utilizes a lookup table on get and set:')
+            print('    This command utilizes a lookup table on get and set:')
             print('     ' + str(self._cmds[index].lookup))
 
     def log_all_getters(self, filename=None, suppress_stdout=False):
@@ -272,11 +272,30 @@ class SCPI(object):
         return dict(zip(keys, results))
 
     def read_comm_err(self):
-        ''' Read if the instrument has flagged a communciation error 
-            The csv command file must have a getter with name comm_error that returns a bool '''
+        """ Read if the instrument has flagged a communciation error 
+            The csv command file must have a getter with name comm_error that returns a bool """
         return self.get('comm_error')
 
     def test_command(self, name, set_vals=None):
+        """ Test a command by setting and getting to determine if: 
+            1) the instrument reports a communcation error
+            2) the return value is of an unexpected type or an error threshold away from what was set
+        
+            Parameters
+            ----------
+
+            name : str
+                Name of the command 
+            set_vals : list, optional
+                A list of values to test by a sequence of set and get.
+                If not provided the low and high limits are used 
+
+            Returns
+            -------
+            bool
+                True if the command is successful, False otherwise.
+
+        """ 
 
         ok = True
         allowed_err = 0.02 # TODO: determine error magnitude that is allowed 
@@ -351,8 +370,25 @@ class SCPI(object):
         return ok
 
     def test_all(self, skip_subsystem=['setup', 'status'], skip_commands=['fast_transfer', 'reset']):
-        ''' test all commands '''
+        """ Test all commands by setting and getting to determine if: 
+            1) the instrument reports a communcation error
+            2) the return value is of an unexpected type or an error threshold away from what was set
+        
+            Parameters
+            ----------
 
+            skip_subsystem : list (of strings), default = ['setup', 'status']
+                subsystems to skip, an example might be commands in the status subsystem
+                that reset the instrument 
+            skip_commands : list (of strings), default = ['fast_transfer', 'reset']
+                Commands to skip
+
+            Returns
+            -------
+            dict
+                Keys are each commands tested, value is True (command succeeded) or False 
+
+        """ 
         all_tests = {}
         for key in self._cmds:
             if (self._cmds[key].subsystem in skip_subsystem) or (key in skip_commands):
@@ -589,13 +625,11 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
         sys.exit('Multiple keys: {}'.format(list(addr.keys())))
     # pySerial:RS232
     if 'pyserial' in addr:
-        print('serial address = {}'.format(addr['pyserial']))
         inst_comm = RS232(addr['pyserial'], **kwargs)
         inst_comm.ser.flush()
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
     # pyvisa:USB
     elif 'pyvisa' in addr:
-        print('Pyvisa address = {}'.format(addr['pyvisa']))
         inst_comm = USB(addr['pyvisa'])
         inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
     # unattached instrument 

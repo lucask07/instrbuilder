@@ -81,12 +81,17 @@
               
             
             
-              <p class="caption"><span class="caption-text">User Documentation</span></p>
+              <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../scpi.html">SCPI Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../command_testing.html">Command Testing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bluesky_demo.html">Interfacing an Instrbuilder Instrument to Bluesky</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bluesky_utils.html">Bluesky Lab Utilities</a></li>
 </ul>
 <p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
 <ul>
@@ -184,7 +189,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../command.html#command.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../bluesky_utils.html#command.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A command to be sent to an instrument </span>
 
@@ -211,7 +216,7 @@
 <span class="sd">        Example: float</span>
 <span class="sd">    setter : Boolean </span>
 <span class="sd">        Is this command a setter?</span>
-<span class="sd">    setter_range : list</span>
+<span class="sd">    limits : list</span>
 <span class="sd">        Minimum and maximum allowed values for the set operation.</span>
 <span class="sd">    setter_type : function, float</span>
 <span class="sd">        Currently not used; may be used to check if set value is the proper type </span>
@@ -220,26 +225,27 @@
 <span class="sd">    subsystem : string, optional</span>
 <span class="sd">        The subsystem (of the instrument) that this command fits into</span>
 <span class="sd">        Used for organization help information.</span>
-<span class="sd">    getter_inputs : list (of strings)</span>
+<span class="sd">    getter_inputs : list (of strings), optional</span>
 <span class="sd">        For non-conventional get functions (long getters) that send extra parameters.</span>
 <span class="sd">        This is a list of the input parameters that are needed. These are keys to </span>
 <span class="sd">        the config dictionary.</span>
-<span class="sd">    setter_inputs : list (of strings)</span>
+<span class="sd">    setter_inputs : list (of strings), optional</span>
 <span class="sd">        For non-conventional set functions (long setters) that send extra parameters (beyond &#39;value&#39;).</span>
 <span class="sd">        This is a list of the input parameters that are needed. These are keys to </span>
 <span class="sd">        the config dictionary.</span>
-<span class="sd">    lookup : dictionary </span>
+<span class="sd">    lookup : dictionary, optional</span>
 <span class="sd">        A lookup table for values that can be mapped to more human-readable results. </span>
 <span class="sd">        E.g. lookup = `{&#39;SLOW&#39;: 0, &#39;FAST&#39;: 1}`</span>
 <span class="sd">        The keys are the human-readable names, the dictionary values are what is sent and </span>
 <span class="sd">        received from the instrument. </span>
-<span class="sd">    is_config : is a &quot;configuration&quot; variable that should be measured and logged at </span>
-<span class="sd">        start and end of experiment.</span>
+<span class="sd">    is_config : bool, optional</span>
+<span class="sd">        is a &quot;configuration&quot; variable that should be measured and logged at the start </span>
+<span class="sd">        and end of an experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ascii_str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ascii_str_get</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">getter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">getter_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                 <span class="n">setter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">setter_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                 <span class="n">setter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                  <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">subsystem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">getter_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">lookup</span><span class="o">=</span><span class="p">{},</span> <span class="n">is_config</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -280,12 +286,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span> <span class="o">=</span> <span class="n">lookup</span>
 
         <span class="c1"># we want to store the acceptable range as the value -- if its lookups convert it</span>
-        <span class="k">if</span> <span class="n">setter_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">setter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">setter_range</span><span class="p">):</span>
-                    <span class="n">setter_range</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">limits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">limits</span><span class="p">):</span>
+                    <span class="n">limits</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">setter_range</span> <span class="o">=</span> <span class="n">setter_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits</span> <span class="o">=</span> <span class="n">limits</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsystem</span> <span class="o">=</span> <span class="n">subsystem</span>

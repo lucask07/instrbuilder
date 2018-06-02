@@ -59,21 +59,22 @@ class Command(object):
     subsystem : string, optional
         The subsystem (of the instrument) that this command fits into
         Used for organization help information.
-    getter_inputs : list (of strings)
+    getter_inputs : list (of strings), optional
         For non-conventional get functions (long getters) that send extra parameters.
         This is a list of the input parameters that are needed. These are keys to 
         the config dictionary.
-    setter_inputs : list (of strings)
+    setter_inputs : list (of strings), optional
         For non-conventional set functions (long setters) that send extra parameters (beyond 'value').
         This is a list of the input parameters that are needed. These are keys to 
         the config dictionary.
-    lookup : dictionary 
+    lookup : dictionary, optional
         A lookup table for values that can be mapped to more human-readable results. 
         E.g. lookup = `{'SLOW': 0, 'FAST': 1}`
         The keys are the human-readable names, the dictionary values are what is sent and 
         received from the instrument. 
-    is_config : is a "configuration" variable that should be measured and logged at 
-        start and end of experiment.
+    is_config : bool, optional
+        is a "configuration" variable that should be measured and logged at the start 
+        and end of an experiment.
     """
 
     def __init__(self, name, ascii_str='', ascii_str_get='',

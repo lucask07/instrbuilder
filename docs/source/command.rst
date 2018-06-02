@@ -1,7 +1,7 @@
 Command
 ******************************
 
-A **command** is a gets or sets (to `value`) state of an instrument. The commands of an instrument are read from the spreadsheet: "*commands.csv*". Default values are used if a cell is left empty. 
+A **command** reads, writes, or writes/reads an instrument. The commands of an instrument are imported from the spreadsheet: "*commands.csv*". Default values are used if a cell in the CSV file is left empty. 
 
 The columns of the CSV spreadsheet are:
 
@@ -28,7 +28,6 @@ digital lock-in amplifier are used to explain the format of an instrument `Comma
 
 Simple Command (`phase`)
 -------------------------------
-
 .. csv-table:: Example of a simple command that uses many default values.
   :header: name, ascii_str, ascii_str_get, getter, getter_type, setter, setter_type, setter_range, doc, subsystem, is_config, setter_inputs, getter_inputs
   :widths: 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
@@ -39,18 +38,22 @@ The command `phase` is both a setter and getter. On set, 'PHAS `value`' is writt
 
 Complex Command (`ch1_disp`)
 -------------------------------
-
 .. csv-table:: Example of a complex command that requires a config dictionary input upon set.
   :header: name, ascii_str, ascii_str_get, getter, getter_type, setter, setter_type, setter_range, doc, subsystem, is_config, setter_inputs, getter_inputs
   :widths: 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
 
   ch1_disp,DDEF {value} {ratio},DDEF?,TRUE,byte_array_to_numarray,TRUE,int,"[0, 4]","CH1 display to X, R, Xn, Aux 1or Aux 2 (j=0..4) and ratio the display to None, Aux1or Aux 2 (k=0,1,2).",disp_out,TRUE,2,
 
-The command `ch1_disp`
+The command `ch1_disp` an input, `ratio, in addition to the `value` input. The may be referred to as a *long setter*. The syntax of this `set` is:
 
-Actual Class
+.. code-block:: python
+
+	ret = lia.set(value = 'R', name = 'ch1_disp', configs = {'ratio': 0})
+
+The `configs` dictionary must have keys that match all of the format keys in the `ascii_str` of the command. 
+
+The Command Class
 ============================
-
 
 .. module:: command
 

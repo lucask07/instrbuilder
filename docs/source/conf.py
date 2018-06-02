@@ -20,7 +20,7 @@ import sphinx_rtd_theme
 # add one directory back to search path
 cwd = os.getcwd()
 sys.path.insert(0, 
-    os.path.abspath('/Users/koer2434/Google Drive/UST/research/instrbuilder/'))
+    os.path.abspath('/Users/koer2434/Google Drive/UST/research/instrbuilder/instrbuilder/'))
 
 sys.path.insert(0, os.path.abspath('../.'))
 

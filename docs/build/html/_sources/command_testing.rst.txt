@@ -1,5 +1,12 @@
 Command Testing 
 **************************
 
-All commands can be tested with xyz  
+All SCPI commands can be tested with :code:`test_command`  
 A command named `comm_error` **is required** in the commands.csv file to test commands for communication errors. 
+
+.. module:: scpi
+
+.. py:class:: SCPI     
+
+	.. automethod:: test_command
+	.. automethod:: test_all
