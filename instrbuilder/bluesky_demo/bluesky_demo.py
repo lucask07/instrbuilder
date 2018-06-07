@@ -40,8 +40,8 @@ db = Broker.named('local_file') # a broker poses queries for saved data sets
 RE.subscribe(db.insert)
 
 # get lockin amplifier SCPI object 
-cmd_map = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/srs810/commands.csv'
-lookup_file = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/srs810/lookup.csv'
+cmd_map = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/srs/lock_in/sr810/commands.csv'
+lookup_file = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/srs/lock_in/sr810/lookup.csv'
 addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
 # addr = {}
 lia, lia_serial = init_instrument(cmd_map, addr = addr,
@@ -68,8 +68,8 @@ lia.set(8, 'tau')
 lia.set(5e3, 'freq')
 lia.set('Int', 'fmode')
 
-cmd_map = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/fg_3320a/commands.csv'
-lookup_file = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/fg_3320a/lookup.csv'
+cmd_map = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/agilent/function_gen/3320A/commands.csv'
+lookup_file = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments//agilent/function_gen/3320A/lookup.csv'
 addr = {'pyvisa': 'USB0::0x0957::0x0407::MY44060286::INSTR'}
 # addr = {}
 fg, fg_usb = init_instrument(cmd_map, addr = addr,

@@ -457,21 +457,6 @@ class USB(object):
     def close(self):
         pass
 
-    # https://stackoverflow.com/questions/16470903/pyserial-2-6-specify-end-of-line-in-readline
-    def _readline(self):
-        eol = b'\r'
-        leneol = len(eol)
-        line = bytearray()
-        while True:
-            c = self.ser.read(1)
-            if c:
-                line += c
-                if line[-leneol:] == eol:
-                    break
-            else:
-                break
-        return bytes(line)
-
 
 class RS232(object):
 
@@ -554,6 +539,12 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
         # make a dictionary for each command 
         cmd_lookups = {}
         for index, row in df_look.iterrows():
+            if (index == 0):
+                try:
+                    if math.isnan(row['command']):
+                        raise Exception('The first element of the lookup table is empty')
+                except:
+                    pass
             try: 
                 if math.isnan(row['command']) == False:
                     current_cmd = current_cmd # shouldn't get here 
