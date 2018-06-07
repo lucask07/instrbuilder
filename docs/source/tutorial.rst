@@ -1,7 +1,7 @@
 Tutorial 
 **************************************************
 
-Import needed modules and configure paths to the csv files of each command:
+Import needed modules and configure paths to the CSV file that describes the commands of the instrument:
 
 .. code-block:: python
 
@@ -28,7 +28,7 @@ Import needed modules and configure paths to the csv files of each command:
 
 .. ipython:: python
   :suppress:
-  
+
   import os
   import yaml
   from scpi import init_instrument
@@ -49,6 +49,7 @@ Import needed modules and configure paths to the csv files of each command:
   # configure the transport method (pyserial) and the device address
   addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
 
+Initialize the instrument object `lia` and execute a simple `get` and `set`.
 
 .. ipython:: python
 

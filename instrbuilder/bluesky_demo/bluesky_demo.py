@@ -153,8 +153,8 @@ for name in config_getters:
 	baseline_dets.append(b_det)
 
 b_det = ScpiBaseSignal(lia, 'ch1_disp', shape = (2,), dtype = 'array')
-# b_det.kind = Kind.normal
-b_det.kind = 'normal'
+b_det.kind = Kind.omitted
+# b_det.kind = 'normal'
 
 baseline_dets.append(b_det)
 

@@ -6,3 +6,5 @@ scratch_code.py
 data
 data/
 data/*
+instrbuilder/bluesky_demo/bluesky_camera.py
+instrbuilder/bluesky_demo/bluesky_flyers.py
