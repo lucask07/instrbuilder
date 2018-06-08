@@ -84,6 +84,10 @@ class SCPI(object):
     ask : method 
         a function that queries data from the hardware interface (typically a sequence of write and then read).
         Examples are pySerial ask() and pyvisa inst.query()
+    comm_handle : Communication object 
+        handle to the (general) hardware interface 
+        Example is the pyvisa instrument object: inst
+        Needed when commands are overriden
     name : str, optional
         Name of the instrument 
     unconnected : bool, optional
@@ -91,12 +95,12 @@ class SCPI(object):
         If true a "fake" ask and write command are configured. Ask always returns the same value (getter_debug_value).
     """
 
-    def __init__(self, cmd_list, write, ask, name='not named', unconnected = False):
+    def __init__(self, cmd_list, comm_handle, name='not named', unconnected = False):
         self._cmds = {}
         for cmd in cmd_list:
             self._cmds[cmd.name] = cmd
-        self.write = write
-        self.ask = ask
+        self.write = comm_handle.write
+        self.ask = comm_handle.ask
         self.unconnected = unconnected
 
         # get the vendor ID, which often includes firmware revision and other useful info.
@@ -108,9 +112,10 @@ class SCPI(object):
             vendor_id = None
         self.vendor_id = vendor_id
         self.nickname = name
+        self.comm_handle = comm_handle
 
     def __dir__(self):
-        # dir(lia) --> returns a list of the keys
+        # dir(instrument_obj) --> returns a list of the keys
         return self._cmds.keys()
 
     def __len__(self):
@@ -121,6 +126,9 @@ class SCPI(object):
         if not self._cmds[name].getter:
             print('This command {} is not a getter'.format(name))
             raise NotImplementedError
+
+        if self._cmds[name].getter_override is not None:
+            return self._cmds[name].getter_override(configs)
 
         cmd_str = self._cmds[name].ascii_str_get
         ret_val = self.ask(cmd_str.format(**configs))
@@ -616,13 +624,17 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
         sys.exit('Multiple keys: {}'.format(list(addr.keys())))
     # pySerial:RS232
     if 'pyserial' in addr:
-        inst_comm = RS232(addr['pyserial'], **kwargs)
-        inst_comm.ser.flush()
-        inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
+        inst = RS232(addr['pyserial'], **kwargs)
+        inst_comm = inst.ser
+        inst_comm.flush()
+        unconnected = False
+        # inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
     # pyvisa:USB
     elif 'pyvisa' in addr:
-        inst_comm = USB(addr['pyvisa'])
-        inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
+        inst = USB(addr['pyvisa'])
+        inst_comm = inst.instr
+        unconnected = False
+        # inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
     # unattached instrument 
     else:  
         # allow for debugging without instruments attached: 
@@ -633,7 +645,9 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
         print('Getters will always return {} (set by variable getter_debug_value)'.format(getter_debug_value))
         print(divider_string)
 
-        inst_comm = None
+        class Comm():
+            pass
+        inst_comm = Comm()
 
         def ask(str_input):
             print(str_input)
@@ -642,6 +656,10 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
         def write(str_input):
             print(str_input)
 
-        inst = SCPI(cmd_list, write, ask, unconnected = True)
+        inst_comm.write = write 
+        inst_comm.ask = ask 
+        unconnected = True
+        
+        # inst = SCPI(cmd_list, write, ask, unconnected = True)
 
-    return inst, inst_comm
+    return cmd_list, inst_comm, unconnected 

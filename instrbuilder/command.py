@@ -82,7 +82,9 @@ class Command(object):
                  setter=True, limits=None, setter_type=float,
                  doc='', subsystem=None,
                  getter_inputs=None, setter_inputs=None,
-                 lookup={}, is_config = False):
+                 lookup={}, is_config = False, 
+                 getter_override = None, setter_override = None, 
+                 returns_image = False):
 
         self.name = name
 
@@ -133,3 +135,6 @@ class Command(object):
         self.setter_inputs = setter_inputs
 
         self.is_config = is_config
+        self.getter_override = getter_override
+        self.setter_override = setter_override 
+        self.returns_image = returns_image

@@ -1,18 +1,29 @@
-﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
 curr_bw,CURR:AC:BAND ,,TRUE,float,TRUE,float,"[3, 300e3]",Sets the bandwidth for AC current measurements.,sense,TRUE,,
 curr_null_enable,CURR:{ac_dc}:NULL {value},,TRUE,int,TRUE,int,"[0,1]",Enables or disables the null function for AC or DC current measurements,sense,TRUE,2,1
 curr_null_value,CURR:{ac_dc}:NULL:VAL {value},,TRUE,float,TRUE,float,"[-12,12]",Sets the null value for AC or DC current measurements,sense,TRUE,2,1
 curr_null_value,CURR:{ac_dc}:NULL:VAL:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Sets the null value for AC or DC current measurements,sense,TRUE,2,1
 curr_range,CURR:{ac_dc}:RANG {value},,TRUE,float,TRUE,float,"[100e-6, 3]",Selects a fixed measurement range for AC or DC current measurements on the 3 A terminals.,sense,TRUE,2,1
-curr_range_auto,CURR:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Disables or enables autoranging for AC or DC current measurements. Autoranging is convenient because it automatically selects the range for each measurement based on the input signal. Did not implement ONCE ,sense,TRUE,2,1
-curr_nplc,CURR:NPLC,,TRUE,float,TRUE,float,"[0.02, 0.06, 0.2, 1,10, 100]","Sets the integration time in number of power line cycles (PLC) for DC current measurements. Integration
-time is the period that the instrument's analog-to-digital (A/D) converter samples the input signal for a
-measurement. A longer integration time gives better measurement resolution but slower measurement
-speed.",sense,TRUE,,
+curr_range_auto,CURR:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Disables or enables autoranging for AC or DC current measurements. Auto-ranging is convenient because it automatically selects the range for each measurement based on the input signal. Did not implement ONCE ,sense,TRUE,2,1
+curr_nplc,CURR:NPLC,,TRUE,float,TRUE,float,"[0.02, 0.06, 0.2, 1,10, 100]",Sets the integration time in number of power line cycles (PLC) for DC current measurements. Integration time is the period that the instruments analog-to digital (A/D) converter samples the input signal for a measurement. A longer integration time gives better measurement resolution but slower measurement speed.,sense,TRUE,,
 curr_res,CURR:RES,,TRUE,float,TRUE,float,,"Selects the measurement resolution for DC current measurements. Specify the resolution in the same units as the selected measurement function, not in number of digits.",sense,TRUE,,
 meas_cap,MEAS:CAP,MEAS:CAP? {range},TRUE,float,FALSE,float,,"Sets all measurement parameters and trigger parameters to their default values for capacitance measurements
 and immediately triggers a measurement. The results are sent directly to the instrument's output
 buffer.",meas,FALSE,,
-meas_curr,MEAS:CURR:{ac_dc},,TRUE,float,FALSE,float,,Sets all measurement parameters and trigger parameters to their default values for AC or DC current measurements and immediately triggers a measurement. The results are sent directly to the instrument's output buffer.,meas,FALSE,,1
-meas_volt,MEAS:VOLT:{ac_dc},,TRUE,float,FALSE,float,,Sets all measurement parameters and trigger parameters to their default values for AC or DC voltage measurements and immediately triggers a measurement. The results are sent directly to the instrument's output buffer.,meas,FALSE,,1
-id,*IDN,,TRUE,str,FALSE,str,,Get instrument id ,,,,
+meas_curr,MEAS:CURR:{ac_dc},,TRUE,float,FALSE,float,,Sets all measurement parameters and trigger parameters to their default values for AC or DC current measurements and immediately triggers a measurement. The results are sent directly to the instruments output buffer.,meas,FALSE,,1
+meas_volt,MEAS:VOLT:{ac_dc},,TRUE,float,FALSE,float,,Sets all measurement parameters and trigger parameters to their default values for AC or DC voltage measurements and immediately triggers a measurement. The results are sent directly to the instruments output buffer.,meas,FALSE,,1
+hardcopy_format,HCOP:SDUM:DATA:FORM,,TRUE,str,TRUE,str,"['PNG', 'BMP']",Set the image format for the hardcopy command,save,FALSE,,
+hardcopy,HCOP:SDUM:DATA?,,TRUE,image,FALSE,str,,Returns an image of the screen,save,FALSE,,
+volt_range,VOLT:{ac_dc}:RANG {value},,TRUE,float,TRUE,float,,,,,,
+volt_range_auto,VOLT:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,,,,,,
+volt_aperture,VOLT:APER,,TRUE,float,TRUE,float,"[200e-6, 1]","Acquisition aperture, use NPLC for better power-line rejection",sense,,,
+sample_count,SAMP:COUN,,TRUE,int,TRUE,int,"[1, 1e9]",Number of samples per trigger,trigger,TRUE,,
+trig_slope,TRIG:SLOP,,TRUE,str,TRUE,str,"['POS', 'NEG']",Slope of external trigger,trigger,TRUE,,
+trig_source,TRIG:SOUR,,TRUE,str,TRUE,str,"['IMM', 'EXT', 'BUS', 'INT']",Trigger source,trigger,TRUE,,
+trig_delay,TRIG:DEL,,TRUE,float,TRUE,float,"[0, 3600]",Delay after trigger before the first measurement,trigger,TRUE,,
+trig_count,TRIG:COUN,,TRUE,int,TRUE,int,"[1, 1e9]",Number of triggers before returning to idle. Continuous (specified by INF) is also possible,trigger,TRUE,,
+read_error,:SYST:ERR,,TRUE,str,FALSE,str,,Get an error from the communication module,system,FALSE,,
+initialize,INIT,,FALSE,str,TRUE,str,,Initialize measurement,meas,FALSE,,
+fetch,FETC,,TRUE,str_array_to_numarray,FALSE,str,,Get data in buffer,memory,FALSE,,
+trigger,*TRG,,FALSE,str,TRUE,str,,Trigger via Bus ,trigger,FALSE,,
+id,*IDN,,TRUE,str,FALSE,str,,Get instrument id ,system,TRUE,,
