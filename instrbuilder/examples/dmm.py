@@ -14,6 +14,7 @@ print(p)
 sys.path.append(p)
 from scpi import init_instrument
 from instruments import KeysightMultimeter
+from utils import find_visa_connected
 
 # Bluesky stuff is temporary, until I figure out how to deal with getters that 
 # 	return arrays or images 
@@ -45,19 +46,22 @@ cmd_map = os.path.join(configs['base_directory'], configs['csv_directory'],
 lookup_file = os.path.join(configs['base_directory'], configs['csv_directory'], 
 						instrument, lookups)
 
-'''
-Find connected VISA devices 
-'''
-# import visa
-# mgr = visa.ResourceManager()
-# resources = mgr.list_resources()
-# print(resources)
-
+# example of using find_visa_connected to determine address(es)
+connected_instr = find_visa_connected()
+# hard-code the address in case more instruments are connected
 addr = {'pyvisa': 'USB0::0x2A8D::0x0101::MY57503303::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(cmd_map, addr = addr, lookup = lookup_file)
 dmm = KeysightMultimeter(cmd_list, inst_comm, name = 'dmm', unconnected = unconnected)
 
 dmm.save_hardcopy(filename = 'test88', filetype = 'png')
+
+test_results = dmm.test_all(skip_commands=['fetch', 'reset'])
+
+## Work on the Bluesky image saving aspects 
+v = ScpiBaseSignal(dmm, 'meas_volt', configs = {'ac_dc': 'DC'})
+
+# dmm._cmds['hardcopy'].returns_image = True
+# img = ScpiBaseSignal(dmm, 'hardcopy')
 
 '''
 @wrapt.decorator
@@ -65,8 +69,3 @@ def only_one_return(wrapped, instance, args, kwargs):
     return wrapped(*args, **kwargs)[0]
 dmm.hardcopy_blueksy = only_one_return(dmm.hardcopy)
 '''
-v = ScpiBaseSignal(dmm, 'meas_volt', configs = {'ac_dc': 'DC'})
-
-# dmm._cmds['hardcopy'].returns_image = True
-
-# img = ScpiBaseSignal(dmm, 'hardcopy')
