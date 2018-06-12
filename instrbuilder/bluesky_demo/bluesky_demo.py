@@ -15,15 +15,20 @@ from bluesky.callbacks.best_effort import BestEffortCallback
 from bluesky.plans import scan, count
 from databroker import Broker
 
-sys.path.append('/Users/koer2434/Google Drive/UST/research/bluesky/new_ophyd/') # these 2 will become an import of my ophyd
-sys.path.append('/Users/koer2434/Google Drive/UST/research/bluesky/new_ophyd/ophyd/') # 
-sys.path.append('/Users/koer2434/Google Drive/UST/research/instrbuilder/instrbuilder/') # this will be the SCPI library
+# use symbolic links 
+sys.path.append('/Users/koer2434/ophyd/') # these 2 will become an import of ophyd
+sys.path.append('/Users/koer2434/ophyd/ophyd/') # 
+sys.path.append('/Users/koer2434/instrbuilder/') # this instrbuilder: the SCPI library
 
 # imports that require sys.path.append pointers 
-from ophyd.signal import ScpiSignal, ScpiBaseSignal
-from ophyd import Device
+from ophyd.signal import ScpiSignal, ScpiSignalBase
+from ophyd import Device, Component
 from ophyd.device import Kind
-from scpi import init_instrument
+from scpi import init_instrument, SCPI
+from instruments import SRSLockIn, AgilentFunctionGen
+import scpi 
+
+base_dir = os.path.abspath(os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
 
 plt.close('all')
 
@@ -33,77 +38,141 @@ bec = BestEffortCallback()
 RE.subscribe(bec)
 db = Broker.named('local_file') # a broker poses queries for saved data sets
 
-# prettry print json from terminal
-# cat run_starts.json | json_pp
-
 # Insert all metadata/data captured into db.
 RE.subscribe(db.insert)
 
+
+############# ------------------------------ #############
+#					Lock-in Amplifier 					 #
+############# ------------------------------ #############
 # get lockin amplifier SCPI object 
-cmd_map = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/srs/lock_in/sr810/commands.csv'
-lookup_file = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/srs/lock_in/sr810/lookup.csv'
-addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
-# addr = {}
-lia, lia_serial = init_instrument(cmd_map, addr = addr,
+instrument_path = 'instruments/srs/lock_in/sr810/'
+cmd_name = 'commands.csv'
+lookup_name = 'lookup.csv'
+cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
+lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
+addr = {'pyserial': '/dev/tty.USA19H14512434P1.1'}
+
+# addr = {} # an empty address dictionary will return an unconnected instrument 
+cmd_list, inst_comm, unconnected = init_instrument(cmd_map, addr = addr,
 	lookup = lookup_file, init_write = 'OUTX 0')
+lia = SRSLockIn(cmd_list, inst_comm, name = 'lock-in', unconnected = unconnected)
+# reset the lockin amplifier 
+lia.set(0, 'reset')
 
 # Immediately add the lock-in instrument id to the run-engine metadata
 RE.md['lock_in'] = lia.vendor_id
 
-# TODO: Remove this hack. How to ensure the commands unconnected value works with the getter conversion
-#		function
-lia._cmds['ch1_disp']._unconnected_val = b'1,0\r'
+# create a Bluesky Lock-in device
+class LockIn(Device):
+	fmode = Component(ScpiSignal, scpi_cl = lia, cmd_name = 'fmode', configs = {})
+	tau = Component(ScpiSignal, scpi_cl = lia, cmd_name = 'tau', configs = {})
+	ch1_disp = Component(ScpiSignal, scpi_cl = lia, cmd_name = 'ch1_disp', configs = {'ratio': 0})
+	freq = Component(ScpiSignal, scpi_cl = lia, cmd_name = 'freq', configs = {})
+	disp_val = Component(ScpiSignal, scpi_cl = lia, cmd_name = 'disp_val', configs = {})
+	# Example of an Instrbuilder long setter, i.e. the SCPI command takes more than a single value 
+	off_exp = ScpiSignal(scpi_cl = lia, cmd_name = 'off_exp', 
+		configs = {'chan': 2}) # offset and expand
 
-# reset the lockin amplifier 
-lia.set(0, 'reset')
+	def stage(self):
+		self.tau.set(8)
+		self.fmode.set('Int')
+		self.ch1_disp.set('X') # magnitude 
+		self.freq.set(5e3)
 
-# Configure the lock-in amplfier 
-#	(TODO: setup the bluesky stage methods to do this)
+	def unstage(self):
+		pass
 
-# Set the display to show "R" -- magnitude
-lia.set(value = 1, name = 'ch1_disp', configs = {'ratio': 0})
-# Time-constant 
-lia.set(8, 'tau')
-# Internal frequency mode, 5 kHz 
-lia.set(5e3, 'freq')
-lia.set('Int', 'fmode')
+bsky_lia = LockIn(name = 'bsky_lia')
 
-cmd_map = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments/agilent/function_gen/3320A/commands.csv'
-lookup_file = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments//agilent/function_gen/3320A/lookup.csv'
+for cmpt in ['tau', 'fmode', 'freq']:
+	setattr(getattr(bsky_lia, cmpt), 'kind', Kind.config)
+
+############# ------------------------------ #############
+#					Function Generator 					 #
+############# ------------------------------ #############
+instrument_path = 'instruments/agilent/function_gen/3320A/'
+cmd_name = 'commands.csv'
+lookup_name = 'lookup.csv'
+cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
+lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
 addr = {'pyvisa': 'USB0::0x0957::0x0407::MY44060286::INSTR'}
 # addr = {}
-fg, fg_usb = init_instrument(cmd_map, addr = addr,
-		lookup = lookup_file)
+cmd_list, inst_comm, unconnected = init_instrument(cmd_map, addr = addr,
+	lookup = lookup_file)
+fg = AgilentFunctionGen(cmd_list, inst_comm, name = 'function-generator', unconnected = unconnected)
+
 # Immediately add the function generator vendor/instrument_id to the run-engine metadata
 RE.md['function_generator'] = fg.vendor_id
 
-# TODO: use bluesky to setup this initialization? 
-# initialize the function generator
-fg.set(0, 'offset')
-fg.set('INF', 'load')
-fg.set(0.1, 'v')
-if fg.get('output') == 'OFF':
-	fg.set('ON', 'output')
+### -------- Example of a device: function generator ---------------
+class FuncGen(Device):
+	freq = Component(ScpiSignal, scpi_cl = fg, cmd_name = 'freq', configs = {})
+	v = Component(ScpiSignal, scpi_cl = fg, cmd_name = 'v', configs = {})
+	output = Component(ScpiSignal, scpi_cl = fg, cmd_name = 'output', configs = {})
+	offset = Component(ScpiSignal, scpi_cl = fg, cmd_name = 'offset', configs = {})
 
-# setup the Bluesky "motor"
-freq_motor = ScpiSignal(fg, 'freq')
-freq_motor.delay = 0.1
+	def stage(self):
+		self.freq.set(4997)
+		self.v.set(0.2)
+		self.offset.set(0)
+		if self.output.get() == 'OFF':
+			self.output.set('ON')
 
-# Add the Bluesky "detector from the lock-in" 
-# 	TODO: the name of the SCPI command becomes the display name used by bluesky, 
-#	would like to be able to rename this 
-det = ScpiBaseSignal(lia, 'disp_val')
+	def unstage(self):
+		# could/should turn the output off, but would rather not cycle the relay every time
+		self.freq.set(4997) 
 
-# Add a few Bluesky "motors" for the lock-in that change configurations: 
-filt_tau = ScpiSignal(lia, 'tau')
-# Example of an Instrbuilder long setter, i.e. the SCPI command takes more than a single value 
-off_exp = ScpiSignal(lia, 'off_exp', configs = {'chan': 2}) # offset and expand
+bsky_fg = FuncGen(name = 'bsky_fg')
+
+# setup control of the frequency sweep
+bsky_fg.freq.delay = 0.2
+bsky_fg.freq.kind = Kind.hinted
+
+# TODO: bsky_rg.read_configuration() returns an empty OrderedDict if the configuration_attrs is simply populated
+#		read_configuration() depends upon the setting of offset.kind for each component
+#		should be = Kind.config 
+#		Am I doing something wrong or is the documentation stale?
+for cmpt in ['output', 'v', 'offset']:
+	setattr(getattr(bsky_fg, cmpt), 'kind', Kind.config)
+
+############# ------------------------------ #############
+#					Setup Supplemental Data				 #
+############# ------------------------------ #############
+from bluesky.preprocessors import SupplementalData
+baseline_dets = []
+for dev in [bsky_fg, bsky_lia]:
+	for name in dev.component_names:
+		if getattr(dev, name).kind == Kind.config:
+			baseline_dets.append(getattr(dev, name))
+
+sd = SupplementalData(baseline = baseline_dets, monitors=[], flyers=[])
+RE.preprocessors.append(sd)
+
+
+############# ------------------------------ #############
+#					Run a measurement					 #
+############# ------------------------------ #############
+
+# stage the instrumetns 
+bsky_lia.stage()
+bsky_fg.stage()
 
 if len(addr) != 0:
-	for i in range(3):
-		# scan is a pre-configured Bluesky plan; return the uid
-		uid = RE(scan([det], freq_motor, 4997, 5005, 12), 
-			LiveTable([det]), attenuator='0dB', purpose='demo', operator='Lucas')
+	for i in range(1):
+		# scan is a pre-configured Bluesky plan; returns the experiment uid
+		uid = RE(scan([bsky_lia.disp_val], bsky_fg.freq, 4997, 5005, 12), LiveTable([bsky_lia.disp_val]), 
+			attenuator='0dB', purpose='demo', operator='Lucas', 
+			fg_config = bsky_fg.read_configuration(),
+			lia_config = bsky_lia.read_configuration())
+		# TODO: the name of the SCPI command becomes the display name used by bluesky, 
+		#		would like to be able to rename this 
+
+############# ------------------------------ #############
+#				Example Data Processing					 #
+############# ------------------------------ #############
+
+if len(addr) != 0:
 	# get data into a pandas dataframe 
 	header = db[uid[0]]
 	print(header.table())
@@ -113,67 +182,6 @@ if len(addr) != 0:
 	header['start']
 	header['stop']
 
-	# Save the data to two other formats: csv and hdf5
-	#	ALTHOUGH this is not needed and the .sqlite is file is the most complete 
-	# See: https://pandas.pydata.org/pandas-docs/stable/io.html
-	data_dir = '/Users/koer2434/Google Drive/UST/research/instrbuilder/data'
-	
-	filename = 'test_data_{}.csv'.format(uid[0])
-	fullfile = os.path.join(data_dir, filename)
-	print('saving table as: {}'.format(filename))
-	print(' to directory: {}'.format(data_dir))
-	df.to_csv(fullfile)
-
-	filename = 'test_data_{}.hdf'.format(uid[0])
-	fullfile = os.path.join(data_dir, filename) #TODO: what does the hdf key do?
-	print('saving table as: {}'.format(filename))
-	print(' to directory: {}'.format(data_dir))
-	df.to_hdf(fullfile, key = 'test_id')
-
-	# the location of the data database and the json metadata files is set by the config file 'local_file'
-	# 	db = Broker.named('local_file') 
-	# this .yml config file (on my system) is at ~/.config/databroker
-	# each run of the run-engine makes an sqlite data file; 
-	# 	all JSON metadata/headers (start; stop; event_descriptors) are in the same .json file
-
-### --------
-## Baseline example: save and validate instrument configurations 
-from bluesky.preprocessors import SupplementalData
-
-config_getters = [c for c in lia._cmds if ((lia._cmds[c].is_config == True) and (lia._cmds[c].getter_inputs == 0))]
-config_getters.remove('ch1_disp')
-
-# TODO: fix this (bluesky doesn't know how to print an array)
-# 		modify any baseline getters that return multiple values; 
-# 		bluesky expects a single value 
-
-baseline_dets = []
-for name in config_getters:
-	b_det = ScpiBaseSignal(lia, name)
-	baseline_dets.append(b_det)
-
-b_det = ScpiBaseSignal(lia, 'ch1_disp', shape = (2,), dtype = 'array')
-b_det.kind = Kind.omitted
-# b_det.kind = 'normal'
-
-baseline_dets.append(b_det)
-
-# TODO -- monitors? something that throws interrupt with update? 
-sd = SupplementalData(baseline= baseline_dets, monitors=[], flyers=[])
-RE.preprocessors.append(sd)
-
-for i in range(3):
-	if i == 2:
-		lia._cmds['fmode']._unconnected_val = 33
-	uid = RE(scan([det], freq_motor, 4997, 5005, 12), 
-		LiveTable([det]), sample_id='B', purpose='demo-baseline', operator='me')
-
-# view the baseline data 
-h = db[-1]
-h.table('baseline')
-
-class FGAmpFreq(Device):
-    x = ScpiSignal(fg, 'freq')
-    y = ScpiSignal(fg, 'v')
-
-amp_f = FGAmpFreq(name = 'first_device')
+	# view the baseline data 
+	h = db[-1]
+	h.table('baseline')

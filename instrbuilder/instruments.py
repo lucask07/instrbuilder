@@ -54,6 +54,19 @@ def returns_array(func):
     func.returns_array = True
     return func 
 
+class AgilentFunctionGen(SCPI):
+    def __init__(self, cmd_list, comm_handle, name='not named', unconnected = False):
+        super().__init__(cmd_list, comm_handle, name='not named', unconnected = False)
+
+class SRSLockIn(SCPI):
+    def __init__(self, cmd_list, comm_handle, name='not named', unconnected = False):
+        super().__init__(cmd_list, comm_handle, name='not named', unconnected = False)
+        
+        if unconnected:
+            # TODO: Remove this hack. 
+            #       How to ensure the commands unconnected value works with the getter conversion function?
+            lia._cmds['ch1_disp']._unconnected_val = b'1,0\r'
+
 class KeysightMultimeter(SCPI):
     def __init__(self, cmd_list, comm_handle, name='not named', unconnected = False):
         super().__init__(cmd_list, comm_handle, name='not named', unconnected = False)
@@ -74,7 +87,7 @@ class KeysightMultimeter(SCPI):
         return np.array(img_data, dtype = 'B') #unsigned byte 
         #   [see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html]
 
-    ## Composite functions 
+    ## Composite functions (examples)
     def save_hardcopy(self, filename, filetype = 'png'):
         ''' get the hardcopy data from the display and save to a file '''
         filewriter(self.hardcopy(), filename, filetype)

@@ -51,9 +51,13 @@ def str_strip(str_in):
     """ strip whitespace at right of string. Wrap string rstrip method into function """
     return str_in.rstrip()
 
+def keysight_error(str_in):
+    return str_in[0:2] != '+0'
+
 convert_lookup['str'] = str_strip
 convert_lookup['str_array_to_numarray'] = arr_str
 convert_lookup['byte_array_to_numarray'] = arr_bytes
+convert_lookup['keysight_error'] = keysight_error
 
 # getter conversion function to determine if a single bit is set. Returns True or False
 for i in range(8):
@@ -282,9 +286,14 @@ class SCPI(object):
     def read_comm_err(self):
         """ Read if the instrument has flagged a communciation error 
             The csv command file must have a getter with name comm_error that returns a bool """
-        return self.get('comm_error')
+        try:
+            return self.get('comm_error')
+        except KeyError as e:
+            print('Error: The command comm_error must be configured to read instrument errors')
+            sys.exit()
 
-    def test_command(self, name, set_vals=None):
+    def test_command(self, name, set_vals=None, 
+                get_configs = {}, set_configs = {}):
         """ Test a command by setting and getting to determine if: 
             1) the instrument reports a communcation error
             2) the return value is of an unexpected type or an error threshold away from what was set
@@ -298,42 +307,57 @@ class SCPI(object):
                 A list of values to test by a sequence of set and get.
                 If not provided the low and high limits are used 
 
+            get_configs : dict, optional
+                A dictionary of configs to send the get command
+
+            set_configs : dict, optional
+                A dictionary of configs to send the set command
+
             Returns
             -------
             bool
                 True if the command is successful, False otherwise.
 
+            Example
+            -------
+            dmm.test_command('curr_range', set_configs = {'ac_dc':'DC'}, get_configs = {'ac_dc':'DC'})
+
         """ 
 
-        ok = True
+        comm_error = False
         allowed_err = 0.02 # TODO: determine error magnitude that is allowed 
 
-        if (len(self._cmds[name].get_config_keys) > 0) or (len(self._cmds[name].set_config_keys) > 0):
+        if (len(self._cmds[name].get_config_keys) != len(get_configs) ) or (len(self._cmds[name].set_config_keys) != len(set_configs)):
             print('Skipping test of: {}'.format(name))
             print(
-                '  Test of getters or setters that require a configuration input is not yet implemented')
+                '  Automated test of getters or setters that require a configuration input is not yet implemented')
+            print('An input configuration dictionary is required')
             return 'NotTested'
 
         # if getter and setter
         if (self._cmds[name].getter and self._cmds[name].setter):
 
-            ret = self.get(name)
-            ok |= self.read_comm_err()
+            ret = self.get(name, configs = get_configs)
+            comm_error |= self.read_comm_err()
             if set_vals is None:
-                set_vals = [self._cmds[name].limits[0],
-                            self._cmds[name].limits[1]]
+                try:
+                    set_vals = [self._cmds[name].limits[0],
+                                self._cmds[name].limits[1]]
+                except:
+                    print('Skipping test of setter {} since limits are missing'.format(name))
+                    return 'NotTested'
 
             for set_val in set_vals:
-                self.set(set_val, name)
-                ok |= self.read_comm_err()
-                ret = self.get(name)
+                self.set(set_val, name, configs = set_configs)
+                comm_error |= self.read_comm_err()
+                ret = self.get(name, configs = get_configs)
                 # if present remove lookup table modification
                 try:
                     ret = self._cmds[name].lookup[ret]
                 except:
                     pass
 
-                ok |= self.read_comm_err()
+                comm_error |= self.read_comm_err()
                 if self._cmds[name].getter_type == float:
                     try:
                         deviates = np.abs((ret - set_val) /
@@ -344,7 +368,7 @@ class SCPI(object):
                     deviates = (ret != set_val)
 
                     if deviates:
-                        ok = False
+                        comm_error = True
                         if self._cmds[name].getter_type == float:
                             print('Get vs. set difference greater than {} %% for command {}'.format(
                                 allowed_err * 100, name))
@@ -358,26 +382,29 @@ class SCPI(object):
         elif self._cmds[name].setter:
             if (self._cmds[name].limits) is None:
                 set_val = None
-            elif (len(self._cmds[name].limits) == 2):
-                set_val = self._cmds[name].limits[0]
+                self.set(set_val, name, configs = set_configs)
+                comm_error |= self.read_comm_err()     
+
+            elif (len(self._cmds[name].limits) > 2):
+                set_vals = [self._cmds[name].limits[0], self._cmds[name].limits[-1]]
+                for set_val in set_vals:
+                    self.set(set_val, name, configs = set_configs)
+                    comm_error |= self.read_comm_err()  
             else:
                 print('Skipping test of setter {}'.format(name))
                 return 'NotTested'
 
-            self.set(set_val, name)
-            ok |= self.read_comm_err()
-
         # if getter only
         elif self._cmds[name].getter:
-            ret = self.get(name)
-            ok |= self.read_comm_err()
+            ret = self.get(name, configs = get_configs)
+            comm_error |= self.read_comm_err()
 
         else:
             print('Command is not a setter nor a getter, cannot test!')
 
-        return ok
+        return (not comm_error)
 
-    def test_all(self, skip_subsystem=['setup', 'status'], skip_commands=['fast_transfer', 'reset']):
+    def test_all(self, skip_subsystem=['setup', 'status', 'system'], skip_commands=['fast_transfer', 'reset']):
         """ Test all commands by setting and getting to determine if: 
             1) the instrument reports a communcation error
             2) the return value is of an unexpected type or an error threshold away from what was set
@@ -394,7 +421,7 @@ class SCPI(object):
             Returns
             -------
             dict
-                Keys are each commands tested, value is True (command succeeded) or False 
+                Keys are each commands tested, value is True (command succeeded) or False (command errored)
 
         """ 
         all_tests = {}
@@ -407,6 +434,12 @@ class SCPI(object):
                 all_tests[key] = status
                 print('Result for {} = {}'.format(key, status))
 
+        #### ---- Print and return results -----
+        print('\n')
+        print(divider_string)
+        print('Command Test Results:')
+        import pprint 
+        pprint.pprint(all_tests)
         return all_tests
 
 
@@ -542,7 +575,9 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
     if lookup:
         df_look = pd.read_csv(lookup)
         # strip white space and end-of-line from column headers
-        df_look = df_look.rename(columns=lambda x: x.strip())  
+        df_look = df_look.rename(columns=lambda x: x.strip())
+        # drop empty rows (for example, at the end)
+        df_look = df_look.dropna(how = 'all')  
 
         # make a dictionary for each command 
         cmd_lookups = {}
@@ -625,8 +660,8 @@ def init_instrument(cmd_map, addr, lookup = None, **kwargs):
     # pySerial:RS232
     if 'pyserial' in addr:
         inst = RS232(addr['pyserial'], **kwargs)
-        inst_comm = inst.ser
-        inst_comm.flush()
+        inst_comm = inst
+        inst_comm.ser.flush()
         unconnected = False
         # inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
     # pyvisa:USB
