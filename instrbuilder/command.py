@@ -3,7 +3,7 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-# standard library imports 
+# standard library imports
 import ast
 import math
 import re
@@ -18,10 +18,10 @@ import pandas as pd
 import numpy as np
 import serial
 import visa
-
 """
 
 """
+
 
 class Command(object):
     """
@@ -77,14 +77,24 @@ class Command(object):
         and end of an experiment.
     """
 
-    def __init__(self, name, ascii_str='', ascii_str_get='',
-                 getter=True, getter_type=float,
-                 setter=True, limits=None, setter_type=float,
-                 doc='', subsystem=None,
-                 getter_inputs=None, setter_inputs=None,
-                 lookup={}, is_config = False, 
-                 getter_override = None, setter_override = None, 
-                 returns_image = False):
+    def __init__(self,
+                 name,
+                 ascii_str='',
+                 ascii_str_get='',
+                 getter=True,
+                 getter_type=float,
+                 setter=True,
+                 limits=None,
+                 setter_type=float,
+                 doc='',
+                 subsystem=None,
+                 getter_inputs=None,
+                 setter_inputs=None,
+                 lookup={},
+                 is_config=False,
+                 getter_override=None,
+                 setter_override=None,
+                 returns_image=False):
 
         self.name = name
 
@@ -110,14 +120,14 @@ class Command(object):
         self.get_config_defaults = dict.fromkeys(self.get_config_keys)
         self.set_config_defaults = dict.fromkeys(self.set_config_keys)
 
-        self.getter = getter    # is this a getter? True or False
-        
+        self.getter = getter  # is this a getter? True or False
+
         # getter_type: a function that converts the value retrieved to the anticipated type,
         # typically a built-in like float, int, etc. but could be a custom function
         self.getter_type = getter_type
-        self.setter = setter            # is this a setter? True or False
+        self.setter = setter  # is this a setter? True or False
         self.setter_type = setter_type  # TODO: checks that the value matches this type
-        
+
         # lookup table support (dictionary)
         self.lookup = lookup
 
@@ -136,5 +146,5 @@ class Command(object):
 
         self.is_config = is_config
         self.getter_override = getter_override
-        self.setter_override = setter_override 
+        self.setter_override = setter_override
         self.returns_image = returns_image

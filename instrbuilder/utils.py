@@ -5,6 +5,7 @@
 
 import visa
 
+
 def get_bit(value, bit):
     """ 
     Returns single bit from byte 
@@ -23,6 +24,7 @@ def get_bit(value, bit):
     bit_val = 1 if (value & 2**(bit) != 0) else 0
     return bit_val
 
+
 def set_bit(value, bit):
     """ 
     Sets single bit of byte 
@@ -39,6 +41,7 @@ def set_bit(value, bit):
 
     """
     return (value | 2**bit)
+
 
 def clear_bit(value, bit):
     """ 
@@ -57,6 +60,7 @@ def clear_bit(value, bit):
     """
     return (value & ((2**8 - 1) - bit**2))
 
+
 def find_visa_connected():
     """
     Finds VISA connected devices, returns the connected resources as a list 
@@ -66,4 +70,4 @@ def find_visa_connected():
     resources = mgr.list_resources()
     print('Found VISA devices: ')
     print(resources)
-    return resources 
+    return resources
