@@ -92,3 +92,5 @@ ch1_disp,0,X
 ,2,X Noise
 ,3,Aux In 1
 ,4,Aux In 2
+scan_mode,0,one-shot
+,1,loop

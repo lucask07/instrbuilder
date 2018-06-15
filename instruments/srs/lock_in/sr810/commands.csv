@@ -39,10 +39,10 @@ val,OUTP,OUTP? {chan},TRUE,float,FALSE,none,None,"Query the value of X (1), Y (2
 disp_val,OUTR,,TRUE,float,FALSE,none,None,Query the value of CH1 Display. Returns ASCII floating point value,data_transfer,FALSE,,
 all_val,SNAP,"SNAP? {i}, {j}, {k}, {l}, {m}, {n}",TRUE,float,FALSE,none,None,Query the value of 2 thru 6 paramters at once.,data_transfer,FALSE,,2
 aux_input,OAUX,OAUX? {chan},TRUE,int ,FALSE,none,"[1,4]","Query the value of Aux Input i (1,2,3,4) in volts. Insturment has 4 AUX channels",data_transfer,FALSE,,1
-data_stored,SPTS,,TRUE,int,FALSE,none,None,"Query the number of points stored in Display i buffer (1,2)",data_transfer,FALSE,,
-read_buffer,TRCA,"TRCA? {j},{k}",TRUE,float,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in ASCII floating point,data_transfer,FALSE,,2
-read_buffer_float,TRCB,"TRCB? {j},{k}",TRUE,float,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in IEEE binary floating point,data_transfer,FALSE,,2
-read_buffer_nonnorm,TRCL,"TRCL? {j},{k}",TRUE,float,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in nonnormalized binary floating point.,data_transfer,FALSE,,2
+data_pts_ready,SPTS,,TRUE,int,FALSE,none,None,"Query the number of points stored in Display i buffer (1,2)",data_transfer,FALSE,,
+read_buffer,TRCA,"TRCA? {start_pt}, {num_pts}",TRUE,byte_array_to_numarray_floats,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in ASCII floating point,data_transfer,FALSE,,2
+read_buffer_float,TRCB,"TRCB? {start_pt}, {num_pts}",TRUE,byte_array_to_numarray_floats,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in IEEE binary floating point,data_transfer,FALSE,,2
+read_buffer_nonnorm,TRCL,"TRCL? {start_pt}, {num_pts}",TRUE,byte_array_to_numarray_floats,FALSE,none,None,Read k≥1 points starting at bin j≥0 from CH1 Display buffer in nonnormalized binary floating point.,data_transfer,FALSE,,2
 fast_transfer,FAST,,TRUE,int,TRUE,int,"[0,2]",Fast Data Transfer Mode On (1 or 2) or Off (0).On will transfer binary X and Y every sample during a scan over the GPIB interface.,data_transfer,TRUE,,
 start_delay,STRD,,FALSE,none,TRUE,none,None,Start a scan after 0.5sec delay. Use with Fast Data Transfer Mode,data_transfer,FALSE,,
 reset,*RST,,FALSE,none,TRUE,none,None,Reset the unit to its default configurations,interface,,,

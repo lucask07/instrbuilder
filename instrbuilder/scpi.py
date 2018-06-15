@@ -48,11 +48,14 @@ def arr_bytes(bytes_in):
     str_in = bytes_in.decode('utf-8').rstrip()
     return np.asarray(list(map(lambda x: int(x), str_in.split(','))))
 
+def arr_bytes_floats(bytes_in):
+    """ convert array of bytes such as b'-3.051776e-004,-3.051776e-004,\r', to a list of floats """
+    str_in = bytes_in.decode('utf-8').rstrip()
+    return np.asarray(list(map(lambda x: float(x), list(filter(None, str_in.split(','))))))
 
 def str_strip(str_in):
     """ strip whitespace at right of string. Wrap string rstrip method into function """
     return str_in.rstrip()
-
 
 def keysight_error(str_in):
     return str_in[0:2] != '+0'
@@ -61,6 +64,7 @@ def keysight_error(str_in):
 convert_lookup['str'] = str_strip
 convert_lookup['str_array_to_numarray'] = arr_str
 convert_lookup['byte_array_to_numarray'] = arr_bytes
+convert_lookup['byte_array_to_numarray_floats'] = arr_bytes_floats
 convert_lookup['keysight_error'] = keysight_error
 
 # getter conversion function to determine if a single bit is set. Returns True or False
