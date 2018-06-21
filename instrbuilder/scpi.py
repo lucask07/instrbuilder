@@ -8,7 +8,6 @@ import warnings
 import time
 import sys
 import math
-import re
 import ast
 from collections import defaultdict
 import functools
@@ -23,6 +22,7 @@ from pyvisa.constants import StatusCode
 # local package imports
 from command import Command
 import utils
+
 '''
 The SCPI module includes the SCPI class, functions to convert return values, and builds 
 a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.
@@ -55,16 +55,23 @@ def arr_bytes_floats(bytes_in):
 
 def str_strip(str_in):
     """ strip whitespace at right of string. Wrap string rstrip method into function """
-    return str_in.rstrip()
+    return str(str_in.rstrip())
 
 def keysight_error(str_in):
     return str_in[0:2] != '+0'
 
 
+# add attribute to the getter conversion function so that bluesky
+#    (or the generation of a bluesky signal) knows what to do
+def returns_array(func):
+    func.returns_array = True
+    return func
+
+
 convert_lookup['str'] = str_strip
-convert_lookup['str_array_to_numarray'] = arr_str
-convert_lookup['byte_array_to_numarray'] = arr_bytes
-convert_lookup['byte_array_to_numarray_floats'] = arr_bytes_floats
+convert_lookup['str_array_to_numarray'] = returns_array(arr_str)
+convert_lookup['byte_array_to_numarray'] = returns_array(arr_bytes)
+convert_lookup['byte_array_to_numarray_floats'] = returns_array(arr_bytes_floats)
 convert_lookup['keysight_error'] = keysight_error
 
 # getter conversion function to determine if a single bit is set. Returns True or False
@@ -676,7 +683,7 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
                 row_el = row_el
             return row_el
 
-        row['setter_inputs'] = modify_default(row['setter_inputs'], None)
+        row['setter_inputs'] = modify_default(row['setter_inputs'], 1)
         row['getter_inputs'] = modify_default(row['getter_inputs'], 0)
         row['ascii_str_get'] = modify_default(row['ascii_str_get'], None)
         row['subsystem'] = modify_default(row['subsystem'], None)
@@ -715,19 +722,43 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
         sys.exit('Multiple keys: {}'.format(list(addr.keys())))
     # pySerial:RS232
     if 'pyserial' in addr:
-        inst = RS232(addr['pyserial'], **kwargs)
-        inst_comm = inst
-        inst_comm.ser.flush()
-        unconnected = False
-        # inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
+        try:
+            inst = RS232(addr['pyserial'], **kwargs)
+            inst_comm = inst
+            inst_comm.ser.flush()
+            unconnected = False
+        except Exception as e:
+            print(e)
+            unconnected = True
+            print('PySerial address not found {}'.format(addr['pyserial']))
+            print('Possible serial addresses:')
+            import glob
+            import platform
+            if platform.system() == 'Darwin':
+                print('On your MAC at /dev/tty.USA*')
+                print(glob.glob("/dev/tty.USA*"))
+            elif platform.system() == 'Linux':
+                print('On your MAC at /dev/tty.USA*')
+                print(glob.glob("/dev/tty.USA*"))
+            elif platform.system() == 'Windows':
+                print('On your Windows Machine I dont know how to check for available COM ports')
+                #print(glob.glob("/dev/tty.USA*"))
     # pyvisa:USB
     elif 'pyvisa' in addr:
-        inst = USB(addr['pyvisa'])
-        inst_comm = inst.instr
-        unconnected = False
-        # inst = SCPI(cmd_list, inst_comm.write, inst_comm.ask)
+        try:
+            inst = USB(addr['pyvisa'])
+            inst_comm = inst.instr
+            unconnected = False
+        except Exception as e:
+            print(e)
+            unconnected = True
+            print('PyVISA address {} not found'.format(addr['pyvisa']))
+            print('These VISA instruments are available')
+            utils.find_visa_connected()
     # unattached instrument
     else:
+        unconnected = True
+    if unconnected:
         # allow for debugging without instruments attached:
         #   print command to stdout, always return getter_debug_value
         print(divider_string, end='')
@@ -752,8 +783,5 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
 
         inst_comm.write = write
         inst_comm.ask = ask
-        unconnected = True
-
-        # inst = SCPI(cmd_list, write, ask, unconnected = True)
 
     return cmd_list, inst_comm, unconnected

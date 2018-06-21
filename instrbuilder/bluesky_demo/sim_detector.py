@@ -29,7 +29,8 @@ RE = RunEngine({})
 db = Broker.named('local_file') # a broker poses queries for saved data sets
 bec = BestEffortCallback()
 # Send all metadata/data captured to the BestEffortCallback.
-# RE.subscribe(bec)
+# RE.subscribe(bec) # the BestEffortCallback seems to fail too often for my scenarios
+					# 	will explicitly define LiveTables and Plots
 
 # Insert all metadata/data captured into db.
 RE.subscribe(db.insert)
@@ -43,6 +44,7 @@ RE(count([cam], num=5),
 	LivePlot('cam_isum', 'cam_istd', marker = '*', LineStyle = 'None'))
 # TODO: can the CameraWithStats have a list of functions and generate the components from that?
 
+#### --------- #### 
 # Check that the stats calculation matches up if we load the file and re-calculate 
 print('Verify that stats calculated match what is found in the files: ')
 header = db[-1]

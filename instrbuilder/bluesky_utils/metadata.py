@@ -20,7 +20,7 @@ df = pd.DataFrame.from_dict([h.start for h in headers])
 df['human_time'] = df.apply(lambda row: datetime.fromtimestamp(row['time']).strftime('%Y-%m-%d %H:%M:%S'), axis=1)
 cols = df.columns.tolist()
 
-# for astetics, re-order the dataframe so that uid is the leftmost column
+# for aesthetics, re-order the dataframe so that uid is the leftmost column
 new_cols = [f for f in cols if f != 'uid']
 new_cols.insert(0, 'uid')
 

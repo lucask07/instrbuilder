@@ -4,24 +4,13 @@
 # University of St. Thomas
 
 # standard library imports
-import warnings
-import time
-import sys
-import math
-import re
-import ast
-from collections import defaultdict
-import functools
-# imports that may need installation
-import pandas as pd
-import colorama
+
 import numpy as np
-import serial
-import visa
-from pyvisa.constants import StatusCode
-import wrapt  # for wrapping functions to have a return appropriate for bluesky
+import sys
 
 # local package imports
+sys.path.append(
+    '/Users/koer2434/instrbuilder/')  # this instrbuilder: the SCPI library
 from scpi import SCPI
 
 
@@ -46,18 +35,6 @@ def filewriter(data, filename, filetype='png'):
         np.save(filename + '.' + filetype, data)
 
 
-# add attributes to a function so that bluesky (or the generation of a bluesky signal)
-#   knows what to do
-def returns_image(func):
-    func.returns_image = True
-    return func
-
-
-def returns_array(func):
-    func.returns_array = True
-    return func
-
-
 class AgilentFunctionGen(SCPI):
     def __init__(self,
                  cmd_list,
@@ -65,7 +42,7 @@ class AgilentFunctionGen(SCPI):
                  name='not named',
                  unconnected=False):
         super().__init__(
-            cmd_list, comm_handle, name='not named', unconnected=False)
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
 
 
 class SRSLockIn(SCPI):
@@ -75,12 +52,12 @@ class SRSLockIn(SCPI):
                  name='not named',
                  unconnected=False):
         super().__init__(
-            cmd_list, comm_handle, name='not named', unconnected=False)
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
 
         if unconnected:
             # TODO: Remove this hack.
             #       How to ensure the commands unconnected value works with the getter conversion function?
-            lia._cmds['ch1_disp']._unconnected_val = b'1,0\r'
+            self._cmds['ch1_disp']._unconnected_val = b'1,0\r'
 
 
 class KeysightMultimeter(SCPI):
@@ -90,7 +67,7 @@ class KeysightMultimeter(SCPI):
                  name='not named',
                  unconnected=False):
         super().__init__(
-            cmd_list, comm_handle, name='not named', unconnected=False)
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
 
         # Override of "single line" SCPI functions
         self._cmds['hardcopy'].getter_override = self.hardcopy

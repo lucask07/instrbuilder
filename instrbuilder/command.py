@@ -4,20 +4,8 @@
 # University of St. Thomas
 
 # standard library imports
-import ast
-import math
 import re
-import warnings
-import time
-from collections import defaultdict
-import sys
 
-# imports that may need installation
-import colorama
-import pandas as pd
-import numpy as np
-import serial
-import visa
 """
 
 """
@@ -75,6 +63,12 @@ class Command(object):
     is_config : bool, optional
         is a "configuration" variable that should be measured and logged at the start 
         and end of an experiment.
+    getter_override : function, optional
+        run this upon get
+    setter_override: function
+        runs this upon set
+    returns_image: bool, optional (defaults to False)
+        does this command return an array or image (a value that cannot be stored in the NoSQL database)
     """
 
     def __init__(self,
