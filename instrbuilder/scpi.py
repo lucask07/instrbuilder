@@ -30,13 +30,12 @@ a SCPI object (using the function init_instrument) from a CSV file of commands a
 
 #### -----------------------------------------
 # a dictionary of functions that are used to convert return values from getters
-convert_lookup = defaultdict(lambda: str)
-convert_lookup['string'] = str
-convert_lookup['float'] = float
-convert_lookup['double'] = float
-convert_lookup['int'] = int
-convert_lookup['nan'] = str
-
+convert_return = defaultdict(lambda: str)
+convert_return['string'] = str
+convert_return['float'] = float
+convert_return['double'] = float
+convert_return['int'] = int
+convert_return['nan'] = str
 
 def arr_str(str_in):
     """ convert string such as '2.3', '5.4', '9.9' to a list of floats """
@@ -60,27 +59,29 @@ def str_strip(str_in):
 def keysight_error(str_in):
     return str_in[0:2] != '+0'
 
-
 # add attribute to the getter conversion function so that bluesky
 #    (or the generation of a bluesky signal) knows what to do
 def returns_array(func):
     func.returns_array = True
     return func
 
+nop = lambda x: x
 
-convert_lookup['str'] = str_strip
-convert_lookup['str_array_to_numarray'] = returns_array(arr_str)
-convert_lookup['byte_array_to_numarray'] = returns_array(arr_bytes)
-convert_lookup['byte_array_to_numarray_floats'] = returns_array(arr_bytes_floats)
-convert_lookup['keysight_error'] = keysight_error
+convert_return['str'] = str_strip
+convert_return['str_array_to_numarray'] = returns_array(arr_str)
+convert_return['byte_array_to_numarray'] = returns_array(arr_bytes)
+convert_return['byte_array_to_numarray_floats'] = returns_array(arr_bytes_floats)
+convert_return['keysight_error'] = keysight_error
+convert_return['pass'] = nop
+convert_return['pass_array'] = returns_array(nop)
 
 # getter conversion function to determine if a single bit is set. Returns True or False
 for i in range(8):
-    convert_lookup['bit{}_set'.format(
+    convert_return['bit{}_set'.format(
         i)] = lambda x: bool(functools.partial(utils.get_bit, bit=i)(int(x)))
 # getter conversion function to determine if a single bit is cleared. Returns True or False
 for i in range(8):
-    convert_lookup['bit{}_cleared'.format(
+    convert_return['bit{}_cleared'.format(
         i
     )] = lambda x: not bool(functools.partial(utils.get_bit, bit=i)(int(x)))
 #### -----------------------------------------
@@ -101,16 +102,13 @@ class SCPI(object):
     ----------
     cmd_list : Command
         A list of commands. Each command is an object of the class Command
-    write : method 
-        A function that writes data to the hardware interface.
-        Examples are pySerial write() or pyvisa inst.write()
-    ask : method 
-        a function that queries data from the hardware interface (typically a sequence of write and then read).
-        Examples are pySerial ask() and pyvisa inst.query()
-    comm_handle : Communication object 
-        handle to the (general) hardware interface 
+    comm_handle : Communication object
+        handle to the (general) hardware interface
         Example is the pyvisa instrument object: inst
         Needed when commands are overriden
+        should support a:
+            write method (Examples are pySerial write() or pyvisa inst.write())
+            and an ask method (Examples are pySerial ask() and pyvisa inst.query())
     name : str, optional
         Name of the instrument 
     unconnected : bool, optional
@@ -143,7 +141,6 @@ class SCPI(object):
         self.comm_handle = comm_handle
 
     def __dir__(self):
-        # dir(instrument_obj) --> returns a list of the keys
         return self._cmds.keys()
 
     def __len__(self):
@@ -156,7 +153,7 @@ class SCPI(object):
             raise NotImplementedError
 
         if self._cmds[name].getter_override is not None:
-            return self._cmds[name].getter_override(configs)
+            return self._cmds[name].getter_override(**configs)
 
         cmd_str = self._cmds[name].ascii_str_get
         ret_val = self.ask(cmd_str.format(**configs))
@@ -634,25 +631,30 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
         # make a dictionary for each command
         cmd_lookups = {}
         for index, row in df_look.iterrows():
-            if (index == 0):
+            if index == 0:
                 try:
                     if math.isnan(row['command']):
                         raise Exception(
                             'The first element of the lookup table is empty')
-                except:
+                except Exception as e:
                     pass
             try:
-                if math.isnan(row['command']) == False:
+                if not math.isnan(row['command']):
                     current_cmd = current_cmd  # shouldn't get here
-            except:
+            except Exception as e:
                 current_cmd = row['command']
 
+            try:
+                dict_key = float(row['name'])
+            except ValueError:
+                dict_key = str(row['name'])
+
             if current_cmd in cmd_lookups.keys():
-                cmd_lookups[current_cmd][row['name']] = row['value']
+                cmd_lookups[current_cmd][dict_key] = row['value']
             else:
                 # initialize the dictionary
                 cmd_lookups[current_cmd] = {}
-                cmd_lookups[current_cmd][row['name']] = row['value']
+                cmd_lookups[current_cmd][dict_key] = row['value']
 
     cmd_list = []
     for index, row in df.iterrows():
@@ -704,9 +706,9 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
             ascii_str=row['ascii_str'],
             ascii_str_get=row['ascii_str_get'],
             getter=row['getter'],
-            getter_type=convert_lookup[row['getter_type']],
+            getter_type=convert_return[row['getter_type']],
             setter=row['setter'],
-            setter_type=convert_lookup[row['setter_type']],
+            setter_type=convert_return[row['setter_type']],
             limits=row['setter_range'],
             doc=row['doc'],
             subsystem=row['subsystem'],

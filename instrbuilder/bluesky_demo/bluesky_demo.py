@@ -23,7 +23,7 @@ sys.path.append(
 
 # imports that require sys.path.append pointers
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockInAuto, FunctionGenAuto
+from ophyd.ee_instruments import LockInAuto, FunctionGenAuto, MultiMeterAuto
 import scpi
 
 base_dir = os.path.abspath(
@@ -44,6 +44,7 @@ if lia.unconnected:
     sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
 lia.reset.set(0)
 RE.md['lock_in'] = lia.id.get()
+
 
 # -------------------------------------
 #					Function Generator
@@ -161,3 +162,5 @@ if 0:
                 attenuator='60dB',
                 purpose='demo',
                 operator='Lucas')
+
+dmm = MultiMeterAuto(name = 'name')

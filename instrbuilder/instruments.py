@@ -59,6 +59,15 @@ class SRSLockIn(SCPI):
             #       How to ensure the commands unconnected value works with the getter conversion function?
             self._cmds['ch1_disp']._unconnected_val = b'1,0\r'
 
+    def test_composite_get(self):
+        f = self.get('freq')
+        self.set(f*1.2, 'freq')
+        return float(self.get('freq'))
+
+    def test_composite_set(self, value):
+        self.set(value[0], 'freq')
+        self.set(value[1], 'tau')
+        return self.set(value[2], 'sensitivity')
 
 class KeysightMultimeter(SCPI):
     def __init__(self,
@@ -71,9 +80,10 @@ class KeysightMultimeter(SCPI):
 
         # Override of "single line" SCPI functions
         self._cmds['hardcopy'].getter_override = self.hardcopy
+        self._cmds['burst_volt'].getter_override = self.burst_volt 
 
     ## Override getter functions -- these overrides should be compatible with Bluesky
-    ##                              (in other words return a signal value that can be an np.array)
+    ##                              (in other words return a signal value, which can be an np.array)
     def hardcopy(self, configs={}):
         ''' Transfers a hard-copy (image) of the screen to the host as a  '''
 
@@ -83,40 +93,34 @@ class KeysightMultimeter(SCPI):
             'HCOP:SDUM:DATA?', datatype='B', header_fmt='ieee')
         self.comm_handle.query_delay = 0.0
         return np.array(img_data, dtype='B')  #unsigned byte
-        #   [see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html]
+        #   see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html
 
     ## Composite functions (examples)
     def save_hardcopy(self, filename, filetype='png'):
         ''' get the hardcopy data from the display and save to a file '''
         filewriter(self.hardcopy(), filename, filetype)
 
-    ''' TODO: test 
-    def triggered_burst(self, readings, delay = 0, sample_count = 1):
-        
-        self.set('EXT', 'trig_source')
-        self.set(readings, 'trig_count')
-        self.set(sample_count, 'sample_count')
-        self.set(0, 'volt_range_auto', configs = {'ac_dc':'DC'})
-        self.set(None, 'initialize')
-        self.set(None, 'trigger')
-
-        x = self.get('fetch') # converted to a np.array using: list(map(float, x.split(','))) # a list of values
-        return x 
-
-    '''
-
-    def burst_volt(self, reads, aperture=1e-3):
-        ''' measure a burst of voltage readings, triggered over the remote interface
-        '''
+    def burst_volt(self, reads_per_trigger = 1, aperture=1e-3, 
+                    trig_source = 'BUS', trig_count = 1, trig_slope = 'POS',
+                    volt_range = 10, trig_delay = None):
+        """
+        measure a burst of triggerd voltage readings
+        """
         self.set(aperture, 'volt_aperture')
-        self.set('BUS', 'trig_source')  # BUS = remote interface trigger
-        self.set(1, 'trig_count')
-        self.set(reads, 'sample_count')
-        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'})
+        self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal 
+        if trig_source == 'EXT':
+            self.set(trig_slope, 'trig_slope')
+        self.set(trig_count, 'trig_count')
+        self.set(reads_per_trigger, 'sample_count')
+        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'}) # turn off auto-range
+        self.set(volt_range, 'volt_range', configs={'ac_dc': 'DC'}) # set range
+        if trig_delay is not None:
+            self.set(trig_delay, 'trig_delay')
         self.set(None, 'initialize')
-        self.set(None, 'trigger')
+        if trig_source == 'BUS':
+            print('Sending (bus) trigger command')
+            self.set(None, 'trig')
+        print('Expecting {} readings'.format(trig_count * reads_per_trigger))
 
-        x = self.get(
-            'fetch'
-        )  # converted to a np.array using: list(map(float, x.split(','))) # a list of values
+        x = self.get('fetch')
         return x

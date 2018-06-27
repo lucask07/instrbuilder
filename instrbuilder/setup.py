@@ -1,7 +1,7 @@
 import os
 import scpi
 from scpi import init_instrument
-from instruments import SRSLockIn, AgilentFunctionGen
+from instruments import SRSLockIn, AgilentFunctionGen, KeysightMultimeter
 
 # general to instrbuilder package
 # could be in CONFIG
@@ -21,16 +21,39 @@ cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')
 scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lock-in', unconnected=unconnected)
 
-# Function Generator SCPI object
-instrument_path = 'instruments/agilent/function_gen/3320A/'
+# Function Generator 3320A SCPI object
+# instrument_path = 'instruments/agilent/function_gen/3320A/'
+# cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
+# lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
+# addr = {'pyvisa': 'USB0::0x0957::0x0407::MY44060286::INSTR'}
+# cmd_list, inst_comm, unconnected = init_instrument(
+#     cmd_map, addr=addr, lookup=lookup_file)
+# scpi_fg = AgilentFunctionGen(
+#     cmd_list, inst_comm, name='function-generator', unconnected=unconnected)
+
+# Function Generator 33500B SCPI object
+instrument_path = 'instruments/keysight/function_gen/33500B/'
 cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
 lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
-addr = {'pyvisa': 'USB0::0x0957::0x0407::MY44060286::INSTR'}
-
+addr = {'pyvisa': 'USB0::0x0957::0x2B07::MY57700733::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file)
 scpi_fg = AgilentFunctionGen(
     cmd_list, inst_comm, name='function-generator', unconnected=unconnected)
+
+# Multimeter SCPI object
+instrument_path = 'instruments/keysight/multimeter/34465A'
+cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
+lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
+# hard-code the address in case more instruments are connected
+addr = {'pyvisa': 'USB0::0x2A8D::0x0101::MY57503303::INSTR'}
+cmd_list, inst_comm, unconnected = init_instrument(
+    cmd_map, addr=addr, lookup=lookup_file)
+scpi_dmm = KeysightMultimeter(
+    cmd_list, inst_comm, name='dmm', unconnected=unconnected)
+
+# Keysight Oscilloscope MSOX3012A
+addr = {'pyvisa': 'USB0::0x0957::0x17A9::MY52160418::INSTR'}
 
 
 class DataSave():

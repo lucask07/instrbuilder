@@ -14,25 +14,9 @@ from scpi import init_instrument
 from instruments import KeysightMultimeter
 from utils import find_visa_connected
 
-# Bluesky stuff is temporary, in order to test how to deal with getters that
-# 	return arrays or images
-from bluesky import RunEngine
-from bluesky.callbacks import LiveTable, LivePlot
-from bluesky.callbacks.best_effort import BestEffortCallback
-from bluesky.plans import scan, count
-from databroker import Broker
-
 # use symbolic links
 sys.path.append(
-    '/Users/koer2434/ophyd/')  # these 2 will become an import of ophyd
-sys.path.append('/Users/koer2434/ophyd/ophyd/')  #
-sys.path.append(
     '/Users/koer2434/instrbuilder/')  # this instrbuilder: the SCPI library
-
-# imports that require sys.path.append pointers
-from ophyd.signal import ScpiSignal, ScpiBaseSignal
-from ophyd import Device
-from ophyd.device import Kind
 
 yaml_config = open('config.yaml', 'r')
 configs = yaml.load(yaml_config)
@@ -56,27 +40,29 @@ cmd_list, inst_comm, unconnected = init_instrument(
 dmm = KeysightMultimeter(
     cmd_list, inst_comm, name='dmm', unconnected=unconnected)
 
+v = dmm.get('meas_volt', configs = {'ac_dc': 'DC'})
+print('Measured voltage of {} [V]'.format(v))
 dmm.save_hardcopy(filename='test88', filetype='png')
 
+"""
 test_results = dmm.test_all(
     skip_commands=['fetch', 'reset', 'initialize', 'hardcopy'])
-
-# certain commands will fail during test_all, not do to communication errors but do to
+"""
+# certain commands will fail during test_all, not due to communication errors but do to
 #	incompatible configurations
 
-# Check what we get for the 'trigger'
+# Check the trigger source command 'trig_source'
 print('------------------')
-dmm.test_command('trigger')
+dmm.test_command('trig_source')
 print(dmm.get('comm_error_details'))
 
-## Work on the Bluesky image saving aspects
-v = ScpiBaseSignal(dmm, 'meas_volt', configs={'ac_dc': 'DC'})
+# samples at 1 kHz with the 34465A 
+voltage_burst = dmm.burst_volt(reads_per_trigger = 100, aperture = 200e-6)
 
-# dmm._cmds['hardcopy'].returns_image = True
-# img = ScpiBaseSignal(dmm, 'hardcopy')
-'''
-@wrapt.decorator
-def only_one_return(wrapped, instance, args, kwargs):
-    return wrapped(*args, **kwargs)[0]
-dmm.hardcopy_blueksy = only_one_return(dmm.hardcopy)
-'''
+x = dmm.burst_volt(reads_per_trigger = 1, aperture = 200e-6, 
+					trig_source = 'EXT', trig_count = 1024, 
+					volt_range = 10, trig_delay = 300e-6)
+
+def running_mean(x, N):
+    cumsum = np.cumsum(np.insert(x, 0, 0)) 
+    return (cumsum[N:] - cumsum[:-N]) / float(N)
