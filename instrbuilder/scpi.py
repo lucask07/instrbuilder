@@ -137,7 +137,7 @@ class SCPI(object):
                 'ID command not returned by instrument. Vendor ID set to None')
             vendor_id = None
         self.vendor_id = vendor_id
-        self.nickname = name
+        self.name = name
         self.comm_handle = comm_handle
 
     def __dir__(self):

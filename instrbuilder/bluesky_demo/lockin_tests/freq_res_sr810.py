@@ -39,9 +39,9 @@ db = Broker.named('local_file')  # a broker poses queries for saved data sets
 # Insert all metadata/data captured into db.
 RE.subscribe(db.insert)
 
-# -------------------------------------
+# ------------------------------------------------
 #           Lock-In Amplifier
-# -------------------------------------
+# ------------------------------------------------
 lia = LockInAuto(name='lia')
 if lia.unconnected:
     sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
@@ -50,14 +50,29 @@ RE.md['lock_in'] = lia.id.get()
 
 # setup lock-in
 # similar to a stage, but specific to this experiment
+lia.reset.set(None)
+lia.fmode.set('Int')
+lia.in_gnd.set('float')
+lia.in_config.set('A')
+lia.in_couple.set('DC')
 lia.freq.set(5000)
-lia.sensitivity.set(26)
-lia.tau.set(8)
+lia.sensitivity.set(1.0) # 1 V RMS full-scale
+tau = 0.1
+lia.tau.set(tau)
+# maximum settle is 9*tau (filter-slope of 24-db/oct
+max_settle = 9*tau
 lia.filt_slope.set('6-db/oct')
+lia.res_mode.set('normal')
 
-# -------------------------------------
+# setup control of the lock-in filter-slope sweep (for LiveTable)
+lia.filt_slope.delay = max_settle
+lia.filt_slope.kind = Kind.hinted
+lia.filt_slope.dtype = 'string'
+lia.filt_slope.precision = 9  # so the string is not cutoff in the LiveTable
+lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
+# ------------------------------------------------
 #           Function Generator
-# -------------------------------------
+# ------------------------------------------------
 
 fg = FunctionGenAuto(name='fg')
 if fg.unconnected:
@@ -65,49 +80,50 @@ if fg.unconnected:
 RE.md['lock_in'] = fg.id.get()
 
 # setup control of the frequency sweep
-fg.freq.delay = 0.2
-fg.freq.kind = Kind.hinted
+fg.freq.delay = max_settle
 
-# -------------------------------------
+# configure the function generator
+fg.reset.set(None) # start fresh
+fg.function.set('SIN')
+fg.load.set('INF')
+fg.freq.set(5000)
+fg.v.set(2) #full-scale range with 1 V RMS sensitivity is 2.8284
+fg.offset.set(0)
+fg.output.set('ON')
+
+# ------------------------------------------------
 #           Setup Supplemental Data
-# -------------------------------------
+# ------------------------------------------------
 from bluesky.preprocessors import SupplementalData
-baseline_dets = []
+baseline_detectors = []
 for dev in [fg, lia]:
     for name in dev.component_names:
         if getattr(dev, name).kind == Kind.config:
-            baseline_dets.append(getattr(dev, name))
+            baseline_detectors.append(getattr(dev, name))
 
-sd = SupplementalData(baseline=baseline_dets, monitors=[], flyers=[])
+sd = SupplementalData(baseline=baseline_detectors, monitors=[], flyers=[])
 RE.preprocessors.append(sd)
 
 # ------------------------------------------------
 #                   Run a 2D sweep
 # ------------------------------------------------
-# setup control of the lock-in filter-slope sweep
-lia.filt_slope.delay = 2
-lia.filt_slope.kind = Kind.hinted
-# ToDo: pass datatypes to bluesky automatically
-lia.filt_slope.dtype = 'string'
 
-if len(addr) != 0:
-    for i in range(1):
-        # grid_scan is a pre-configured Bluesky plan; returns the experiment uid
-        uid = RE(
-            grid_scan([lia.disp_val],
-                lia.filt_slope, 0, 3, 4,
-                fg.freq, 4997, 5005, 30, False),
-            LivePlot('disp_val', 'freq'),
-            # the input parameters below are metadata
-            attenuator='0dB',
-            purpose='freq_resolution_SR810',
-            operator='Lucas',
-            fg_config=fg.read_configuration(),
-            lia_config=lia.read_configuration())
+# grid_scan is a pre-configured Bluesky plan
+uid = RE(
+    grid_scan([lia.disp_val],
+        lia.filt_slope, 0, 1, 1,
+        fg.freq, 4997, 5005, 10, False),
+    LiveTable(['lockin_disp_val', 'fgen_freq', 'lockin_filt_slope']),
+    # input parameters below are added to metadata
+    attenuator='0dB',
+    purpose='freq_resolution_SR810',
+    operator='Lucas',
+    fg_config=fg.read_configuration(),
+    lia_config=lia.read_configuration())
 
-# ------------------------------
-#   	Example Data Processing
-# ------------------------------
+# ------------------------------------------------
+#   	(briefly) Investigate the captured data
+# ------------------------------------------------
 
 # get data into a pandas data-frame
 header = db[uid[0]]  # db is a DataBroker instance
@@ -115,4 +131,7 @@ print(header.table())
 df = header.table()
 # view the baseline data (i.e. configuration values)
 h = db[-1]
-h.table('baseline')
+df_meta = h.table('baseline')
+
+print('Check values saved to baseline data:')
+print(df_meta.columns.values)

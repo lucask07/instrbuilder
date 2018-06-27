@@ -14,10 +14,10 @@ res_mode,RMOD,,TRUE,int,TRUE,int,"[0,1,2]","Dynamic Reserve Mode to HighReserve 
 tau,OFLT,,TRUE,int,TRUE,int,"[0,13]",Time Constant to 10 µs (0) through 30 ks (19),gain_tau,TRUE,,
 filt_slope,OFSL,,TRUE,int,TRUE,int,"[0, 3]","Low Pass Filter Slope to 6 (0), 12 (1), 18 (2) or 24 (3) dB/oct",gain_tau,TRUE,,
 sync_filt,SYNC,,TRUE,int,TRUE,int,"[0,1]",Synchronous Filter to Off (0) or On below 200 Hz (1),gain_tau,TRUE,,
-ch1_disp,DDEF {value} {ratio},DDEF?,TRUE,byte_array_to_numarray,TRUE,int,"[0, 4]","CH1 display to X, R, Xn, Aux 1or Aux 2 (j=0..4) and ratio the display to None, Aux1or Aux 2 (k=0,1,2).",disp_out,TRUE,2,
+ch1_disp,"DDEF {value}, {ratio}",DDEF?,TRUE,byte_array_to_numarray,TRUE,int,"[0, 4]","CH1 display to X, R, Xn, Aux 1or Aux 2 (j=0..4) and ratio the display to None, Aux1or Aux 2 (k=0,1,2).",disp_out,TRUE,2,
 ch1_out_select,FPOP,,TRUE,int,TRUE,int,"[0,1]",CH1Output Source to X (j=1) or Display (j=0),disp_out,TRUE,,
-off_exp,OEXP {value} {offset} {expand},OEXP? {chan},TRUE,byte_array_to_numarray,TRUE,int,"[1,2,3]","X, Y, R (i=1,2,3) Offset to x percent ( -105.00 ≤ x ≤ 105.00) and Expand to 1, 10 or 100 (j=0,1,2)",disp_out,TRUE,3,1
-aux_output,AUXV {value} {chan},AUXV? {chan},TRUE,float,TRUE,int,"[1,4]","voltage of Aux Output i (1,2,3,4) to x Volts. -10.500 ≤ x ≤ 10.500",aux,FALSE,2,1
+off_exp,"OEXP {value}, {offset}, {expand}",OEXP? {chan},TRUE,byte_array_to_numarray,TRUE,int,"[1,2,3]","X, Y, R (i=1,2,3) Offset to x percent ( -105.00 ≤ x ≤ 105.00) and Expand to 1, 10 or 100 (j=0,1,2)",disp_out,TRUE,3,1
+aux_output,"AUXV {value}, {chan}",AUXV? {chan},TRUE,float,TRUE,int,"[1,4]","voltage of Aux Output i (1,2,3,4) to x Volts. -10.500 ≤ x ≤ 10.500",aux,FALSE,2,1
 out_interface,OUTX,,TRUE,int,TRUE,int,"[0,1]",Output interface to RS-232(0) or GPIB(1),setup,TRUE,,
 gpib_override,OVRM,,TRUE,int,TRUE,int,"[0,1]",GPIB Overide Remote state to Off (0) or On (1),setup,TRUE,,
 key_click,KCLK,,TRUE,int,TRUE,int,"[0,1]",Key Click to Off (0) or On (1),setup,TRUE,,

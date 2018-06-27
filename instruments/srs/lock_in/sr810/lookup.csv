@@ -10,8 +10,8 @@ in_config,0,A
 ,3,I(100Meg)
 in_gnd,0,float
 ,1,ground
-in_couple,0,ac
-,1,dc
+in_couple,0,AC
+,1,DC
 line_filter,0,out
 ,1,line-in
 ,2,2xline-in

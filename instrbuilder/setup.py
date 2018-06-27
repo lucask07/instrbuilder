@@ -16,10 +16,10 @@ base_dir = os.path.abspath(
     os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
 cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
 lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
-addr = {'pyserial': '/dev/tty.USA19H14512434P1.1'}
+addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')
-scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lock-in', unconnected=unconnected)
+scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lockin', unconnected=unconnected)
 
 # Function Generator 3320A SCPI object
 # instrument_path = 'instruments/agilent/function_gen/3320A/'
@@ -29,7 +29,7 @@ scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lock-in', unconnected=unconnecte
 # cmd_list, inst_comm, unconnected = init_instrument(
 #     cmd_map, addr=addr, lookup=lookup_file)
 # scpi_fg = AgilentFunctionGen(
-#     cmd_list, inst_comm, name='function-generator', unconnected=unconnected)
+#     cmd_list, inst_comm, name='fgen', unconnected=unconnected)
 
 # Function Generator 33500B SCPI object
 instrument_path = 'instruments/keysight/function_gen/33500B/'
@@ -39,7 +39,7 @@ addr = {'pyvisa': 'USB0::0x0957::0x2B07::MY57700733::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file)
 scpi_fg = AgilentFunctionGen(
-    cmd_list, inst_comm, name='function-generator', unconnected=unconnected)
+    cmd_list, inst_comm, name='fgen', unconnected=unconnected)
 
 # Multimeter SCPI object
 instrument_path = 'instruments/keysight/multimeter/34465A'

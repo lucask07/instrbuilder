@@ -39,7 +39,17 @@ class AgilentFunctionGen(SCPI):
     def __init__(self,
                  cmd_list,
                  comm_handle,
-                 name='not named',
+                 name='fg',
+                 unconnected=False):
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
+
+
+class KeysightFunctionGen(SCPI):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='fg',
                  unconnected=False):
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
@@ -49,7 +59,7 @@ class SRSLockIn(SCPI):
     def __init__(self,
                  cmd_list,
                  comm_handle,
-                 name='not named',
+                 name='lia',
                  unconnected=False):
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
@@ -73,7 +83,7 @@ class KeysightMultimeter(SCPI):
     def __init__(self,
                  cmd_list,
                  comm_handle,
-                 name='not named',
+                 name='dmm',
                  unconnected=False):
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
