@@ -25,7 +25,7 @@ sys.path.append(
 
 # imports that require sys.path.append pointers
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockInAuto, FunctionGenAuto, MultiMeterAuto, ManualDevice
+from ophyd.ee_instruments import LockIn, FunctionGen, MultiMeter, ManualDevice, BasicStatistics
 import scpi
 
 base_dir = os.path.abspath(
@@ -44,9 +44,14 @@ RE.subscribe(db.insert)
 # ------------------------------------------------
 #           Lock-In Amplifier
 # ------------------------------------------------
-lia = LockInAuto(name='lia')
+lia = LockIn(name='lia')
 if lia.unconnected:
     sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
+
+# create an object that returns statistics calculated on the arrays returned by read_buffer
+# the name is derived from the parent (e.g. lockin and from the signal that returns an array e.g. read_buffer)
+lia_buffer_stats = BasicStatistics(name='', array_source=lia.read_buffer)
+
 lia.reset.set(0)
 RE.md['lock_in'] = lia.id.get()
 
@@ -77,7 +82,7 @@ lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
 #           Function Generator
 # ------------------------------------------------
 
-fg = FunctionGenAuto(name='fg')
+fg = FunctionGen(name='fg')
 if fg.unconnected:
     sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['lock_in'] = fg.id.get()
@@ -115,7 +120,9 @@ RE.preprocessors.append(sd)
 # ------------------------------------------------
 #   Run a measurement (with a custom per step)
 # ------------------------------------------------
-from bluesky.plan_stubs import checkpoint, abs_set, trigger_and_read, input_plan, pause
+from bluesky.plan_stubs import checkpoint, abs_set, trigger_and_read, pause
+
+
 def custom_step(detectors, motor, step):
     """
     Inner loop of a 1D step scan
@@ -128,20 +135,21 @@ def custom_step(detectors, motor, step):
     yield from abs_set(motor, step, wait=True)
     return (yield from trigger_and_read(list(detectors) + [motor]))
 
+
 lia.read_buffer.unstage()
 lia.read_buffer.stage()
 print('Starting scan')
 lia.read_buffer.trigger()
 time.sleep(0.2)
 
-uid = RE(list_scan([lia.read_buffer, lia.iavg, lia.istd],
-                att.val, [0, 20, 50, 80, 110], per_step = custom_step),
-            LiveTable([att.val, lia.read_buffer, lia.iavg, lia.istd]),
-            attenuator='attenuator sweep',
-            purpose='snr_SR810',
-            operator='Lucas',
-            fg_config=fg.read_configuration(),
-            lia_config=lia.read_configuration()
+uid = RE(list_scan([lia.read_buffer, lia_buffer_stats.std, lia_buffer_stats.mean],
+         att.val, [0, 20], per_step=custom_step),
+         LiveTable([att.val, lia.read_buffer, lia_buffer_stats.mean, lia_buffer_stats.std]),
+         attenuator='attenuator sweep',
+         purpose='snr_SR810',
+         operator='Lucas',
+         fg_config=fg.read_configuration(),
+         lia_config=lia.read_configuration()
          )
 
 # ------------------------------------------------

@@ -22,17 +22,17 @@ yaml_config = open('config.yaml', 'r')
 configs = yaml.load(yaml_config)
 
 # get multimeter SCPI object
-commands = 'commands.csv'
-lookups = 'lookup.csv'
-
-instrument = 'keysight/multimeter/34465A'
-cmd_map = os.path.join(configs['base_directory'], configs['csv_directory'],
-                       instrument, commands)
-lookup_file = os.path.join(configs['base_directory'], configs['csv_directory'],
-                           instrument, lookups)
+cmd_name = 'commands.csv'
+lookup_name = 'lookup.csv'
 
 # example of using find_visa_connected to determine address(es)
 connected_instr = find_visa_connected()
+print(connected_instr)
+
+# Multimeter SCPI object
+instrument_path = 'instruments/keysight/multimeter/34465A'
+cmd_map = os.path.join(configs['base_directory'], instrument_path, cmd_name)
+lookup_file = os.path.join(configs['base_directory'], instrument_path, lookup_name)
 # hard-code the address in case more instruments are connected
 addr = {'pyvisa': 'USB0::0x2A8D::0x0101::MY57503303::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(
@@ -40,9 +40,10 @@ cmd_list, inst_comm, unconnected = init_instrument(
 dmm = KeysightMultimeter(
     cmd_list, inst_comm, name='dmm', unconnected=unconnected)
 
+
 v = dmm.get('meas_volt', configs = {'ac_dc': 'DC'})
 print('Measured voltage of {} [V]'.format(v))
-dmm.save_hardcopy(filename='test88', filetype='png')
+dmm.save_hardcopy(filename='test55', filetype='png')
 
 """
 test_results = dmm.test_all(

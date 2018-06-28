@@ -7,6 +7,7 @@
 
 import numpy as np
 import sys
+import time
 
 # local package imports
 sys.path.append(
@@ -14,7 +15,7 @@ sys.path.append(
 from scpi import SCPI
 
 
-## Extra capabilites should be moved somewhere else
+# TODO: Extra capabilites should be moved somewhere else
 def filewriter(data, filename, filetype='png'):
     ''' Write a list or np.array of unsigned bytes to a file 
 
@@ -79,6 +80,7 @@ class SRSLockIn(SCPI):
         self.set(value[1], 'tau')
         return self.set(value[2], 'sensitivity')
 
+
 class KeysightMultimeter(SCPI):
     def __init__(self,
                  cmd_list,
@@ -92,8 +94,8 @@ class KeysightMultimeter(SCPI):
         self._cmds['hardcopy'].getter_override = self.hardcopy
         self._cmds['burst_volt'].getter_override = self.burst_volt 
 
-    ## Override getter functions -- these overrides should be compatible with Bluesky
-    ##                              (in other words return a signal value, which can be an np.array)
+    # Override getter functions -- these overrides should be compatible with Bluesky
+    #                              (in other words return a signal value, which can be an np.array)
     def hardcopy(self, configs={}):
         ''' Transfers a hard-copy (image) of the screen to the host as a  '''
 
@@ -105,7 +107,7 @@ class KeysightMultimeter(SCPI):
         return np.array(img_data, dtype='B')  #unsigned byte
         #   see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html
 
-    ## Composite functions (examples)
+    # Composite functions (examples)
     def save_hardcopy(self, filename, filetype='png'):
         ''' get the hardcopy data from the display and save to a file '''
         filewriter(self.hardcopy(), filename, filetype)
@@ -114,7 +116,7 @@ class KeysightMultimeter(SCPI):
                     trig_source = 'BUS', trig_count = 1, trig_slope = 'POS',
                     volt_range = 10, trig_delay = None):
         """
-        measure a burst of triggerd voltage readings
+        measure a burst of triggered voltage readings
         """
         self.set(aperture, 'volt_aperture')
         self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal 
@@ -134,3 +136,60 @@ class KeysightMultimeter(SCPI):
 
         x = self.get('fetch')
         return x
+
+    def burst_volt_setup(self, reads_per_trigger=1, aperture=1e-3,
+                         trig_source='EXT', trig_count=1, trig_slope='POS',
+                         volt_range=10, trig_delay=None):
+        """
+        measure a burst of triggered voltage readings that are saved to the instruments flash
+        and then downloaded at the end
+        """
+        self.set(aperture, 'volt_aperture')
+        self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal
+        if trig_source == 'EXT':
+            self.set(trig_slope, 'trig_slope')
+        self.set(trig_count, 'trig_count')
+        self.set(reads_per_trigger, 'sample_count')
+        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'}) # turn off auto-range
+        self.set(volt_range, 'volt_range', configs={'ac_dc': 'DC'}) # set range
+        if trig_delay is not None:
+            self.set(trig_delay, 'trig_delay')
+
+    def burst_volt_save(self, reads_per_trigger=1,
+                        trig_source='EXT', trig_count=1, repeats=4,
+                        filename='test_{}'):
+        # MMEMory:STORe:DATA RDG_STORE, <file> pg 306,
+        # initialize clears the memory
+        for i in range(repeats):
+            self.set(None, 'initialize')
+            if trig_source == 'BUS':
+                print('Sending (bus) trigger command')
+                self.set(None, 'trig')
+            print('Expecting {} readings'.format(trig_count * reads_per_trigger))
+
+            while self.get('operation_complete') == 0:
+                time.sleep(0.005)
+            self.set(filename.format(i), 'store_data')
+
+        # Timing of this function showed that it is not a method to optimize speed
+        # 200 measurements triggered at 780 Hz (256 ms of capture time) required 613 ms with the file-saving
+
+    def burst_volt_upload(self, repeats=4):
+        # read and unpack the binary data (8 byte IEEE-754 format)
+
+        # cannot use the standard SCPI get since we need to read raw binary data and apply a
+        #    different decoding
+        # x = self.get('upload_data', configs={'filename': filename.format(0)})
+
+        data_array = np.array([])
+        header_offset_bytes = 5
+        bytes_per_val = 8
+        for file_idx in range(repeats):
+            self.comm_handle.write('MMEM:UPL? "test_{}.dat"'.format(file_idx))
+            binary_data = self.comm_handle.read_raw()
+            from struct import unpack
+            num_values = int((len(binary_data)-header_offset_bytes-1)/bytes_per_val)
+            unpacked_data = unpack("<{}d".format(num_values), binary_data[header_offset_bytes:-1])
+            data_array = np.append(data_array, unpacked_data)
+
+        return data_array
