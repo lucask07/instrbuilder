@@ -71,12 +71,12 @@ class KeysightOscilloscope(SCPI):
 
         t = self.comm_handle.query_binary_values(
             ':DISP:DATA? PNG, COL', datatype='B', header_fmt='ieee')
-        self.comm_handle.query_delay = 0.0
         return np.array(t, dtype='B')
 
     def save_display_data(self, filename, filetype='png'):
         """ get the display_data from the display and save to a file """
         filewriter(self.display_data(), filename, filetype)
+
 
 class KeysightMSOX3000(KeysightOscilloscope):
     def __init__(self,
@@ -124,9 +124,10 @@ class KeysightMultimeter(SCPI):
 
         # Override of "single line" SCPI functions
         self._cmds['hardcopy'].getter_override = self.hardcopy
-        self._cmds['burst_volt'].getter_override = self.burst_volt 
+        self._cmds['burst_volt'].getter_override = self.burst_volt
+        self._cmds['burst_volt_timer'].getter_override = self.burst_volt_timer
 
-    # Override getter functions -- these overrides should be compatible with Bluesky
+        # Override getter functions -- these overrides should be compatible with Bluesky
     #                              (in other words return a signal value, which can be an np.array)
     def hardcopy(self):
         """ Transfers a hard-copy (image) of the screen to the host as a  """
@@ -169,6 +170,41 @@ class KeysightMultimeter(SCPI):
         x = self.get('fetch')
         return x
 
+    def burst_volt_timer(self, reads_per_trigger=256, aperture=20e-6,
+                         trig_source='EXT', trig_count=1, trig_slope='POS',
+                         volt_range=10, trig_delay=0, sample_timer=0.4096e-3,
+                         repeats=16):
+        """
+        measure a burst of triggered voltage readings
+        maximum rate of external trigger is 5 kHz
+        """
+        self.set(aperture, 'volt_aperture')
+        self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal
+        if trig_source == 'EXT':
+            self.set(trig_slope, 'trig_slope')
+        self.set(0, 'volt_autozero', configs={'ac_dc': 'DC'})
+        self.set(trig_count, 'trig_count')
+        self.set(reads_per_trigger, 'sample_count')
+        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'}) # turn off auto-range
+        self.set(volt_range, 'volt_range', configs={'ac_dc': 'DC'}) # set range
+        self.set('TIM', 'sample_source')
+        self.set(sample_timer, 'sample_timer')
+        if trig_delay is not None:
+            self.set(trig_delay, 'trig_delay')
+
+        total_arr = np.array([])
+        for i in range(repeats):
+            self.set(None, 'initialize')
+            if trig_source == 'BUS':
+                print('Sending (bus) trigger command')
+                self.set(None, 'trig')
+            # print('Expecting {} readings'.format(trig_count * reads_per_trigger))
+
+            x = self.get('fetch')
+            total_arr = np.append(total_arr, x)
+        return total_arr
+
+
     def burst_volt_setup(self, reads_per_trigger=1, aperture=1e-3,
                          trig_source='EXT', trig_count=1, trig_slope='POS',
                          volt_range=10, trig_delay=None):
@@ -197,7 +233,7 @@ class KeysightMultimeter(SCPI):
             if trig_source == 'BUS':
                 print('Sending (bus) trigger command')
                 self.set(None, 'trig')
-            print('Expecting {} readings'.format(trig_count * reads_per_trigger))
+            # print('Expecting {} readings'.format(trig_count * reads_per_trigger))
 
             while self.get('operation_complete') == 0:
                 time.sleep(0.005)

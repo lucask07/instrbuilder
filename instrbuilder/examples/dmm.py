@@ -53,8 +53,8 @@ test_results = dmm.test_all(
 
 # Check the trigger source command 'trig_source'
 print('------------------')
-dmm.test_command('trig_source')
-print(dmm.get('comm_error_details'))
+# dmm.test_command('trig_source')
+# print(dmm.get('comm_error_details'))
 
 # samples at 1 kHz with the 34465A 
 voltage_burst = dmm.burst_volt(reads_per_trigger = 100, aperture = 200e-6)

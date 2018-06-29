@@ -60,7 +60,7 @@ fg.phase.delay = 0.05
 fg.reset.set(None)  # start fresh
 fg.function.set('SIN')
 fg.load.set('INF')
-fg.freq.set(5e6/512)
+fg.freq.set(5e6/512/8)
 fg.v.set(2)  # full-scale range with 1 V RMS sensitivity is 2.8284
 fg.offset.set(1.65)
 fg.output.set('ON')
@@ -68,7 +68,7 @@ fg.output.set('ON')
 dmm = MultiMeter(name='dmm')
 # create an object that returns statistics calculated on the arrays returned by read_buffer
 # the name is derived from the parent (e.g. lockin and from the signal that returns an array e.g. read_buffer)
-dmm_burst_stats = BasicStatistics(name='', array_source=dmm.burst_volt)
+dmm_burst_stats = BasicStatistics(name='', array_source=dmm.burst_volt_timer)
 # ------------------------------------------------
 #           Setup Supplemental Data
 # ------------------------------------------------
@@ -85,13 +85,13 @@ RE.preprocessors.append(sd)
 # ------------------------------------------------
 #                   Run a Measurement
 # ------------------------------------------------
-dmm.burst_volt.stage()
+dmm.burst_volt_timer.stage()
 
 for i in range(1):
     # scan is a pre-configured Bluesky plan, which returns the experiment uid
     uid = RE(
-        scan([dmm.burst_volt, dmm_burst_stats.mean], fg.phase, 0, 360, 10),
-        LiveTable([fg.phase, dmm.burst_volt, dmm_burst_stats.mean]),
+        scan([dmm.burst_volt_timer, dmm_burst_stats.mean], fg.phase, 0, 360, 60),
+        LiveTable([fg.phase, dmm.burst_volt_timer, dmm_burst_stats.mean]),
         # the input parameters below will be metadata
         attenuator='0dB',
         purpose='phase_dependence',
@@ -112,6 +112,14 @@ df_meta = h.table('baseline')
 print('These configuration values are saved to baseline data:')
 print(df_meta.columns.values)
 
-array_filename = df['dmm_burst_volt'][5]
-arr = np.load(os.path.join(dmm.burst_volt.save_path, array_filename))
-plt.plot(arr, marker = '*')
+array_filename = df['dmm_burst_volt_timer'][1]
+arr = np.load(os.path.join(dmm.burst_volt_timer.save_path, array_filename))
+plt.plot(arr, marker='*')
+
+
+# This works, however the phase does drift slightly
+offset = 3.3/2
+plt.figure()
+plt.plot(df['fgen_phase'], df['dmm_burst_volt_timer_mean'] - offset, marker='*')
+plt.xlabel('Phase [deg]')
+plt.ylabel('Magnitude [V]')

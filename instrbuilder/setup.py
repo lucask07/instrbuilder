@@ -1,7 +1,7 @@
 import os
 import scpi
 from scpi import init_instrument
-from instruments import SRSLockIn, AgilentFunctionGen, KeysightMultimeter
+from instruments import SRSLockIn, AgilentFunctionGen, KeysightMultimeter, KeysightMSOX3000
 
 # general to instrbuilder package
 # could be in CONFIG
@@ -18,7 +18,7 @@ instrument_path = 'instruments/srs/lock_in/sr810/'
 cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
 lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
 addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
-addr = {'unconnected': None}
+# addr = {'unconnected': None}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')
 scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lockin', unconnected=unconnected)
@@ -56,8 +56,14 @@ scpi_dmm = KeysightMultimeter(
     cmd_list, inst_comm, name='dmm', unconnected=unconnected)
 
 # Keysight Oscilloscope MSOX3012A
+instrument_path = 'instruments/keysight/oscilloscope/MSOX3000'
+cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
+lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
 addr = {'pyvisa': 'USB0::0x0957::0x17A9::MY52160418::INSTR'}
-
+cmd_list, inst_comm, unconnected = init_instrument(
+    cmd_map, addr=addr, lookup=lookup_file)
+scpi_osc = KeysightMSOX3000(
+    cmd_list, inst_comm, name='osc', unconnected=unconnected)
 
 class DataSave():
     def __init__(self, **kwds):
