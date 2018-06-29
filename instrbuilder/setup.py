@@ -8,15 +8,17 @@ from instruments import SRSLockIn, AgilentFunctionGen, KeysightMultimeter
 cmd_name = 'commands.csv'
 lookup_name = 'lookup.csv'
 save_path = '/Users/koer2434/Google Drive/UST/research/bluesky/data'
+base_dir = os.path.abspath(
+    os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
+
 
 # LOCKIN amplifier SCPI object
 instrument_path = 'instruments/srs/lock_in/sr810/'
 # could be in CONFIG
-base_dir = os.path.abspath(
-    os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
 cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
 lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
 addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
+addr = {'unconnected': None}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')
 scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lockin', unconnected=unconnected)
@@ -30,6 +32,7 @@ scpi_lia = SRSLockIn(cmd_list, inst_comm, name='lockin', unconnected=unconnected
 #     cmd_map, addr=addr, lookup=lookup_file)
 # scpi_fg = AgilentFunctionGen(
 #     cmd_list, inst_comm, name='fgen', unconnected=unconnected)
+
 
 # Function Generator 33500B SCPI object
 instrument_path = 'instruments/keysight/function_gen/33500B/'

@@ -3,6 +3,7 @@ function,FUNC,,TRUE,str,TRUE,str,"['SIN', 'SQU', 'RAMP', 'PULS', 'NOIS', 'DC', '
 freq,FREQ,,TRUE,float,TRUE,float,"[0, 20e6]",output frequency in Hz,output,TRUE,,
 v,VOLT,,TRUE,float,TRUE,float,"[10e-3, 10]",voltage amplitude,output,TRUE,,
 offset,VOLT:OFFS,,TRUE,float,TRUE,float,"[-4.99, 4.99]","voltage offset, range depends on amplitude ",output,TRUE,,
+phase,PHAS,,TRUE,float,TRUE,float,"[-360, 360]",phase with respect to sync and rear-panel connectors,output,TRUE,,
 v_low,VOLT:LOW,,TRUE,float,TRUE,float,"[0,1]",need to check this one,output,TRUE,,
 v_high,VOLT:HIGH,,TRUE,float,TRUE,float,"[0,1]",need to check this one,output,TRUE,,
 unit,VOLT:UNIT,,TRUE,str,TRUE,str,"['VPP', 'VRMS', 'DBM']",voltage unit,output,TRUE,,

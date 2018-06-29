@@ -56,6 +56,38 @@ class KeysightFunctionGen(SCPI):
             cmd_list, comm_handle, name=name, unconnected=unconnected)
 
 
+class KeysightOscilloscope(SCPI):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='osc',
+                 unconnected=False):
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
+        # Override of "single line" SCPI functions
+        self._cmds['display_data'].getter_override = self.display_data
+
+    def display_data(self):
+
+        t = self.comm_handle.query_binary_values(
+            ':DISP:DATA? PNG, COL', datatype='B', header_fmt='ieee')
+        self.comm_handle.query_delay = 0.0
+        return np.array(t, dtype='B')
+
+    def save_display_data(self, filename, filetype='png'):
+        """ get the display_data from the display and save to a file """
+        filewriter(self.display_data(), filename, filetype)
+
+class KeysightMSOX3000(KeysightOscilloscope):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='osc',
+                 unconnected=False):
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
+
+
 class SRSLockIn(SCPI):
     def __init__(self,
                  cmd_list,
@@ -96,25 +128,25 @@ class KeysightMultimeter(SCPI):
 
     # Override getter functions -- these overrides should be compatible with Bluesky
     #                              (in other words return a signal value, which can be an np.array)
-    def hardcopy(self, configs={}):
-        ''' Transfers a hard-copy (image) of the screen to the host as a  '''
+    def hardcopy(self):
+        """ Transfers a hard-copy (image) of the screen to the host as a  """
 
         self.comm_handle.query_delay = 4
 
         img_data = self.comm_handle.query_binary_values(
             'HCOP:SDUM:DATA?', datatype='B', header_fmt='ieee')
         self.comm_handle.query_delay = 0.0
-        return np.array(img_data, dtype='B')  #unsigned byte
-        #   see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html
+        return np.array(img_data, dtype='B')  # unsigned byte
+        # see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html
 
     # Composite functions (examples)
     def save_hardcopy(self, filename, filetype='png'):
-        ''' get the hardcopy data from the display and save to a file '''
+        """ get the hardcopy data from the display and save to a file """
         filewriter(self.hardcopy(), filename, filetype)
 
-    def burst_volt(self, reads_per_trigger = 1, aperture=1e-3, 
-                    trig_source = 'BUS', trig_count = 1, trig_slope = 'POS',
-                    volt_range = 10, trig_delay = None):
+    def burst_volt(self, reads_per_trigger=1, aperture=1e-3,
+                    trig_source='BUS', trig_count=1, trig_slope = 'POS',
+                    volt_range=10, trig_delay=None):
         """
         measure a burst of triggered voltage readings
         """

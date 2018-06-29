@@ -6,10 +6,10 @@
 # standard library imports
 import sys
 import os
-import time
 
 # imports that may need installation
 import matplotlib.pyplot as plt
+import numpy as np
 from bluesky import RunEngine
 from bluesky.callbacks import LiveTable, LivePlot
 from bluesky.callbacks.best_effort import BestEffortCallback
@@ -23,8 +23,11 @@ sys.path.append(
 
 # imports that require sys.path.append pointers
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen
+from ophyd.ee_instruments import MultiMeter, FunctionGen, BasicStatistics
 import scpi
+
+sys.path.append('/Users/koer2434/Google Drive/UST/research/point_of_care/lock_in/cots_comparisons/ada2200/')
+from ada2200 import *
 
 base_dir = os.path.abspath(
     os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
@@ -39,37 +42,7 @@ db = Broker.named('local_file')  # a broker poses queries for saved data sets
 # Insert all metadata/data captured into db.
 RE.subscribe(db.insert)
 
-# ------------------------------------------------
-#           Lock-In Amplifier
-# ------------------------------------------------
-lia = LockIn(name='lia')
-if lia.unconnected:
-    sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
-lia.reset.set(0)
-RE.md['lock_in'] = lia.id.get()
 
-# setup lock-in
-# similar to a stage, but specific to this experiment
-lia.reset.set(None)
-lia.fmode.set('Int')
-lia.in_gnd.set('float')
-lia.in_config.set('A')
-lia.in_couple.set('DC')
-lia.freq.set(5000)
-lia.sensitivity.set(1.0)  # 1 V RMS full-scale
-tau = 0.1
-lia.tau.set(tau)
-# maximum settle to 99% accuracy is 9*tau (filter-slope of 24-db/oct
-max_settle = 9*tau*4
-lia.filt_slope.set('6-db/oct')
-lia.res_mode.set('normal')
-
-# setup control of the lock-in filter-slope sweep (for LiveTable)
-lia.filt_slope.delay = max_settle*2
-lia.filt_slope.kind = Kind.hinted
-lia.filt_slope.dtype = 'string'
-lia.filt_slope.precision = 9  # so the string is not cutoff in the LiveTable
-lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
 # ------------------------------------------------
 #           Function Generator
 # ------------------------------------------------
@@ -80,23 +53,28 @@ if fg.unconnected:
 RE.md['fg'] = fg.id.get()
 
 # setup control of the frequency sweep
-fg.freq.delay = max_settle
+fg.freq.delay = 0.05
+fg.phase.delay = 0.05
 
 # configure the function generator
 fg.reset.set(None)  # start fresh
 fg.function.set('SIN')
 fg.load.set('INF')
-fg.freq.set(5000)
+fg.freq.set(5e6/512)
 fg.v.set(2)  # full-scale range with 1 V RMS sensitivity is 2.8284
-fg.offset.set(0)
+fg.offset.set(1.65)
 fg.output.set('ON')
 
+dmm = MultiMeter(name='dmm')
+# create an object that returns statistics calculated on the arrays returned by read_buffer
+# the name is derived from the parent (e.g. lockin and from the signal that returns an array e.g. read_buffer)
+dmm_burst_stats = BasicStatistics(name='', array_source=dmm.burst_volt)
 # ------------------------------------------------
 #           Setup Supplemental Data
 # ------------------------------------------------
 from bluesky.preprocessors import SupplementalData
 baseline_detectors = []
-for dev in [fg, lia]:
+for dev in [fg]:
     for name in dev.component_names:
         if getattr(dev, name).kind == Kind.config:
             baseline_detectors.append(getattr(dev, name))
@@ -105,24 +83,19 @@ sd = SupplementalData(baseline=baseline_detectors, monitors=[], flyers=[])
 RE.preprocessors.append(sd)
 
 # ------------------------------------------------
-#                   Run a 2D sweep
+#                   Run a Measurement
 # ------------------------------------------------
-f1 = 4980
-f2 = 5020
-fg.freq.set(f1)
-lia.filt_slope.set(0)
-time.sleep(tau*30)
-# grid_scan is a pre-configured Bluesky plan
-uid = RE(grid_scan([lia.disp_val],
-         lia.filt_slope, 0, 3, 4,
-         fg.freq, f1, f2, 60, False),
-         LiveTable(['lockin_disp_val', 'fgen_freq', 'lockin_filt_slope']),
-         # input parameters below are added to metadata
-         attenuator='0dB',
-         purpose='freq_resolution_SR810',
-         operator='Lucas',
-         fg_config=fg.read_configuration(),
-         lia_config=lia.read_configuration())
+dmm.burst_volt.stage()
+
+for i in range(1):
+    # scan is a pre-configured Bluesky plan, which returns the experiment uid
+    uid = RE(
+        scan([dmm.burst_volt, dmm_burst_stats.mean], fg.phase, 0, 360, 10),
+        LiveTable([fg.phase, dmm.burst_volt, dmm_burst_stats.mean]),
+        # the input parameters below will be metadata
+        attenuator='0dB',
+        purpose='phase_dependence',
+        operator='Lucas')
 
 # ------------------------------------------------
 #   	(briefly) Investigate the captured data
@@ -138,3 +111,7 @@ df_meta = h.table('baseline')
 
 print('These configuration values are saved to baseline data:')
 print(df_meta.columns.values)
+
+array_filename = df['dmm_burst_volt'][5]
+arr = np.load(os.path.join(dmm.burst_volt.save_path, array_filename))
+plt.plot(arr, marker = '*')

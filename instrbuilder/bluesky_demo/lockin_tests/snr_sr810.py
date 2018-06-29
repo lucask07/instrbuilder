@@ -91,7 +91,7 @@ RE.md['lock_in'] = fg.id.get()
 fg.freq.delay = max_settle
 
 # configure the function generator
-fg.reset.set(None) # start fresh
+fg.reset.set(None)  # start fresh
 fg.function.set('SIN')
 fg.load.set('INF')
 fg.freq.set(5000)
@@ -100,9 +100,9 @@ fg.offset.set(0)
 fg.output.set('ON')
 
 # ------------------------------------------------
-#           Attenuator
+#           Attenuator (must be manually changed)
 # ------------------------------------------------
-att = ManualDevice(name = 'att')
+att = ManualDevice(name='att')
 
 # ------------------------------------------------
 #           Setup Supplemental Data

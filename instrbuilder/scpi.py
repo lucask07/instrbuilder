@@ -28,7 +28,7 @@ The SCPI module includes the SCPI class, functions to convert return values, and
 a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.
 '''
 
-#### -----------------------------------------
+# -----------------------------------------
 # a dictionary of functions that are used to convert return values from getters
 convert_return = defaultdict(lambda: str)
 convert_return['string'] = str
@@ -47,17 +47,21 @@ def arr_bytes(bytes_in):
     str_in = bytes_in.decode('utf-8').rstrip()
     return np.asarray(list(map(lambda x: int(x), str_in.split(','))))
 
+
 def arr_bytes_floats(bytes_in):
     """ convert array of bytes such as b'-3.051776e-004,-3.051776e-004,\r', to a list of floats """
     str_in = bytes_in.decode('utf-8').rstrip()
     return np.asarray(list(map(lambda x: float(x), list(filter(None, str_in.split(','))))))
 
+
 def str_strip(str_in):
     """ strip whitespace at right of string. Wrap string rstrip method into function """
     return str(str_in.rstrip())
 
+
 def keysight_error(str_in):
     return str_in[0:2] != '+0'
+
 
 # add attribute to the getter conversion function so that bluesky
 #    (or the generation of a bluesky signal) knows what to do
@@ -671,10 +675,11 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
         if row['setter_range'] is not None:
             try:
                 row['setter_range'] = ast.literal_eval(row['setter_range'])
-            except:
-                print(
-                    f'Warning setter_range of {colorama.Fore.GREEN}{row["setter_range"]}{colorama.Style.RESET_ALL} for command {colorama.Fore.BLUE}{row["name"]}{colorama.Style.RESET_ALL} not of proper form'
-                )
+            except ValueError:
+                if not math.isnan(row["setter_range"]):
+                    print(
+                        f'Warning setter_range of {colorama.Fore.GREEN}{row["setter_range"]}{colorama.Style.RESET_ALL} for command {colorama.Fore.BLUE}{row["name"]}{colorama.Style.RESET_ALL} not of proper form'
+                    )
                 row['setter_range'] = None
 
         # pandas read default value is nan. Convert to None or 0 depending upon column

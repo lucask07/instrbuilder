@@ -1,0 +1,55 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+acq_complete,:ACQ:COMP,,TRUE,int,TRUE,int,[100],The :ACQuire:COMPlete command affects the operation of the :DIGitize command. It specifies the minimum completion criteria for an acquisition.,acquire,TRUE,,
+acq_count,:ACQ:COUN,,TRUE,int,TRUE,int,"[2,65536]",Number of averages when acquisition mode is AVER,acquire,TRUE,,
+acq_mode,:ACQ:MODE,,TRUE,str,TRUE,str,"['RTIM', 'SEGM']",Configures acquisition to real-time or segmented,acquire,TRUE,,
+acq_points,:ACQ:POIN,,TRUE,int,FALSE,float,,Returns the number of points the hardware will acquire from the input signal. This is not directly controllable,acquire,TRUE,,
+acq_segment_count,:ACQ:SEG:COUN,,TRUE,int,TRUE,int,"[2,1000]",,acquire,TRUE,,
+acq_segment_index,:ACQ:SEG:IND,,TRUE,int,TRUE,int,"[1,1000]",,acquire,TRUE,,
+acq_sample_rate,:ACQ:SRAT,,TRUE,float,FALSE,none,,acquistion sample rate,acquire,TRUE,,
+acq_type,:ACQ:TYPE,,TRUE,str,TRUE,str,"['NORM', 'AVER', 'HRES','PEAK']",acquistion mode,acquire,TRUE,,
+chan_bwlimit,:CHAN{channel}:BWL {value},,TRUE,int,TRUE,int,"[0,1]",Limit the badwidth of the channel,channel,TRUE,2,1
+chan_coupling,:CHAN{channel}:COUP,,TRUE,str,TRUE,str,"['AC','DC']",DC or AC input coupling of the channel,channel,TRUE,2,1
+chan_display,:CHAN{channel}:DISP,,TRUE,int,TRUE,int,"[0,1]",Turn on or off the channel display,channel,TRUE,2,1
+chan_impedance,:CHAN{channel}:IMP,,TRUE,str,TRUE,str,"['ONEMEG', 'FIFTY']",Input impedance of the channel ,channel,TRUE,2,1
+chan_invert,:CHAN{channel}:INV,,TRUE,int,TRUE,int,"[0,1]",Invert channel? ,channel,TRUE,2,1
+chan_label,:CHAN{channel}:LAB,,TRUE,str,TRUE,str,,Waveform label ,channel,TRUE,2,1
+chan_offset,:CHAN{channel}:OFFS,,TRUE,float,TRUE,float,,Voltage offset of the channel,channel,TRUE,2,1
+chan_probe,:CHAN{channel}:PROB,,TRUE,float,TRUE,float,,Attenuation of a probe,channel,TRUE,2,1
+chan_range,:CHAN{channel}:RANG,,TRUE,float,TRUE,float,,Vertical full-scale range value ,channel,TRUE,2,1
+chan_scale,:CHAN{channel}:SCAL,,TRUE,float,TRUE,float,,Vertical units per division,channel,TRUE,2,1
+chan_units,:CHAN{channel}:UNIT,,TRUE,float,TRUE,float,"['VOLT','AMP']",Units of vertical axis,channel,TRUE,2,1
+chan_vernier,:CHAN{channel}:VERN,,TRUE,int,TRUE,int,"[0,1]",Fine vertical control on/off,channel,TRUE,2,1
+demo_function,:DEMO:FUNC,,TRUE,str,TRUE,str,"['SIN', 'NOIS', 'PHAS', 'LFS', 'AM', 'RFB', 'FMB', 'HARM', 'COUP', 'RING', 'SING', 'CLK', 'RUNT']",,demo,TRUE,,
+demo_output,:DEMO:OUTP,,TRUE,int,TRUE,int,"[0,1]",Demo output on or off ,demo,TRUE,,
+display_annotate,:DISP:ANN:TEXT,,TRUE,str,TRUE,str,,ASCII string to display on the oscillosocope,display,FALSE,,
+display_data,:DISP:DATA,DISP:DATA? PNG COL,TRUE,pass_array,FALSE,none,,Download screenshot from the oscilloscope. Format options are forced to PNG and Color,display,FALSE,,
+run,:RUN,,FALSE,str,TRUE,str,,run acquisition,root,FALSE,,
+single,:SING,,FALSE,str,TRUE,str,,single-shot trigger,root,FALSE,,
+stop,:STOP,,FALSE,str,TRUE,str,,stop acquisition,root,FALSE,,
+inksaver,:SAVE:IMAG:INKS,,TRUE,int,TRUE,int,"[0,1]",Invert graticule colors (change background to white),save,FALSE,,
+time_mode,:TIM:MODE,,TRUE,str,TRUE,int,"['MAIN', 'WIND', 'XY', 'ROLL']",Timebase mode ,time,TRUE,,
+time_pos,:TIM:POS,,TRUE,float,TRUE,int,,Time for the trigger event to the display reference point,time,TRUE,,
+time_range,:TIM:RANG,,TRUE,float,TRUE,int,,Time for 10 divisions in seconds,time,TRUE,,
+time_reference,:TIM:FER,,TRUE,str,TRUE,int,"['LEFT', 'CENT', 'RIGH']","One division from the left, center, or one division from the right",time,TRUE,,
+time_scale,:TIM:SCAL,,TRUE,float,TRUE,int,,time/div in seconds ,time,TRUE,,
+time_vernier,:TIM:VERN,,TRUE,int,TRUE,int,,Turn on or off fine adjustment,time,FALSE,,
+time_window_pos,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window position,time,TRUE,,
+time_window_range,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window range,time,TRUE,,
+time_window_scale,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window scale,time,TRUE,,
+trigger_sweep,:TRIG:SWE,,TRUE,str,TRUE,str,"['AUTO', 'NORM']",Trigger sweep mode,trigger,TRUE,,
+trigger_mode,:TRIG:MODE,,TRUE,str,TRUE,str,"['EDGE', 'GLIT', 'PATT']",Trigger pattern,trigger,TRUE,,
+trigger_force,:TRIG:FORC,,FALSE,none,TRUE,none,,Force a trigger,trigger,TRUE,,
+trigger_level_high,":TRIG:LEV:HIGH {value}, CHAN{channel}",:TRIG:LEV:HIGH CHAN{channel}?,TRUE,float,TRUE,float,,Set level for triggering ,trigger,TRUE,2,1
+trigger_level_low,":TRIG:LEV:LOW {value}, CHAN{channel}",:TRIG:LEV:LOW CHAN{channel}?,TRUE,float,TRUE,float,,Set level for triggering ,trigger,TRUE,2,1
+trigger_holdoff,:TRIG:HOLD,,TRUE,float,TRUE,float,,Trigge holdoff,trigger,TRUE,,
+trigger_hfreject,:TRIG:HFR,,TRUE,int,TRUE,int,,Trigger high-frequency reject,trigger,TRUE,,
+trigger_slope,:TRIG:SLOP,,TRUE,str,TRUE,str,"['NEG', 'POS', 'EITH', 'ALT']",Trigger slope,trigger,TRUE,,
+waveform_points,:WAV:POIN,,TRUE,int,TRUE,int,,Set the number of points to be transferred,waveform,TRUE,,
+waveform_points_mode,:WAV:POIN:MODE,,TRUE,str,TRUE,str,"['NORM','MAX','RAW']",The :WAVeform:POINts:MODE command sets the data record to be transferred with the :WAVeform:DATA? query,waveform,TRUE,,
+waveform_data,:WAV:DATA,,TRUE,composite?,FALSE,str,,download raw data from instrument,waveform,FALSE,,
+clear,*CLS,,FALSE,none,TRUE,none,,Clear instrument,system,FALSE,,
+reset,*RST,,FALSE,none,TRUE,none,,Reset instrument,system,FALSE,,
+operation_complete,*OPC,,TRUE,int,TRUE,int,,Check if operation is complete,system,FALSE,,
+is_running,:OPER:COND,,TRUE,bit3_set,FALSE,none,,Check operation status register for if oscilloscope is running ,system,FALSE,,
+wait_trig,:OPER:COND,,TRUE,bit5_set,FALSE,none,,Trigger is armed,system,FALSE,,
+id,*IDN,,TRUE,str,FALSE,none,,retrieve instrument id ,system,TRUE,,
