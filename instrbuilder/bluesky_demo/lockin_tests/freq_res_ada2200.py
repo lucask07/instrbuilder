@@ -81,4 +81,5 @@ for i in range(1):
         # the input parameters below will be metadata
         attenuator='0dB',
         purpose='demo',
-        operator='Lucas')
+        operator='Lucas',
+        dut='ADA2200')

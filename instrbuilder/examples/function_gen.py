@@ -5,11 +5,12 @@
 
 import yaml
 import os
+import scpi
 from scpi import init_instrument
 from instruments import KeysightFunctionGen
 
-
-yaml_config = open('config.yaml', 'r')
+yaml_config = open(os.path.join(os.path.dirname(scpi.__file__),
+					'config.yaml'), 'r')
 configs = yaml.load(yaml_config)
 
 # get lockin amplifier SCPI object

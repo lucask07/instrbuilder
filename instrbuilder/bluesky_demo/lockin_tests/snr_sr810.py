@@ -148,6 +148,7 @@ uid = RE(list_scan([lia.read_buffer, lia_buffer_stats.std, lia_buffer_stats.mean
          attenuator='attenuator sweep',
          purpose='snr_SR810',
          operator='Lucas',
+         dut='SR810',
          fg_config=fg.read_configuration(),
          lia_config=lia.read_configuration()
          )

@@ -57,7 +57,7 @@ lia.in_config.set('A')
 lia.in_couple.set('DC')
 lia.freq.set(5000)
 lia.sensitivity.set(1.0)  # 1 V RMS full-scale
-tau = 0.1
+tau = 0.03
 lia.tau.set(tau)
 # maximum settle to 99% accuracy is 9*tau (filter-slope of 24-db/oct
 max_settle = 9*tau*4
@@ -104,7 +104,8 @@ osc.trigger_sweep.set('NORM')
 osc.trigger_level_chan2.set(0.7)
 
 
-from bluesky.plan_stubs import checkpoint, abs_set, trigger_and_read, pause
+from bluesky.plan_stubs import checkpoint, abs_set, trigger_and_read
+
 
 def custom_step(detectors, motor, step):
     """
@@ -134,6 +135,7 @@ uid = RE(list_scan([osc.display_data],
          attenuator='attenuator sweep',
          purpose='snr_SR810',
          operator='Lucas',
+         dut='SR810',
          fg_config=fg.read_configuration(),
          lia_config=lia.read_configuration()
          )

@@ -53,3 +53,5 @@ operation_complete,*OPC,,TRUE,int,TRUE,int,,Check if operation is complete,syste
 is_running,:OPER:COND,,TRUE,bit3_set,FALSE,none,,Check operation status register for if oscilloscope is running ,system,FALSE,,
 wait_trig,:OPER:COND,,TRUE,bit5_set,FALSE,none,,Trigger is armed,system,FALSE,,
 id,*IDN,,TRUE,str,FALSE,none,,retrieve instrument id ,system,TRUE,,
+meas,:MEAS:{meas_type} {chan},:MEAS:{meas_type} {chan}?,TRUE,float,TRUE,none,,Generic measure command,measure,FALSE,,
+meas_phase,":MEAS:PHAS CHAN{chan1}, CHAN{chan2}",":MEAS:PHAS? CHAN{chan1}, CHAN{chan2}",TRUE,float,TRUE,none,,Measure phase between two signals,measure,FALSE,,

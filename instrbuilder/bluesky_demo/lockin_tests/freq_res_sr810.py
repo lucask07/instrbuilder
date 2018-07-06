@@ -50,16 +50,17 @@ RE.md['lock_in'] = lia.id.get()
 
 # setup lock-in
 # similar to a stage, but specific to this experiment
+test_frequency = 5e6/512/8
 lia.reset.set(None)
 lia.fmode.set('Int')
 lia.in_gnd.set('float')
 lia.in_config.set('A')
 lia.in_couple.set('DC')
-lia.freq.set(5000)
+lia.freq.set(test_frequency)
 lia.sensitivity.set(1.0)  # 1 V RMS full-scale
-tau = 0.1
+tau = 0.03
 lia.tau.set(tau)
-# maximum settle to 99% accuracy is 9*tau (filter-slope of 24-db/oct
+# maximum settle to 99% accuracy is 9*tau for a filter-slope of 24-db/oct
 max_settle = 9*tau*4
 lia.filt_slope.set('6-db/oct')
 lia.res_mode.set('normal')
@@ -86,7 +87,7 @@ fg.freq.delay = max_settle
 fg.reset.set(None)  # start fresh
 fg.function.set('SIN')
 fg.load.set('INF')
-fg.freq.set(5000)
+fg.freq.set(test_frequency)
 fg.v.set(2)  # full-scale range with 1 V RMS sensitivity is 2.8284
 fg.offset.set(0)
 fg.output.set('ON')
@@ -107,8 +108,8 @@ RE.preprocessors.append(sd)
 # ------------------------------------------------
 #                   Run a 2D sweep
 # ------------------------------------------------
-f1 = 4980
-f2 = 5020
+f1 = test_frequency - test_frequency/80
+f2 = test_frequency + test_frequency/80
 fg.freq.set(f1)
 lia.filt_slope.set(0)
 time.sleep(tau*30)
@@ -121,6 +122,7 @@ uid = RE(grid_scan([lia.disp_val],
          attenuator='0dB',
          purpose='freq_resolution_SR810',
          operator='Lucas',
+         dut='SR810',
          fg_config=fg.read_configuration(),
          lia_config=lia.read_configuration())
 
