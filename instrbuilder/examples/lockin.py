@@ -35,6 +35,6 @@ print()
 
 # A more complex Lock-in Amplifier set; requires input dictionary configs 
 # Set the display to show "R" -- magnitude
-lia.set(value = 1, name = 'ch1_disp', configs = {'ratio': 0})
+lia.set(name='ch1_disp', value=1, configs={'ratio': 0})
 
 

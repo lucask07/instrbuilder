@@ -40,12 +40,11 @@ cmd_list, inst_comm, unconnected = init_instrument(
 osc = KeysightMSOX3000(
     cmd_list, inst_comm, name='osc', unconnected=unconnected)
 
-
 osc.set('time_range', 1e-3, )
-osc.set('chan_scale', 0.8, configs={'channel':1})
-osc.set('chan_offset', -0.2, configs= {'channel':1})
-osc.set('chan_offset', 0.2, configs={'channel':1})
+osc.set('chan_scale', 0.8, configs={'channel': 1})
+osc.set('chan_offset', -0.2, configs={'channel': 1})
+osc.set('chan_offset', 0.2, configs={'channel': 1})
+osc.set('single_acq')
 
-osc.set('single', None)
 time.sleep(0.1)
 t = osc.save_display_data('test')

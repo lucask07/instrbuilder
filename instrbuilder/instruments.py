@@ -102,16 +102,6 @@ class SRSLockIn(SCPI):
             #       How to ensure the commands unconnected value works with the getter conversion function?
             self._cmds['ch1_disp']._unconnected_val = b'1,0\r'
 
-    def test_composite_get(self):
-        f = self.get('freq')
-        self.set(f*1.2, 'freq')
-        return float(self.get('freq'))
-
-    def test_composite_set(self, value):
-        self.set(value[0], 'freq')
-        self.set(value[1], 'tau')
-        return self.set(value[2], 'sensitivity')
-
 
 class KeysightMultimeter(SCPI):
     def __init__(self,
@@ -151,20 +141,20 @@ class KeysightMultimeter(SCPI):
         """
         measure a burst of triggered voltage readings
         """
-        self.set(aperture, 'volt_aperture')
-        self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal 
+        self.set('volt_aperture', aperture)
+        self.set('trig_source', trig_source)  # BUS = remote interface (host); EXT = external signal
         if trig_source == 'EXT':
-            self.set(trig_slope, 'trig_slope')
-        self.set(trig_count, 'trig_count')
-        self.set(reads_per_trigger, 'sample_count')
-        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'}) # turn off auto-range
-        self.set(volt_range, 'volt_range', configs={'ac_dc': 'DC'}) # set range
+            self.set('trig_slope', trig_slope)
+        self.set('trig_count', trig_count)
+        self.set('sample_count', reads_per_trigger)
+        self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'}) # turn off auto-range
+        self.set('volt_range', volt_range, configs={'ac_dc': 'DC'}) # set range
         if trig_delay is not None:
-            self.set(trig_delay, 'trig_delay')
-        self.set(None, 'initialize')
+            self.set('trig_delay', trig_delay)
+        self.set('initialize')
         if trig_source == 'BUS':
             print('Sending (bus) trigger command')
-            self.set(None, 'trig')
+            self.set('trig')
         print('Expecting {} readings'.format(trig_count * reads_per_trigger))
 
         x = self.get('fetch')
@@ -178,26 +168,26 @@ class KeysightMultimeter(SCPI):
         measure a burst of triggered voltage readings
         maximum rate of external trigger is 5 kHz
         """
-        self.set(aperture, 'volt_aperture')
-        self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal
+        self.set('volt_aperture', aperture)
+        self.set('trig_source', trig_source)  # BUS = remote interface (host); EXT = external signal
         if trig_source == 'EXT':
-            self.set(trig_slope, 'trig_slope')
-        self.set(0, 'volt_autozero', configs={'ac_dc': 'DC'})
-        self.set(trig_count, 'trig_count')
-        self.set(reads_per_trigger, 'sample_count')
-        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'}) # turn off auto-range
-        self.set(volt_range, 'volt_range', configs={'ac_dc': 'DC'}) # set range
-        self.set('TIM', 'sample_source')
-        self.set(sample_timer, 'sample_timer')
+            self.set('trig_slope', trig_slope)
+        self.set('volt_autozero', 0, configs={'ac_dc': 'DC'})
+        self.set('trig_count', trig_count)
+        self.set('sample_count', reads_per_trigger)
+        self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'}) # turn off auto-range
+        self.set('volt_range', volt_range, configs={'ac_dc': 'DC'}) # set range
+        self.set('sample_source', 'TIM')
+        self.set('sample_timer', sample_timer)
         if trig_delay is not None:
-            self.set(trig_delay, 'trig_delay')
+            self.set('trig_delay', trig_delay)
 
         total_arr = np.array([])
         for i in range(repeats):
-            self.set(None, 'initialize')
+            self.set('initialize')
             if trig_source == 'BUS':
                 print('Sending (bus) trigger command')
-                self.set(None, 'trig')
+                self.set('trig')
             # print('Expecting {} readings'.format(trig_count * reads_per_trigger))
 
             x = self.get('fetch')
@@ -212,16 +202,16 @@ class KeysightMultimeter(SCPI):
         measure a burst of triggered voltage readings that are saved to the instruments flash
         and then downloaded at the end
         """
-        self.set(aperture, 'volt_aperture')
-        self.set(trig_source, 'trig_source')  # BUS = remote interface (host); EXT = external signal
+        self.set('volt_aperture', aperture)
+        self.set('trig_source', trig_source)  # BUS = remote interface (host); EXT = external signal
         if trig_source == 'EXT':
-            self.set(trig_slope, 'trig_slope')
-        self.set(trig_count, 'trig_count')
-        self.set(reads_per_trigger, 'sample_count')
-        self.set(0, 'volt_range_auto', configs={'ac_dc': 'DC'}) # turn off auto-range
-        self.set(volt_range, 'volt_range', configs={'ac_dc': 'DC'}) # set range
+            self.set('trig_slope', trig_slope)
+        self.set('trig_count', trig_count)
+        self.set('sample_count', reads_per_trigger)
+        self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'}) # turn off auto-range
+        self.set('volt_range', volt_range, configs={'ac_dc': 'DC'}) # set range
         if trig_delay is not None:
-            self.set(trig_delay, 'trig_delay')
+            self.set('trig_delay', trig_delay)
 
     def burst_volt_save(self, reads_per_trigger=1,
                         trig_source='EXT', trig_count=1, repeats=4,
@@ -229,15 +219,15 @@ class KeysightMultimeter(SCPI):
         # MMEMory:STORe:DATA RDG_STORE, <file> pg 306,
         # initialize clears the memory
         for i in range(repeats):
-            self.set(None, 'initialize')
+            self.set('initialize')
             if trig_source == 'BUS':
                 print('Sending (bus) trigger command')
-                self.set(None, 'trig')
+                self.set('trig')
             # print('Expecting {} readings'.format(trig_count * reads_per_trigger))
 
             while self.get('operation_complete') == 0:
                 time.sleep(0.005)
-            self.set(filename.format(i), 'store_data')
+            self.set('store_data', filename.format(i), )
 
         # Timing of this function showed that it is not a method to optimize speed
         # 200 measurements triggered at 780 Hz (256 ms of capture time) required 613 ms with the file-saving

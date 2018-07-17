@@ -27,7 +27,7 @@ cmd_list, inst_comm, unconnected = init_instrument(
 fg = KeysightFunctionGen(
     cmd_list, inst_comm, name='function-generator', unconnected=unconnected)
 
-fg.set('offset', 0)
+fg.set('offset', 0.5)
 fg.set('load', 'INF')
 
 # if fg.get('output') == '0':
