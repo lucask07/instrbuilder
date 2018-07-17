@@ -16,7 +16,7 @@ hardcopy_format,HCOP:SDUM:DATA:FORM,,TRUE,str,TRUE,str,"['PNG', 'BMP']",Set the 
 hardcopy,HCOP:SDUM:DATA?,,TRUE,image,FALSE,str,None,Returns an image of the screen,save,FALSE,,
 volt_range,VOLT:{ac_dc}:RANG {value},,TRUE,float,TRUE,float,"[100e-3, 1, 10, 100, 1000]","Set the range of voltage measurements, Auto is also an option",sense,TRUE,2,1
 volt_range_auto,VOLT:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,"[0, 1]",Turn on or off auto ranging,sense,TRUE,2,1
-volt_autozero,VOLT:{ac_dc}:ZERO:AUTO {value},,TRUE,int,TRUE,int,"[0, 1]",Turn on or off auto zero,sense,TRUE,,
+volt_autozero,VOLT:{ac_dc}:ZERO:AUTO {value},,TRUE,int,TRUE,int,"[0, 1]",Turn on or off auto zero,sense,TRUE,2,1
 volt_aperture,VOLT:APER,,TRUE,float,TRUE,float,"[20e-6, 1]","Acquisition aperture, use NPLC for better power-line rejection",sense,TRUE,,
 sample_timer,SAMP:TIM,,TRUE,float,TRUE,float,None,Sets a sample interval for timed sampling,sample,TRUE,,
 sample_source,SAMP:SOUR,,TRUE,str,TRUE,str,"['IMM', 'TIM']",Imm: trigger delay inserted after completion of each measurement; 'TIM': deterministic time between samples,sample,TRUE,,

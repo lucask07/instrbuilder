@@ -26,7 +26,7 @@ lia = SRSLockIn(cmd_list, inst_comm, name='lock-in', unconnected=unconnected)
 
 print()
 lia.get('phase')
-lia.set(0.1, 'phase')
+lia.set('phase', 0.1)
 
 print()
 lia.help('phase')

@@ -40,7 +40,7 @@ def set_bit(value, bit):
     int with new value
 
     """
-    return (value | 2**bit)
+    return value | 2**bit
 
 
 def clear_bit(value, bit):
@@ -58,7 +58,7 @@ def clear_bit(value, bit):
     int with new value
 
     """
-    return (value & ((2**8 - 1) - bit**2))
+    return value & ((2**8 - 1) - bit**2)
 
 
 def find_visa_connected():

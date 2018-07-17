@@ -163,10 +163,10 @@ class SCPI(object):
         ret_val = self.ask(cmd_str.format(**configs))
 
         # if the instrument is not connected, check if the command has a specific return value
-        if self.unconnected == True:
+        if self.unconnected:
             try:
                 ret_val = self._cmds[name]._unconnected_val
-            except:
+            except Exception as get_error:
                 pass
         try:
             val = self._cmds[name].getter_type(ret_val)
@@ -188,7 +188,7 @@ class SCPI(object):
             print('  Returned {}; with type = {}; expects = {}'.format(
                 ret_val, type(ret_val), self._cmds[name].getter_type))
 
-    def set(self, value, name, configs={}):
+    def set(self, name, value=None, configs={}):
         cmd_str = self._cmds[name].ascii_str
 
         if value is not None:
@@ -196,7 +196,7 @@ class SCPI(object):
             if value in self._cmds[name].lookup:
                 try:
                     value = self._cmds[name].lookup[value]
-                except:
+                except Exception as set_error:
                     pass  # just keep value
 
             self.check_set_range(value, name)
@@ -392,7 +392,7 @@ class SCPI(object):
                     return 'NotTested'
 
             for set_val in set_vals:
-                self.set(set_val, name, configs=set_configs)
+                self.set(name, set_val, configs=set_configs)
                 comm_error |= self.read_comm_err()
                 ret = self.get(name, configs=get_configs)
                 # if present remove lookup table modification
@@ -428,7 +428,7 @@ class SCPI(object):
         elif self._cmds[name].setter:
             if (self._cmds[name].limits) is None:
                 set_val = None
-                self.set(set_val, name, configs=set_configs)
+                self.set(name, set_val, configs=set_configs)
                 comm_error |= self.read_comm_err()
 
             elif (len(self._cmds[name].limits) > 2):
@@ -436,7 +436,7 @@ class SCPI(object):
                     self._cmds[name].limits[0], self._cmds[name].limits[-1]
                 ]
                 for set_val in set_vals:
-                    self.set(set_val, name, configs=set_configs)
+                    self.set(name, set_val, configs=set_configs)
                     comm_error |= self.read_comm_err()
             else:
                 print('Skipping test of setter {}'.format(name))

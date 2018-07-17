@@ -12,3 +12,4 @@ instrbuilder/bluesky_demo/bluesky_flyers.py
 *.npy
 *.idea
 instrbuilder/bluesky_demo/custom_plan.py
+instrbuilder/scratch/*

@@ -34,31 +34,29 @@ db = Broker.named('local_file')  # a broker poses queries for saved data sets)
 '''
 
 # get data into a pandas data-frame
-uid = 'b270dad3-96fd-475a-ad1e-b2789db96ed0'
-header = db[uid]
+header = db['8a24caa4-8a72-454b-ae0b-4dfd71b7751d']  # db is a DataBroker instance
 print(header.table())
 df = header.table()
 # view the baseline data (i.e. configuration values)
-df_meta = header.table('baseline')
+h = db[-1]
+df_meta = h.table('baseline')
 
-print('These configuration values are saved to baseline data:')
-print(df_meta.columns.values)
+phase_diff = np.array([])
 
-# Read-in offset data
-uid = 'f31271f1-4231-4798-afe6-83e8647c0927'
-df_offset = header.db[uid].table()
+for f in df['fgen_freq'].unique():
+    idx = df.index[df['fgen_freq'] == f].tolist()
+    time_diff = (df['time'][idx[0]].to_pydatetime() - df['time'][idx[-1]].to_pydatetime()).total_seconds()
+    total_diff = (df['osc_meas_phase'][idx[0]] - df['osc_meas_phase'][idx[-1]])/time_diff
+    phase_diff = np.append(phase_diff, total_diff)
 
-offset = np.mean(df_offset['dmm_meas_volt'])
-print('Offset measured as: {} [V]'.format(offset))
-
-plt.figure()
-plt.plot(df['osc_meas_phase'], df['dmm_burst_volt_timer_mean'] - offset,
-         marker='*', LineStyle='None')
-plt.xlabel('Phase [deg]')
-plt.ylabel('Magnitude [V]')
+plt.plot(df['fgen_freq'].unique(), phase_diff, marker='*')
+plt.ylabel('Degree/second')
+plt.xlabel('Freq [Hz]')
 plt.grid(True)
+plt.savefig(os.path.join(figure_dir, 'phase_tuning_ada2200.eps'))
 
-plt.xlabel('Phase [deg]')
-plt.ylabel('Magnitude [V]')
-plt.grid(True)
-plt.savefig(os.path.join(figure_dir, 'phase_res_ada2200.eps'))
+import scipy.interpolate
+y_interp = scipy.interpolate.interp1d(phase_diff, df['fgen_freq'].unique())
+optimal_freq = y_interp(0)
+print('Frequency of minimum phase drift = {} [Hz]'.format(optimal_freq))
+

@@ -70,14 +70,17 @@ fg.offset.set(1.65)
 fg.output.set('ON')
 
 dmm = MultiMeter(name='dmm')
-osc = Oscilloscope(name='osc')
 
+# Oscilloscope Channel 1 is RCLK from ADA2200
+# Oscilloscope Channel 2 is Input Sinusoid from function generator
+osc = Oscilloscope(name='osc')
 osc.time_reference.set('CENT')
 osc.time_scale.set(200e-6)
 osc.acq_type.set('NORM')
 osc.trigger_slope.set('POS')
 osc.trigger_sweep.set('NORM')
-osc.trigger_level_chan2.set(0.7)
+osc.trigger_level_chan2.set(3.3/2)
+osc.trigger_source.set(1)
 
 # ------------------------------------------------
 #           Setup Supplemental Data
@@ -94,9 +97,10 @@ RE.preprocessors.append(sd)
 
 from bluesky.plan_stubs import checkpoint, abs_set, trigger_and_read, sleep
 
+
 def custom_step(detectors, motor, step):
     """
-        Inner loop of a 1D step scan that takes multiple measurements at each step
+        Custom inner loop of a 1D step scan that takes multiple measurements at each step
         with a delay between each measurement
     """
     yield from checkpoint()
@@ -109,13 +113,13 @@ def custom_step(detectors, motor, step):
         for _ in range(num_measurements):
             yield Msg('checkpoint')
             yield from trigger_and_read(list(detectors) + [motor])
-            # yield Msg('sleep', None, sleep_time)
             yield from sleep(sleep_time)
     return (yield from finite_loop())
 
 # ------------------------------------------------
 #                   Run a Measurement
 # ------------------------------------------------
+
 
 for i in range(1):
     # scan is a pre-configured Bluesky plan, which steps one motor
