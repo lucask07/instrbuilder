@@ -9,7 +9,7 @@ import os
 import time
 
 # imports that may need installation
-import matplotlib.pyplot as plt
+import numpy as np
 from bluesky import RunEngine
 from bluesky.callbacks import LiveTable, LivePlot
 from bluesky.callbacks.best_effort import BestEffortCallback
@@ -108,11 +108,12 @@ RE.preprocessors.append(sd)
 # ------------------------------------------------
 #                   Run a 2D sweep
 # ------------------------------------------------
-f1 = test_frequency - test_frequency/80
-f2 = test_frequency + test_frequency/80
+fc = 1/(2*np.pi*tau)
+f1 = test_frequency - (fc * 2**3.5)  # 3.5 octaves below and above the cutoff
+f2 = test_frequency + (fc * 2**3.5)
 fg.freq.set(f1)
 lia.filt_slope.set(0)
-time.sleep(tau*30)
+time.sleep(tau*12)
 # grid_scan is a pre-configured Bluesky plan
 uid = RE(grid_scan([lia.disp_val],
          lia.filt_slope, 0, 3, 4,
@@ -123,6 +124,7 @@ uid = RE(grid_scan([lia.disp_val],
          purpose='freq_resolution_SR810',
          operator='Lucas',
          dut='SR810',
+         preamp='yes_AD8655',
          fg_config=fg.read_configuration(),
          lia_config=lia.read_configuration())
 
