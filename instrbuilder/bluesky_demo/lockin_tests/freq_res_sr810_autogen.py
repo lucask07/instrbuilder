@@ -23,10 +23,9 @@ sys.path.append(
 
 # imports that require sys.path.append pointers
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen
+from ophyd.ee_instruments import LockIn, FunctionGen, generate_ophyd_obj
 import scpi
 from setup import scpi_lia
-
 
 base_dir = os.path.abspath(
     os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
@@ -44,7 +43,8 @@ RE.subscribe(db.insert)
 # ------------------------------------------------
 #           Lock-In Amplifier
 # ------------------------------------------------
-lia = LockIn(name='lia')
+Lia, component_dict = generate_ophyd_obj(name='LockInAmplifier', scpi=scpi_lia)
+lia = Lia(name='lock_in')
 if lia.unconnected:
     sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
 lia.reset.set(0)
@@ -73,6 +73,10 @@ lia.filt_slope.kind = Kind.hinted
 lia.filt_slope.dtype = 'string'
 lia.filt_slope.precision = 9  # so the string is not cutoff in the LiveTable
 lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
+
+
+"""
+
 # ------------------------------------------------
 #           Function Generator
 # ------------------------------------------------
@@ -144,3 +148,5 @@ df_meta = h.table('baseline')
 
 print('These configuration values are saved to baseline data:')
 print(df_meta.columns.values)
+
+"""

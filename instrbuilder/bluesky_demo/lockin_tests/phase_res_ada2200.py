@@ -69,6 +69,10 @@ fg.v.set(2)  # full-scale range with 1 V RMS sensitivity is 2.8284
 fg.offset.set(1.65)
 fg.output.set('ON')
 
+# ------------------------------------------------
+#           Multimeter
+# ------------------------------------------------
+
 dmm = MultiMeter(name='dmm')
 
 # configure for fast burst reads
@@ -76,7 +80,8 @@ dmm.volt_autozero_dc.set(0)
 dmm.volt_aperture.set(20e-6)
 
 # create an object that returns statistics calculated on the arrays returned by read_buffer
-# the name is derived from the parent (e.g. lockin and from the signal that returns an array e.g. read_buffer)
+# the name is derived from the parent
+#  (e.g. lockin and from the signal that returns an array e.g. read_buffer)
 dmm_burst_stats = BasicStatistics(name='', array_source=dmm.burst_volt_timer)
 
 # ------------------------------------------------
@@ -118,13 +123,14 @@ for i in range(1):
     uid = RE(
         scan([dmm.burst_volt_timer, dmm_burst_stats.mean, osc.meas_phase], fg.phase,
              0, 360, 60),
-        LiveTable([fg.phase, osc.meas_phase, dmm.burst_volt_timer, dmm_burst_stats.mean]),
+        # LiveTable([fg.phase, osc.meas_phase, dmm.burst_volt_timer, dmm_burst_stats.mean]),
+        LiveTable([fg.phase, osc.meas_phase, dmm.burst_volt_timer]),
         # the parameters below will be metadata
         attenuator='0dB',
         purpose='phase_dependence',
         operator='Lucas',
-        dut='ADA2200')
-
+        dut='ADA2200',
+        preamp='yes_AD8655')
 
 # -----------------------------------------------------
 #                 Find offset voltage

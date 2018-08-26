@@ -74,7 +74,7 @@ dmm = MultiMeter(name='dmm')
 # Oscilloscope Channel 1 is RCLK from ADA2200
 # Oscilloscope Channel 2 is Input Sinusoid from function generator
 osc = Oscilloscope(name='osc')
-osc.time_reference.set('CENT')
+# osc.time_reference.set('CENT')
 osc.time_scale.set(200e-6)
 osc.acq_type.set('NORM')
 osc.trigger_slope.set('POS')
@@ -121,18 +121,17 @@ def custom_step(detectors, motor, step):
 # ------------------------------------------------
 
 
-for i in range(1):
-    # scan is a pre-configured Bluesky plan, which steps one motor
-    uid = RE(
-        scan([osc.meas_phase], fg.freq,
-             freq_center - 0.03, freq_center - 0.005, 20,
-             per_step=custom_step),
-        LiveTable([fg.freq, osc.meas_phase]),
-        # the input parameters below will be metadata
-        attenuator='none',
-        purpose='phase_tuning',
-        operator='Lucas',
-        dut='ADA2200')
+# scan is a pre-configured Bluesky plan, which steps one motor
+uid = RE(
+    scan([osc.meas_phase], fg.freq,
+         freq_center - 0.03, freq_center - 0.005, 20,
+         per_step=custom_step),
+    LiveTable([fg.freq, osc.meas_phase]),
+    # the input parameters below will be metadata
+    attenuator='none',
+    purpose='phase_tuning',
+    operator='Lucas',
+    dut='ADA2200')
 
 # ------------------------------------------------
 #   	(briefly) Investigate the captured data

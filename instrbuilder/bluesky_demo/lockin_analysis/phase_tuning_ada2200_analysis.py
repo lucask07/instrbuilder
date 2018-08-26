@@ -11,19 +11,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from databroker import Broker
+from plot_configs import params, dpi, figure_dir
 
-figure_dir = '/Users/koer2434/Google Drive/UST/research/bluesky/manuscript/bluesky_manuscript/figures/'
-params = {
-   'axes.labelsize': 8,
-   'font.size': 8,
-   'legend.fontsize': 10,
-   'xtick.labelsize': 10,
-   'ytick.labelsize': 10,
-   'text.usetex': True,
-   'figure.figsize': [4.5, 4.5]
-   }
 rcParams.update(params)
-plt.figure(dpi=300)
+plt.figure(dpi=dpi)
 
 db = Broker.named('local_file')  # a broker poses queries for saved data sets)
 
@@ -59,4 +50,3 @@ import scipy.interpolate
 y_interp = scipy.interpolate.interp1d(phase_diff, df['fgen_freq'].unique())
 optimal_freq = y_interp(0)
 print('Frequency of minimum phase drift = {} [Hz]'.format(optimal_freq))
-

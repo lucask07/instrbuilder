@@ -19,8 +19,8 @@ lookup_name = 'lookup.csv'
 
 # Function Generator 33500B SCPI object
 instrument_path = 'instruments/keysight/function_gen/33500B/'
-cmd_map = os.path.join(configs['base_directory'], instrument_path, cmd_name)
-lookup_file = os.path.join(configs['base_directory'], instrument_path, lookup_name)
+cmd_map = os.path.join(configs['csv_directory'], instrument_path, cmd_name)
+lookup_file = os.path.join(configs['csv_directory'], instrument_path, lookup_name)
 addr = {'pyvisa': 'USB0::0x0957::0x2B07::MY57700733::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file)

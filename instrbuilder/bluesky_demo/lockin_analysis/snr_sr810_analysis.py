@@ -7,16 +7,9 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from databroker import Broker
 
-figure_dir = '/Users/koer2434/Google Drive/UST/research/bluesky/manuscript/bluesky_manuscript/figures/'
-params = {
-   'axes.labelsize': 8,
-   'font.size': 8,
-   'legend.fontsize': 10,
-   'xtick.labelsize': 10,
-   'ytick.labelsize': 10,
-   'text.usetex': True,
-   'figure.figsize': [4.5, 6.5]
-   }
+from plot_configs import params, dpi, figure_dir
+
+rcParams.update(params)
 rcParams.update(params)
 
 
@@ -30,7 +23,7 @@ df = header.table()
 # view the baseline data (i.e. configuration values)
 df_meta = header.table('baseline')
 
-fig = plt.figure(dpi=300)
+fig = plt.figure(dpi=dpi)
 ax = fig.add_subplot(2, 1, 1)
 ax.plot(df['att_val'], df['lockin_read_buffer_mean'], marker='x')
 plt.grid(True)

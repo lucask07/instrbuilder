@@ -62,7 +62,7 @@ lia.in_gnd.set('float')
 lia.in_config.set('A')
 lia.in_couple.set('DC')
 lia.freq.set(test_frequency)
-lia.sensitivity.set(20e-6)  # 200 uV RMS full-scale
+lia.sensitivity.set(20e-6)  # 20 uV RMS full-scale
 tau = 0.1
 lia.tau.set(tau)
 # maximum settle to 99% accuracy is 9*tau for a filter-slope of 24-db/oct
@@ -72,11 +72,6 @@ max_settle = 12*tau
 lia.filt_slope.set('24-db/oct')
 lia.res_mode.set('normal')
 
-# setup control of the lock-in filter-slope sweep (for LiveTable)
-lia.filt_slope.delay = 0
-lia.filt_slope.kind = Kind.hinted
-lia.filt_slope.dtype = 'string'
-lia.filt_slope.precision = 9  # so the string is not cutoff in the LiveTable
 lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
 lia.disp_val.name = 'lockin_A'  # reading the magnitude from the instrument; change the name for clarity
 # ------------------------------------------------
@@ -94,9 +89,9 @@ fg.freq.delay = max_settle
 # configure the function generator
 fg.reset.set(None)  # start fresh
 fg.function.set('SIN')
-fg.load.set('INF')
+fg.load.set(50)
 fg.freq.set(test_frequency)
-fg.v.set(40e-3)
+fg.v.set(20e-3)  # gives 90% of full-scale at a sensitivity of 20uV and 60 dB attenuation
 fg.offset.set(0)
 fg.output.set('ON')
 
@@ -115,7 +110,7 @@ fg2.v.delay = max_settle
 # configure the function generator
 fg2.reset.set(None)  # start fresh
 fg2.function.set('SIN')
-fg2.load.set('INF')
+fg2.load.set(50)
 fg2.freq.set(test_frequency)
 fg2.v.set(0.1)
 fg2.offset.set(0)
@@ -137,14 +132,14 @@ RE.preprocessors.append(sd)
 #                   Get a baseline with averaging
 # --------------------------------------------------------
 uid_baseline = RE(count([lia.disp_val], num=40, delay=0.2),
-         LiveTable(['lockin_A']),
-         # input parameters below are added to metadata
-         attenuator='60dB',
-         purpose='dynamic_reserve_SR810',
-         operator='Lucas',
-         dut='SR810',
-         preamp='yes_AD8655',
-         notes='baseline-no-interferer')
+                  LiveTable(['lockin_A']),
+                  # input parameters below are added to metadata
+                  attenuator='60dB',
+                  purpose='dynamic_reserve_SR810',
+                  operator='Lucas',
+                  dut='SR810',
+                  preamp='yes_AD8655',
+                  notes='baseline-no-interferer')
 
 # baseline measurement
 baseline = db[uid_baseline[0]].table()
@@ -153,10 +148,13 @@ expected_value = np.mean(baseline['lockin_A'])
 #                   Run a 2D sweep of the FG2 frequency and amplitude
 # --------------------------------------------------------
 
+
 def calc_error_deviation(value, baseline):
     return abs((value-baseline)/baseline*100)
 
+
 calc_per_error = functools.partial(calc_error_deviation, baseline=expected_value)
+
 
 def target_value(detectors, target_field, motor, start, stop,
                   min_step, target_val,
@@ -165,7 +163,7 @@ def target_value(detectors, target_field, motor, start, stop,
                   outer_motor=None, outer_steps=None,
                   *, md=None):
     """
-    Vendor and modify adaptive_scan
+    Vendor and modify adaptive_scan for bluesky.plans
     Scan over one variable with adaptively tuned step size
     find the motor value that gets as close (within accuracy)
     to the target_val without exceeding.
@@ -312,7 +310,6 @@ def target_value(detectors, target_field, motor, start, stop,
 
         def outer_loop():
             for step in outer_steps:
-                print('step outer motor')
                 yield Msg('checkpoint')
                 yield from bps.mv(outer_motor, step)
                 yield from adaptive_core()
@@ -321,18 +318,26 @@ def target_value(detectors, target_field, motor, start, stop,
     return (yield from adaptive_sweep())
 
 
-freq_arr = np.sort(np.append(np.append(np.linspace(50, 10000, 40),
-                             [test_frequency*.99, test_frequency*1.01, test_frequency*.97, test_frequency*1.03]),
-                             [test_frequency*2*.99, test_frequency*2*1.01, test_frequency*2*0.97, test_frequency*2*1.03]))
+freq_arr = np.logspace(1.8, 4.5, 40)  # 63 - 31622
+harmonic_multiplier = np.array([1, 0.998, 1.002, 1.03, 0.97, 1.01, 0.99])
+harmonics = [1/3, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+harmonics = [0.5, 1, 2]
+freq_arr = np.array([])
+
+for hrm in harmonics:
+    freq_arr = np.append(freq_arr, test_frequency*hrm*harmonic_multiplier)
+freq_arr = np.sort(freq_arr)
+print('Total number of points: {}'.format(len(freq_arr)))
 
 fg2.output.set('ON')
 fg2.freq.set(freq_arr[0])
 time.sleep(tau*12)
 
 uid = RE(target_value([lia.disp_val], 'lockin_A',
-         motor=fg2.v, start=0.2, stop=5,
-         min_step=0.05, target_val=5,
-         calc_function=calc_per_error, accuracy=100e-3,
+         motor=fg2.v, start=0.02, stop=8,
+         min_step=0.025, target_val=5,
+         calc_function=calc_per_error, accuracy=50e-3,
          outer_motor=fg2.freq, outer_steps=freq_arr),
          LiveTable(['lockin_A', 'fgen2_freq', 'fgen2_v']),
          # input parameters below are added to metadata
@@ -342,6 +347,9 @@ uid = RE(target_value([lia.disp_val], 'lockin_A',
          operator='Lucas',
          dut='SR810',
          preamp='yes_AD8655',
+         notes='modified setup and measured amp; switch to 50Ohm output for FGs',
+         transfer_function_fg1='0.00193',
+         transfer_function_fg2='0.19',
          fg_config=fg.read_configuration(),
          fg2_config=fg2.read_configuration(),
          lia_config=lia.read_configuration())

@@ -507,7 +507,7 @@ class SCPI_Test(object):
 
 class USB(object):
     def __init__(self, address):
-        self.instr = self.open_visa(address)
+        self.comm = self.open_visa(address)
         try:
             print(self.get('id'))
         except:
@@ -541,11 +541,11 @@ class USB(object):
         return obj
 
     def ask(self, cmd):
-        res = self.instr.query(cmd)
+        res = self.comm.query(cmd)
         return res
 
     def write(self, cmd):
-        ret = self.instr.write(cmd)
+        ret = self.comm.write(cmd)
         return (ret[1] == StatusCode.success, ret)
 
     def close(self):
@@ -754,7 +754,7 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
     elif 'pyvisa' in addr:
         try:
             inst = USB(addr['pyvisa'])
-            inst_comm = inst.instr
+            inst_comm = inst.comm
             unconnected = False
         except Exception as e:
             print(e)

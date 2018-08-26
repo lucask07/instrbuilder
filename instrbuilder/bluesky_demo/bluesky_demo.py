@@ -51,6 +51,7 @@ RE.md['lock_in'] = lia.id.get()
 # ------------------------------
 
 fg = FunctionGenAuto(name='fg')
+generate_ophyd_obj(name, scpi)
 if fg.unconnected:
     sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['lock_in'] = fg.id.get()

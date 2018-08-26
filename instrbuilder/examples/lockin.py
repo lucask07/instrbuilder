@@ -16,9 +16,9 @@ cmd_name = 'commands.csv'
 lookup_name = 'lookup.csv'
 
 # LOCKIN amplifier SCPI object
-instrument_path = 'instruments/srs/lock_in/sr810/'
-cmd_map = os.path.join(configs['base_directory'], instrument_path, cmd_name)
-lookup_file = os.path.join(configs['base_directory'], instrument_path, lookup_name)
+instrument_path = 'srs/lock_in/sr810/'
+cmd_map = os.path.join(configs['csv_directory'], instrument_path, cmd_name)
+lookup_file = os.path.join(configs['csv_directory'], instrument_path, lookup_name)
 addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')

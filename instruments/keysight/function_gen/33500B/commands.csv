@@ -10,7 +10,7 @@ unit,VOLT:UNIT,,TRUE,str,TRUE,str,"['VPP', 'VRMS', 'DBM']",voltage unit,output,T
 output,OUTP,,TRUE,int,TRUE,str,"['OFF', 'ON']",turn output on or off,output,TRUE,,
 duty_cycle,FUNC:SQU:DCYC,,TRUE,float,TRUE,float,"[0, 100]",square wave,output,TRUE,,
 symmetry,FUNC:RAMP:SYMM,,TRUE,float,TRUE,float,"[0,100]",ramp,output,TRUE,,
-load,OUTP:LOAD,,TRUE,float,TRUE,str,"['MIN', 'MAX', 'INF']",output load (50 Ohm or High-Z),output,TRUE,,
+load,OUTP:LOAD,,TRUE,float,TRUE,str,None,"output load (50 Ohm or High-Z). Ohms or 'MIN', 'MAX'",output,TRUE,,
 polarity,OUTP:POL,,TRUE,str,TRUE,str,"['NORM', 'INV']",invert the output or not,output,TRUE,,
 sync,OUTP:SYNC,,TRUE,int,TRUE,int,"['OFF', 'ON']",sync to external reference,output,TRUE,,
 pulse_period,PULS:PER,,TRUE,float,TRUE,float,"[200e-9, 2000]",period for pulses ,pulse,TRUE,,

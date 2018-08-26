@@ -31,8 +31,8 @@ print(connected_instr)
 
 # Multimeter SCPI object
 instrument_path = 'instruments/keysight/multimeter/34465A'
-cmd_map = os.path.join(configs['base_directory'], instrument_path, cmd_name)
-lookup_file = os.path.join(configs['base_directory'], instrument_path, lookup_name)
+cmd_map = os.path.join(configs['csv_directory'], instrument_path, cmd_name)
+lookup_file = os.path.join(configs['csv_directory'], instrument_path, lookup_name)
 addr = {'pyvisa': 'USB0::0x2A8D::0x0101::MY57503303::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file)

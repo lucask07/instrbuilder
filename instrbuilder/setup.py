@@ -3,6 +3,31 @@ import scpi
 from scpi import init_instrument
 from instruments import SRSLockIn, AgilentFunctionGen, KeysightMultimeter, KeysightMSOX3000
 
+# 8/24/2018, redo of config
+
+# instruments have unique names stored in the system YAML file
+# possible to open instrument by name (can over-write various parameters, e.g. serial address)
+# if an instrument is found that is not in the system YAML file there is the possibly to add it
+#   info when adding, instrument type -> specific SCPI class
+# do more things silently: poll for serial addresses as well as pyvisa USB addresses
+# can the YAML make a dictionary? 
+
+# check what's connected vs. what's in YAML
+# user must at least open by name since the user should pick the object variable name 
+
+# detect instruments 
+    # needs a list of interfaces 
+
+# API:
+#   def detect_instruments(optional config_file)
+        # how does this do pyvisa vs. pyserial?
+#   def update_config()
+        # open as SCPI, get ID and close? [this works]
+#   def add_toconfig(addr):
+        # prompt the user for name
+        # present the user with a list of available classes
+        
+
 # general to instrbuilder package
 # could be in CONFIG
 cmd_name = 'commands.csv'
@@ -17,7 +42,7 @@ instrument_path = 'instruments/srs/lock_in/sr810/'
 # could be in CONFIG
 cmd_map = os.path.join(base_dir, instrument_path, cmd_name)
 lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
-addr = {'pyserial': '/dev/tty.USA19H14112432P1.1'}
+addr = {'pyserial': '/dev/tty.USA19H141113P1.1'}
 # addr = {'unconnected': None}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')
@@ -62,6 +87,7 @@ lookup_file = os.path.join(base_dir, instrument_path, lookup_name)
 addr = {'pyvisa': 'USB0::0x0957::0x17A9::MY52160418::INSTR'}
 cmd_list, inst_comm, unconnected = init_instrument(
     cmd_map, addr=addr, lookup=lookup_file)
+print('Oscilloscope unconnected = {}'.format(unconnected))
 scpi_osc = KeysightMSOX3000(
     cmd_list, inst_comm, name='osc', unconnected=unconnected)
 

@@ -142,6 +142,7 @@ print('Starting scan')
 lia.read_buffer.trigger()
 time.sleep(0.2)
 
+
 uid = RE(list_scan([lia.read_buffer, lia_buffer_stats.std, lia_buffer_stats.mean],
          att.val, [0, 6, 10, 20, 30, 50, 60, 70, 80, 90, 100, 110], per_step=custom_step),
          LiveTable([att.val, lia.read_buffer, lia_buffer_stats.mean, lia_buffer_stats.std]),
