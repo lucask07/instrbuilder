@@ -142,3 +142,33 @@ class Command(object):
         self.getter_override = getter_override
         self.setter_override = setter_override
         self.returns_image = returns_image
+
+
+class Register(object):
+
+    """
+    A register of an integrated circuit to read or set
+    The register is an address value pair and can be R or R/W
+
+    todo:
+        handle values that are sub-registers or expand over multiple registers (might be another class)
+
+    Parameters
+    ----------
+    name : string
+        The name of the register, used as lookup key
+        to the dictionary of registers
+    address : int
+        address value
+    read_write : string
+        'R' 'R/W', 'W'
+    is_config : boolean
+        if True the register should have a constant value once written
+        if False the chip may update the register (e.g. by ADC readings) and the value could change
+    """
+
+    def __init__(self, name, address, read_write = 'R/W', is_config=True):
+        self.name = name
+        self.address = address
+        self.read_write = read_write
+        self.is_config = is_config

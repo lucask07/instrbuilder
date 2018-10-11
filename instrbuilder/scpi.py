@@ -90,7 +90,7 @@ for i in range(8):
     )] = lambda x: not bool(functools.partial(utils.get_bit, bit=i)(int(x)))
 #### -----------------------------------------
 divider_string = '=====================================\n'
-getter_debug_value = '7'  # when running headless (no instruments attached) all getters return this
+getter_debug_value = '7'  # when running headless (no instruments attached) all getters return this arbitrary value
 
 
 class SCPI(object):
@@ -506,12 +506,20 @@ class SCPI_Test(object):
 
 
 class USB(object):
+    """A USBPyVISA instrument
+
+        Parameters
+        ----------
+        address: the address of the device
+    """
+
     def __init__(self, address):
         self.comm = self.open_visa(address)
         try:
             print(self.get('id'))
         except:
             'Device ID get failed'
+
 
     def open_visa(self, addr):
         """ open a VISA object 
@@ -546,7 +554,7 @@ class USB(object):
 
     def write(self, cmd):
         ret = self.comm.write(cmd)
-        return (ret[1] == StatusCode.success, ret)
+        return ret[1] == StatusCode.success, ret
 
     def close(self):
         pass
@@ -745,10 +753,10 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
                 print('On your MAC at /dev/tty.USA*')
                 print(glob.glob("/dev/tty.USA*"))
             elif platform.system() == 'Linux':
-                print('On your MAC at /dev/tty.USA*')
+                print('On your Linux Box at /dev/tty.USA* ??')
                 print(glob.glob("/dev/tty.USA*"))
             elif platform.system() == 'Windows':
-                print('On your Windows Machine I dont know how to check for available COM ports')
+                print('On your Windows Machine I do not know how to check for available COM ports')
                 #print(glob.glob("/dev/tty.USA*"))
     # pyvisa:USB
     elif 'pyvisa' in addr:

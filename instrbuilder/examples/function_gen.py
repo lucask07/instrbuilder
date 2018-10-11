@@ -3,7 +3,6 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-
 from instrument_opening import open_by_name
 
 fg = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
@@ -13,4 +12,3 @@ fg.set('load', 'INF')
 
 # if fg.get('output') == '0':
 # 	fg.set('ON', 'output')
-
