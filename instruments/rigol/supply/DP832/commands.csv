@@ -1,0 +1,10 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+v,:SOUR{chan}:VOLT,,TRUE,float,TRUE,float,"[0, 30]",set output voltage,source,TRUE,2,1
+i,:SOUR{chan}:CURR,,TRUE,float,TRUE,float,"[0,3]",set output current,source,TRUE,2,1
+meas_v,:MEAS:VOLT,:MEAS:VOLT? CH{chan},TRUE,float,FALSE,float,None,voltage amplitude,measure,FALSE,2,1
+meas_i,:MEAS:CURR,:MEAS:CURR? CH{chan},TRUE,float,FALSE,float,None,Measure DC current,measure,FALSE,2,1
+output_mode,:OUTP:CVCC,:OUTP:CVCC? CH{chan},TRUE,float,FALSE,float,None,querry if constant voltage or constant current,output,TRUE,2,1
+ovp,":OUTP:OVP:VAL CH{chan},",:OUTP:OVP:VAL? CH{chan},TRUE,float,TRUE,float,"[0, 30]",Over voltage,output,TRUE,2,1
+ocp,":OUTP:OCP:VAL CH{chan},",:OUTP:OCP:VAL? CH{chan},TRUE,float,TRUE,float,"[0,3]",Over current,output,TRUE,2,1
+out_state,":OUTP CH{chan}, ",:OUTP? CH{chan},TRUE,str,TRUE,str,"['ON', 'OFF']",Enable and disable channel output,output,TRUE,2,1
+id,*IDN,,TRUE,str,FALSE,str,None,get id ,system,TRUE,,

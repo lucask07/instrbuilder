@@ -21,7 +21,7 @@ from pyvisa.constants import StatusCode
 
 # local package imports
 from command import Command
-import utils
+# from instrument_opening import find_visa_connected
 
 '''
 The SCPI module includes the SCPI class, functions to convert return values, and builds 
@@ -768,8 +768,8 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
             print(e)
             unconnected = True
             print('PyVISA address {} not found'.format(addr['pyvisa']))
-            print('These VISA instruments are available')
-            utils.find_visa_connected()
+            # print('These VISA instruments are available')
+            # find_visa_connected()
     # unattached instrument
     else:
         unconnected = True

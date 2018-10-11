@@ -247,7 +247,7 @@ def open_by_name(name, name_attached=None, filename='config.yaml'):
     cmd_list, inst_comm, unconnected = init_instrument(
         cmd_map, addr=configs['instruments'][name]['address'], lookup=lookup_file)
 
-    if bluesky_name is not None:
+    if name_attached is not None:
         name = name_attached
 
     InstrumentClass = getattr(instruments, configs['instruments'][name]['python_class'])

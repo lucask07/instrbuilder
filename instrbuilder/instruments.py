@@ -35,6 +35,14 @@ def filewriter(data, filename, filetype='png'):
     elif filetype == 'npy':
         np.save(filename + '.' + filetype, data)
 
+class RigolPowerSupply(SCPI):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='pwr',
+                 unconnected=False):
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
 
 class AgilentFunctionGen(SCPI):
     def __init__(self,
