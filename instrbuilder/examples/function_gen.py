@@ -5,10 +5,11 @@
 
 from instrument_opening import open_by_name
 
-fg = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
+fg = open_by_name(name='new_function_gen')   # name within the configuration file (config.yaml)
 
 fg.set('offset', 0.5)
 fg.set('load', 'INF')
 
-# if fg.get('output') == '0':
-# 	fg.set('ON', 'output')
+test_results = fg.test_all(skip_commands=[])
+fg.set('reset')
+fg.set('clear_status')

@@ -30,3 +30,6 @@ voltage_burst = dmm.burst_volt(reads_per_trigger=num_reads, aperture=200e-6)  # 
 print('Measured a {} length voltage burst'.format(len(voltage_burst)))
 
 assert num_reads == len(voltage_burst), "Voltage burst length does not match number of reads"
+
+dmm.set('reset')
+dmm.set('clear_status')

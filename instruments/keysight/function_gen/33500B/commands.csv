@@ -25,6 +25,6 @@ status_byte,*STB,,TRUE,int,FALSE,none,None,query the summary register (bit 6),st
 status_enable,*SRE,,TRUE,int,TRUE,int,"[0,255]",status register enable ,status,FALSE,,
 event_status,*ESR,,TRUE,int,FALSE,none,None,event status register ,status,FALSE,,
 event_status_enable,*ESE,,TRUE,int,TRUE,int,"[0,255]",enable bits in the event status register ,status,FALSE,,
-clear_status,*CLS,,FALSE,none,TRUE,int,"[0,255]",clear the even register in all register groups,status,FALSE,,
+clear_status,*CLS,,FALSE,none,TRUE,int,"[0,255]",clear the event register in all register groups,status,FALSE,,
 power_on_clear,*PSC,,TRUE,int,TRUE,int,"[0,255]",clear the standard event enable register,status,FALSE,,
 set_opc,*OPC,,FALSE,none,TRUE,int,"[0,255]",Set the operation complete bit in the standard event register,status,FALSE,,

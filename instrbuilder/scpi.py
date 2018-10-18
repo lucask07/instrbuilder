@@ -21,6 +21,7 @@ from pyvisa.constants import StatusCode
 
 # local package imports
 from command import Command
+import utils
 
 '''
 The SCPI module includes the SCPI class, functions to convert return values, and builds 
@@ -326,7 +327,7 @@ class SCPI(object):
             The csv command file must have a getter with name comm_error that returns a bool """
         try:
             return self.get('comm_error')
-        except KeyError as e:
+        except KeyError as inst:
             print(
                 'Error: The command comm_error must be configured to read instrument errors'
             )
@@ -386,7 +387,7 @@ class SCPI(object):
                     set_vals = [
                         self._cmds[name].limits[0], self._cmds[name].limits[1]
                     ]
-                except:
+                except :
                     print(
                         'Skipping test of setter {} since limits are missing'.
                         format(name))
@@ -579,8 +580,9 @@ class Serial(object):
             self.write(init_write)
         try:
             print(self.get('id'))
-        except:
-            'Device ID get failed'
+        except Exception as inst:
+            print(inst)
+            print('Device ID get failed')
 
     def open(self):
         self.ser.close()
@@ -650,12 +652,12 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
                     if math.isnan(row['command']):
                         raise Exception(
                             'The first element of the lookup table is empty')
-                except Exception as e:
+                except Exception as inst:
                     pass
             try:
                 if not math.isnan(row['command']):
                     current_cmd = current_cmd  # shouldn't get here
-            except Exception as e:
+            except Exception as inst:
                 current_cmd = row['command']
 
             try:
@@ -744,8 +746,8 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
             inst_comm = inst
             inst_comm.ser.flush()
             unconnected = False
-        except Exception as e:
-            print(e)
+        except Exception as inst:
+            print(inst)
             unconnected = True
             print('PySerial address not found {}'.format(addr['pyserial']))
             print('Possible serial addresses:')
