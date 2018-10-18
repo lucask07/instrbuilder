@@ -16,7 +16,6 @@ import pandas as pd
 import colorama
 import numpy as np
 
-sys.path.append('/Users/koer2434/Google Drive/UST/research/aardvark/api/python')
 from aardvark_py import *
 
 # local package imports
@@ -39,7 +38,7 @@ class IC(object):
         handle to the (general) hardware interface
         Example is the aardvark
             write method
-            read method
+            ask method
     name : str, optional
         Name of the IC
 
@@ -59,7 +58,7 @@ class IC(object):
                  unconnected=False):
         self._regs = {}
         for reg in reg_list:
-            self._regs[reg.name] = reg
+            self._cmds[cmd.name] = reg  # maintain cmds for compatibility with upper-layers (ophyd)
         self._write = comm_handle.write
         self._ask = comm_handle.read
         self.comm_handle = comm_handle
@@ -76,14 +75,14 @@ class IC(object):
             raise NotImplementedError
 
         return self._ask(self.interface, addr_instruction=self._regs[name].address,
-                        slave_address=self.slave_address)
+                         slave_address=self.slave_address)
 
     def set(self, name, val):
 
-        if self._regs[name].read_write in ['W', 'R/W']:
-            return self._write(self.interface, addr_instruction=self._regs[name].address,
+        if self._cmds[name].read_write in ['W', 'R/W']:
+            return self._write(self.interface, addr_instruction=self._cmds[name].address,
                               slave_address=self.slave_address, data=val)
-        elif self._regs[name].read_write in ['R']:
+        elif self._cmds[name].read_write in ['R']:
             print('register {} is read-only'.format(name))
             return -1
         else:
@@ -240,7 +239,7 @@ class AA(object):
 
         return data_in, count
 
-    def read(self, interface, addr_instruction, slave_address=None,
+    def ask(self, interface, addr_instruction, slave_address=None,
              num_bytes_to_read=1):
         """
         read a register using either SPI or i2c

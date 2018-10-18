@@ -21,7 +21,6 @@ from pyvisa.constants import StatusCode
 
 # local package imports
 from command import Command
-# from instrument_opening import find_visa_connected
 
 '''
 The SCPI module includes the SCPI class, functions to convert return values, and builds 
@@ -94,12 +93,12 @@ getter_debug_value = '7'  # when running headless (no instruments attached) all 
 
 
 class SCPI(object):
-    """A SCPI instrument with a list of commands. The instrument has methods to get and set info of each command.
+    """A SCPI (or SCPI like) instrument with a list of commands. The instrument has methods to get and set info of each command.
 
     .. todo::
         * Instrument error log lookup. How to load? Import as csv?
         * Automatic checker: send values out of range and read-back, note precisions, etc.
-        * Organization of classes, what inherits from what? Override RS232 initialization stuff
+        * Organization of classes, what inherits from what? Override Serial initialization stuff
         * Create docstrings for each method of SCPI class
 
     Parameters
@@ -110,7 +109,7 @@ class SCPI(object):
         handle to the (general) hardware interface
         Example is the pyvisa instrument object: inst
         Needed when commands are overriden
-        should support a:
+        must have a:
             write method (Examples are pySerial write() or pyvisa inst.write())
             and an ask method (Examples are pySerial ask() and pyvisa inst.query())
     name : str, optional
@@ -128,13 +127,14 @@ class SCPI(object):
         self._cmds = {}
         for cmd in cmd_list:
             self._cmds[cmd.name] = cmd
-        self.write = comm_handle.write
-        self.ask = comm_handle.ask
+        self._write = comm_handle.write
+        self._ask = comm_handle.ask
         self.unconnected = unconnected
 
         # get the vendor ID, which often includes firmware revision and other useful info.
         try:
             vendor_id = self.get('id')
+            print('Opened Instrument: {}'.format(vendor_id))
         except Exception as e:
             print(e)
             print(
@@ -160,13 +160,14 @@ class SCPI(object):
             return self._cmds[name].getter_override(**configs)
 
         cmd_str = self._cmds[name].ascii_str_get
-        ret_val = self.ask(cmd_str.format(**configs))
+        ret_val = self._ask(cmd_str.format(**configs))
 
         # if the instrument is not connected, check if the command has a specific return value
         if self.unconnected:
             try:
                 ret_val = self._cmds[name]._unconnected_val
-            except Exception as get_error:
+            except Exception as inst:
+                print(inst)
                 pass
         try:
             val = self._cmds[name].getter_type(ret_val)
@@ -207,7 +208,7 @@ class SCPI(object):
             cmd_str = cmd_str.format(value='').rstrip()
 
         # send the command to the instrument
-        return self.write(cmd_str)
+        return self._write(cmd_str)
 
     def check_set_range(self, value, name):
         ''' check if the value to be set is within range '''
@@ -450,7 +451,7 @@ class SCPI(object):
         else:
             print('Command is not a setter nor a getter, cannot test!')
 
-        return (not comm_error)
+        return not comm_error
 
     def test_all(self,
                  skip_subsystem=['setup', 'status', 'system'],
@@ -491,6 +492,7 @@ class SCPI(object):
         print('Command Test Results:')
         import pprint
         pprint.pprint(all_tests)
+        print('Returns True if command is successful')
         return all_tests
 
 
@@ -505,7 +507,7 @@ class SCPI_Test(object):
     pass
 
 
-class USB(object):
+class PyVisaUSB(object):
     """A USBPyVISA instrument
 
         Parameters
@@ -514,11 +516,11 @@ class USB(object):
     """
 
     def __init__(self, address):
-        self.comm = self.open_visa(address)
         try:
-            print(self.get('id'))
-        except:
-            'Device ID get failed'
+            self.comm = self.open_visa(address)
+        except Exception as inst:
+            print(inst)
+            print('Device Opening failed')
 
 
     def open_visa(self, addr):
@@ -560,7 +562,7 @@ class USB(object):
         pass
 
 
-class RS232(object):
+class Serial(object):
     def __init__(self, ser_port, **kwargs):
         self.ser = serial.Serial(
             port=ser_port,
@@ -589,7 +591,7 @@ class RS232(object):
             time.sleep(0.1)
             cnt = cnt + 1
             if cnt > 25:
-                print('Failed to open RS232 interface at address: {}'.format(
+                print('Failed to open Serial interface at address: {}'.format(
                     self.ser_port))
 
     def ask(self, cmd):
@@ -735,10 +737,10 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
     # check to ensure the dictionary only has 0 or 1 entry
     if len(addr) > 1:
         sys.exit('Multiple keys: {}'.format(list(addr.keys())))
-    # pySerial:RS232
+    # pySerial:Serial
     if 'pyserial' in addr:
         try:
-            inst = RS232(addr['pyserial'], **kwargs)
+            inst = Serial(addr['pyserial'], **kwargs)
             inst_comm = inst
             inst_comm.ser.flush()
             unconnected = False
@@ -758,18 +760,16 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
             elif platform.system() == 'Windows':
                 print('On your Windows Machine I do not know how to check for available COM ports')
                 #print(glob.glob("/dev/tty.USA*"))
-    # pyvisa:USB
+    # pyvisa:PyVisaUSB
     elif 'pyvisa' in addr:
         try:
-            inst = USB(addr['pyvisa'])
+            inst = PyVisaUSB(addr['pyvisa'])
             inst_comm = inst.comm
             unconnected = False
         except Exception as e:
             print(e)
             unconnected = True
             print('PyVISA address {} not found'.format(addr['pyvisa']))
-            # print('These VISA instruments are available')
-            # find_visa_connected()
     # unattached instrument
     else:
         unconnected = True

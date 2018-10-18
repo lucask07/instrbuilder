@@ -16,19 +16,10 @@ from bluesky.callbacks.best_effort import BestEffortCallback
 from bluesky.plans import scan, grid_scan
 from databroker import Broker
 
-# use symbolic links (for now)
-sys.path.append('/Users/koer2434/ophyd/ophyd/')
-sys.path.append(
-    '/Users/koer2434/instrbuilder/')
-
-# imports that require sys.path.append pointers
 from ophyd.device import Kind
 from ophyd.ee_instruments import LockIn, FunctionGen, generate_ophyd_obj
 import scpi
 from setup import scpi_lia
-
-base_dir = os.path.abspath(
-    os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
 
 RE = RunEngine({})
 bec = BestEffortCallback()

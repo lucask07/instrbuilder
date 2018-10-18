@@ -4,18 +4,15 @@
 # University of St. Thomas
 
 # standard library imports
-
 import numpy as np
 import sys
 import time
 
 # local package imports
-sys.path.append(
-    '/Users/koer2434/instrbuilder/')  # this instrbuilder: the SCPI library
 from scpi import SCPI
 
 
-# TODO: Extra capabilites should be moved somewhere else
+# TODO: Extra capabilities should be moved somewhere else
 def filewriter(data, filename, filetype='png'):
     ''' Write a list or np.array of unsigned bytes to a file 
 

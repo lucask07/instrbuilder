@@ -4,7 +4,7 @@
 # University of St. Thomas
 
 import visa
-import oyaml as yaml  # oyaml preserves ordering
+import oyaml as yaml  # oyaml preserves ordering (installed oyaml)
 import os
 import sys
 import inspect
@@ -14,9 +14,6 @@ sys.path.append(p)
 from scpi import init_instrument
 import instruments
 
-# use symbolic links
-sys.path.append(
-    '/Users/koer2434/instrbuilder/')  # this instrbuilder: the SCPI library
 home = os.path.join(os.path.expanduser("~"), '.instrbuilder')
 
 
@@ -53,8 +50,6 @@ def find_instrument_classes():
     instrument_classes = []
     for name, obj in inspect.getmembers(instruments):
         if inspect.isclass(obj):
-            # print(obj)
-            # print(obj.__name__)
             instrument_classes.append(obj.__name__)
 
     return instrument_classes
@@ -204,7 +199,11 @@ def detect_instruments(filename='config.yaml'):
     not_in_config = []
     for addr in usb_addrs:
         if addr not in pyvisa_addr:
-            print('Addr: {} is not in your system configuration file.\n Should we add it?'.format(addr))
+            add_yes_no = input('Addr: {} is not in your system configuration file.\n Should we add it? [Y/N]'.format(addr))
+
+            if add_yes_no in ['Y', 'yes', 'YES']:
+                new_config = user_input(addr, interface='pyvisa')
+                append_to_yaml(new_config)
             not_in_config.append(addr)
 
     return usb_addrs, not_in_config

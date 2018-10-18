@@ -20,21 +20,12 @@ from bluesky.plans import scan, count
 from bluesky.utils import Msg
 from databroker import Broker
 
-# use symbolic links
-sys.path.append('/Users/koer2434/ophyd/ophyd/')
-sys.path.append(
-    '/Users/koer2434/instrbuilder/')
-
-# imports that require sys.path.append pointers
 from ophyd.device import Kind
 from ophyd.ee_instruments import MultiMeter, FunctionGen, BasicStatistics, Oscilloscope
 import scpi
 
 sys.path.append('/Users/koer2434/Google Drive/UST/research/point_of_care/lock_in/cots_comparisons/ada2200/')
 from ada2200 import *
-
-base_dir = os.path.abspath(
-    os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
 
 RE = RunEngine({})
 bec = BestEffortCallback()

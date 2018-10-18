@@ -21,17 +21,8 @@ from my_bluesky.plans import count
 from my_bluesky.plan_stubs import trigger_and_read, trigger
 from databroker import Broker
 
-# use symbolic links
-sys.path.append('/Users/koer2434/ophyd/ophyd/')
-sys.path.append(
-    '/Users/koer2434/instrbuilder/')
-
-# imports that require sys.path.append pointers
 from ophyd.ee_instruments import MultiMeter, FunctionGen, BasicStatistics, Oscilloscope
 import scpi
-
-base_dir = os.path.abspath(
-    os.path.join(os.path.dirname(scpi.__file__), os.path.pardir))
 
 RE = RunEngine({})
 bec = BestEffortCallback()
