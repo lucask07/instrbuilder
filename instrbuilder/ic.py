@@ -56,11 +56,11 @@ class IC(object):
                  name='not_named',
                  slave_address=None,
                  unconnected=False):
-        self._regs = {}
+        self._cmds = {}
         for reg in reg_list:
-            self._cmds[cmd.name] = reg  # maintain cmds for compatibility with upper-layers (ophyd)
+            self._cmds[reg.name] = reg  # maintain cmds for compatibility with upper-layers (ophyd)
         self._write = comm_handle.write
-        self._ask = comm_handle.read
+        self._ask = comm_handle.ask
         self.comm_handle = comm_handle
         self.interface = interface  # SPI or I2C
         self.name = name
@@ -70,11 +70,11 @@ class IC(object):
     def get(self, name):
 
         # check if R or RW
-        if self._cmds[name].read_write in ['R', 'R/W']:
+        if self._cmds[name].read_write not in ['R', 'R/W']:
             print('This register {} is not readable'.format(name))
             raise NotImplementedError
 
-        return self._ask(self.interface, addr_instruction=self._regs[name].address,
+        return self._ask(self.interface, addr_instruction=self._cmds[name].address,
                          slave_address=self.slave_address)
 
     def set(self, name, val):
@@ -148,7 +148,7 @@ class AA(object):
 
         # Set the bitrate
         bitrate = aa_i2c_bitrate(self.comm, bit_rate)
-        print("Bitrate set to %d kHz" % bitrate)
+        print('I2C bitrate set to {} kHz'.format(bitrate))
 
     def configure_spi(self, SPI_BITRATE=1000):
         # Ensure that the SPI subsystem is enabled
@@ -171,7 +171,7 @@ class AA(object):
 
         # Set the bitrate
         bitrate = aa_spi_bitrate(self.comm, SPI_BITRATE)
-        print("SPI Bitrate set to %d kHz" % bitrate)
+        print("SPI Bitrate set to {} kHz".format(bitrate))
 
     def write_i2c(self, slave_addr, sub_addr, value):
 
@@ -223,14 +223,16 @@ class AA(object):
 
     def read_spi(self, instruction):
 
-        # Assemble the write command and address
-        data_out = array('B', [0 for _ in range(2)])
+        # Assemble the read command and address
+        data_out = array('B', [0 for _ in range(3)])
+        data_in = array('B', [0 for _ in range(3)])
         # instructions (2 bytes)
         data_out[0] = ((instruction >> 8) & 0xff) + 128  # MSB of instructions
         data_out[1] = (instruction >> 0) & 0xff  # add Read bit at bit15
+        data_out[2] = 0
 
         # Write the transaction
-        (count, data_in) = aa_spi_write(self.comm, data_out, 0)
+        (count, data_in) = aa_spi_write(self.comm, data_out, data_in)
         if count < 0:
             print("error: %s\n" % aa_status_string(count))
             return
@@ -246,7 +248,7 @@ class AA(object):
         """
 
         if interface is 'SPI':
-            if instruction is None:
+            if addr_instruction is None:
                 print('Error: a SPI read needs an instruction')
                 return
             return self.read_spi(addr_instruction)
