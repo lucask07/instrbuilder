@@ -3,26 +3,10 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-import yaml
-import os
-from scpi import init_instrument
-from instruments import SRSLockIn
+from instrument_opening import open_by_name
 
-yaml_config = open('config.yaml', 'r')
-configs = yaml.load(yaml_config)
-
-# get lockin amplifier SCPI object 
-cmd_name = 'commands.csv'
-lookup_name = 'lookup.csv'
-
-# LOCKIN amplifier SCPI object
-instrument_path = 'srs/lock_in/sr810/'
-cmd_map = os.path.join(configs['csv_directory'], instrument_path, cmd_name)
-lookup_file = os.path.join(configs['csv_directory'], instrument_path, lookup_name)
-addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
-cmd_list, inst_comm, unconnected = init_instrument(
-    cmd_map, addr=addr, lookup=lookup_file, init_write='OUTX 0')
-lia = SRSLockIn(cmd_list, inst_comm, name='lock-in', unconnected=unconnected)
+print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
+lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)
 
 print()
 lia.get('phase')
@@ -32,9 +16,10 @@ print()
 lia.help('phase')
 print()
 
-
 # A more complex Lock-in Amplifier set; requires input dictionary configs 
 # Set the display to show "R" -- magnitude
 lia.set(name='ch1_disp', value=1, configs={'ratio': 0})
 
-
+# Read the value of the display
+disp_val = lia.get('disp_val')
+print('Value of the display = {}'.format(disp_val))

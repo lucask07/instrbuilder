@@ -578,11 +578,6 @@ class Serial(object):
         init_write = kwargs.get('init_write')
         if init_write is not None:
             self.write(init_write)
-        try:
-            print(self.get('id'))
-        except Exception as inst:
-            print(inst)
-            print('Device ID get failed')
 
     def open(self):
         self.ser.close()

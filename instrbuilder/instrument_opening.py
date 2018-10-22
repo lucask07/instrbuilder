@@ -9,8 +9,6 @@ import os
 import sys
 import inspect
 
-p = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
-sys.path.append(p)
 from scpi import init_instrument
 import instruments
 
