@@ -166,6 +166,8 @@ def detect_instruments(filename='config.yaml'):
 
     yaml_config = open(os.path.join(home, filename), 'r')
     configs = yaml.safe_load(yaml_config)
+    # print('Current configs: ')
+    # print(configs)
 
     device_addrs = find_visa_connected()
     usb_addrs = [k for k in device_addrs if 'USB0' in k]
@@ -184,19 +186,15 @@ def detect_instruments(filename='config.yaml'):
         obj.close()
     print('-' * 40)
 
-    # create list of the PyVISA addresses tracked in the config file
-    config_addr = [configs['instruments'][k]['address'] for k in configs['instruments'] if 'address' in k]
-
-    interface = 'pyvsia'
-    pyvisa_addr = [c[interface] for c in config_addr if interface in c]
-
-    interface = 'pyserial'
-    pyserial_addr = [c[interface] for c in config_addr if interface in c]
+    # create list of the addresses tracked in the config file
+    config_addr = [list(x['address'].values())[0] for x in configs['instruments'].values()]
+    # print('Addresses in configuration file: ')
+    # print(config_addr)
 
     # look for instruments that are not in the configuration file
     not_in_config = []
     for addr in usb_addrs:
-        if addr not in pyvisa_addr:
+        if addr not in config_addr:
             add_yes_no = input('Addr: {} is not in your system configuration file.\n Should we add it? [Y/N]'.format(addr))
 
             if add_yes_no in ['Y', 'yes', 'YES']:
