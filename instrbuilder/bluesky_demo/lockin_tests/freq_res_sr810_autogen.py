@@ -17,9 +17,8 @@ from bluesky.plans import scan, grid_scan
 from databroker import Broker
 
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen, generate_ophyd_obj
-import scpi
-from setup import scpi_lia
+from ophyd.ee_instruments import generate_ophyd_obj
+from instrument_opening import open_by_name  # open the SCPI instrument
 
 RE = RunEngine({})
 bec = BestEffortCallback()
@@ -34,6 +33,7 @@ RE.subscribe(db.insert)
 # ------------------------------------------------
 #           Lock-In Amplifier
 # ------------------------------------------------
+scpi_lia = open_by_name(name='srs_lockin')
 Lia, component_dict = generate_ophyd_obj(name='LockInAmplifier', scpi=scpi_lia)
 lia = Lia(name='lock_in')
 if lia.unconnected:

@@ -167,8 +167,11 @@ class Register(object):
         if False the chip may update the register (e.g. by ADC readings) and the value could change
     """
 
-    def __init__(self, name, address, read_write = 'R/W', is_config=True):
+    def __init__(self, name, address, read_write='R/W', is_config=True):
         self.name = name
         self.address = address
         self.read_write = read_write
         self.is_config = is_config
+        self.lookup = {}
+        self.doc = ''
+        self.returns_image = False

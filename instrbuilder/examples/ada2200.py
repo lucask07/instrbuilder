@@ -46,4 +46,4 @@ ada2200.set('serial_interface', 0x18)  # enables SDO (bit 4,3 = 1)
 demod_ctrl = ada2200.get('demod_control')
 
 # Print the read-back. The first two bytes are 0s since that is when command/address is sent
-print('Read from Demod Control: 0x{:02x}'.format(demod_ctrl[0][2:][0]))
+print('Read from Demod Control: 0x{:02x}'.format(demod_ctrl))

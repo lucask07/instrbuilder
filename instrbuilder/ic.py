@@ -67,7 +67,7 @@ class IC(object):
         self.unconnected = unconnected  # not yet supported
         self.slave_address = slave_address
 
-    def get(self, name):
+    def get(self, name, configs={}):
 
         # check if R or RW
         if self._cmds[name].read_write not in ['R', 'R/W']:
@@ -77,11 +77,11 @@ class IC(object):
         return self._ask(self.interface, addr_instruction=self._cmds[name].address,
                          slave_address=self.slave_address)
 
-    def set(self, name, val):
+    def set(self, name, value, configs={}):
 
         if self._cmds[name].read_write in ['W', 'R/W']:
             return self._write(self.interface, addr_instruction=self._cmds[name].address,
-                              slave_address=self.slave_address, data=val)
+                              slave_address=self.slave_address, data=value)
         elif self._cmds[name].read_write in ['R']:
             print('register {} is read-only'.format(name))
             return -1
@@ -229,7 +229,7 @@ class AA(object):
         # instructions (2 bytes)
         data_out[0] = ((instruction >> 8) & 0xff) + 128  # MSB of instructions
         data_out[1] = (instruction >> 0) & 0xff  # add Read bit at bit15
-        data_out[2] = 0
+        data_out[2] = 0  # container for returned data on SDO
 
         # Write the transaction
         (count, data_in) = aa_spi_write(self.comm, data_out, data_in)
@@ -239,7 +239,8 @@ class AA(object):
         elif count != len(data_out):
             print("error: read %d bytes (expected %d)" % (count - 3, len(data_out)))
 
-        return data_in, count
+        # return data_in, count
+        return data_in[2]
 
     def ask(self, interface, addr_instruction, slave_address=None,
              num_bytes_to_read=1):

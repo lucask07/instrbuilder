@@ -17,9 +17,13 @@ from bluesky.plans import scan, grid_scan
 from databroker import Broker
 
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen
-import scpi
-from setup import scpi_lia
+from ophyd.ee_instruments import generate_ophyd_obj
+
+from instrument_opening import open_by_name
+print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
+scpi_lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)
+LIA, component_dict = generate_ophyd_obj(name='LockIn', scpi=scpi_lia)
+lia = LIA(name='lockin')
 
 RE = RunEngine({})
 bec = BestEffortCallback()

@@ -37,6 +37,7 @@ convert_return['double'] = float
 convert_return['int'] = int
 convert_return['nan'] = str
 
+
 def arr_str(str_in):
     """ convert string such as '2.3', '5.4', '9.9' to a list of floats """
     return np.asarray(list(map(lambda x: float(x), str_in.split(','))))
