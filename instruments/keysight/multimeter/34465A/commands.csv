@@ -1,10 +1,10 @@
-name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
 curr_bw,CURR:AC:BAND ,,TRUE,float,TRUE,float,"[3, 300e3]",Sets the bandwidth for AC current measurements.,sense,TRUE,,
 curr_null_enable,CURR:{ac_dc}:NULL {value},,TRUE,int,TRUE,int,"[0,1]",Enables or disables the null function for AC or DC current measurements,sense,TRUE,2,1
 curr_null_value,CURR:{ac_dc}:NULL:VAL {value},,TRUE,float,TRUE,float,"[-12,12]",Sets the null value for AC or DC current measurements,sense,TRUE,2,1
-curr_null_value,CURR:{ac_dc}:NULL:VAL:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Sets the null value for AC or DC current measurements,sense,TRUE,2,1
+curr_null_value_auto,CURR:{ac_dc}:NULL:VAL:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Sets the null value for AC or DC current measurements,sense,TRUE,2,1
 curr_range,CURR:{ac_dc}:RANG {value},,TRUE,float,TRUE,float,"[100e-6, 3]",Selects a fixed measurement range for AC or DC current measurements on the 3 A terminals.,sense,TRUE,2,1
-curr_range_auto,CURR:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Disables or enables autoranging for AC or DC current measurements. Auto-ranging is convenient because it automatically selects the range for each measurement based on the input signal. Did not implement ONCE ,sense,TRUE,2,1
+curr_range_auto,CURR:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,"[0,1]",Disables or enables autoranging for AC or DC current measurements. Auto-ranging is convenient because it automatically selects the range for each measurement based on the input signal. Did not implement ONCE ,sense,FALSE,2,1
 curr_nplc,CURR:NPLC,,TRUE,float,TRUE,float,"[0.02, 0.06, 0.2, 1,10, 100]",Sets the integration time in number of power line cycles (PLC) for DC current measurements. Integration time is the period that the instruments analog-to digital (A/D) converter samples the input signal for a measurement. A longer integration time gives better measurement resolution but slower measurement speed.,sense,TRUE,,
 curr_res,CURR:RES,,TRUE,float,TRUE,float,"[1e-3, 10e-3, 100e-3,1,3]","Selects the measurement resolution for DC current measurements. Specify the resolution in the same units as the selected measurement function, not in number of digits.",sense,TRUE,,
 meas_cap,MEAS:CAP,MEAS:CAP? {range},TRUE,float,FALSE,float,None,"Sets all measurement parameters and trigger parameters to their default values for capacitance measurements
@@ -16,7 +16,7 @@ hardcopy_format,HCOP:SDUM:DATA:FORM,,TRUE,str,TRUE,str,"['PNG', 'BMP']",Set the 
 hardcopy,HCOP:SDUM:DATA?,,TRUE,image,FALSE,str,None,Returns an image of the screen,save,FALSE,,
 volt_range,VOLT:{ac_dc}:RANG {value},,TRUE,float,TRUE,float,"[100e-3, 1, 10, 100, 1000]","Set the range of voltage measurements, Auto is also an option",sense,TRUE,2,1
 volt_range_auto,VOLT:{ac_dc}:RANG:AUTO {value},,TRUE,int,TRUE,int,"[0, 1]",Turn on or off auto ranging,sense,TRUE,2,1
-volt_autozero,VOLT:{ac_dc}:ZERO:AUTO {value},,TRUE,int,TRUE,int,"[0, 1]",Turn on or off auto zero,sense,TRUE,2,1
+volt_autozero_dc,VOLT:DC:ZERO:AUTO,,TRUE,int,TRUE,int,"[0, 1]",Turn on or off auto zero; only valid for DC,sense,TRUE,,
 volt_aperture,VOLT:APER,,TRUE,float,TRUE,float,"[20e-6, 1]","Acquisition aperture, use NPLC for better power-line rejection",sense,TRUE,,
 sample_timer,SAMP:TIM,,TRUE,float,TRUE,float,None,Sets a sample interval for timed sampling,sample,TRUE,,
 sample_source,SAMP:SOUR,,TRUE,str,TRUE,str,"['IMM', 'TIM']",Imm: trigger delay inserted after completion of each measurement; 'TIM': deterministic time between samples,sample,TRUE,,
@@ -30,7 +30,7 @@ read_error,:SYST:ERR,,TRUE,str,FALSE,str,None,Get an error from the communicatio
 initialize,INIT,,FALSE,str,TRUE,str,None,Initialize measurement,meas,FALSE,,
 fetch,FETC,,TRUE,str_array_to_numarray,FALSE,str,None,Get data in buffer,memory,FALSE,,
 data_pts,DATA:POIN,,TRUE,int,FALSE,int,None,query the number of data points in memory,data,FALSE,,
-data_pts_threshold,DATA:POIN:EVEN:THR,,TRUE,int,TRUE,int,None,Set a threshold of data available for setting of status bit before setting bit 9 in the Standard Operation Register group event register to 1,data,TRUE,,
+data_pts_threshold,DATA:POIN:EVEN:THR,,TRUE,int,TRUE,int,None,Set a threshold of data available for setting of status bit before setting bit 9 in the Standard Operation Register group event register to 1,data,FALSE,,
 store_data,"MMEM:STOR:DATA RDG_STORE,""{value}""",,FALSE,str,TRUE,str,None,store readings to a file,memory,FALSE,,
 upload_data,MMEM:UPL,"MMEM:UPL? ""INT:\{filename}""",TRUE,str_array_to_numarray,FALSE,str,None,upload file data to the host computer,memory,FALSE,,
 trig,*TRG,,FALSE,str,TRUE,str,None,Trigger via Bus ,trigger,FALSE,,

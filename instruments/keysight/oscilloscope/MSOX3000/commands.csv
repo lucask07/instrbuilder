@@ -7,18 +7,18 @@ acq_segment_count,:ACQ:SEG:COUN,,TRUE,int,TRUE,int,"[2,1000]",,acquire,TRUE,,
 acq_segment_index,:ACQ:SEG:IND,,TRUE,int,TRUE,int,"[1,1000]",,acquire,TRUE,,
 acq_sample_rate,:ACQ:SRAT,,TRUE,float,FALSE,none,,acquistion sample rate,acquire,TRUE,,
 acq_type,:ACQ:TYPE,,TRUE,str,TRUE,str,"['NORM', 'AVER', 'HRES','PEAK']",acquistion mode,acquire,TRUE,,
-chan_bwlimit,:CHAN{channel}:BWL {value},,TRUE,int,TRUE,int,"[0,1]",Limit the badwidth of the channel,channel,TRUE,2,1
-chan_coupling,:CHAN{channel}:COUP,,TRUE,str,TRUE,str,"['AC','DC']",DC or AC input coupling of the channel,channel,TRUE,2,1
-chan_display,:CHAN{channel}:DISP,,TRUE,int,TRUE,int,"[0,1]",Turn on or off the channel display,channel,TRUE,2,1
-chan_impedance,:CHAN{channel}:IMP,,TRUE,str,TRUE,str,"['ONEMEG', 'FIFTY']",Input impedance of the channel ,channel,TRUE,2,1
-chan_invert,:CHAN{channel}:INV,,TRUE,int,TRUE,int,"[0,1]",Invert channel? ,channel,TRUE,2,1
-chan_label,:CHAN{channel}:LAB,,TRUE,str,TRUE,str,,Waveform label ,channel,TRUE,2,1
-chan_offset,:CHAN{channel}:OFFS,,TRUE,float,TRUE,float,,Voltage offset of the channel,channel,TRUE,2,1
-chan_probe,:CHAN{channel}:PROB,,TRUE,float,TRUE,float,,Attenuation of a probe,channel,TRUE,2,1
-chan_range,:CHAN{channel}:RANG,,TRUE,float,TRUE,float,,Vertical full-scale range value ,channel,TRUE,2,1
-chan_scale,:CHAN{channel}:SCAL,,TRUE,float,TRUE,float,,Vertical units per division,channel,TRUE,2,1
-chan_units,:CHAN{channel}:UNIT,,TRUE,float,TRUE,float,"['VOLT','AMP']",Units of vertical axis,channel,TRUE,2,1
-chan_vernier,:CHAN{channel}:VERN,,TRUE,int,TRUE,int,"[0,1]",Fine vertical control on/off,channel,TRUE,2,1
+chan_bwlimit,:CHAN{chan}:BWL {value},,TRUE,int,TRUE,int,"[0,1]",Limit the badwidth of the channel,channel,TRUE,2,1
+chan_coupling,:CHAN{chan}:COUP,,TRUE,str,TRUE,str,"['AC','DC']",DC or AC input coupling of the channel,channel,TRUE,2,1
+chan_display,:CHAN{chan}:DISP,,TRUE,int,TRUE,int,"[0,1]",Turn on or off the channel display,channel,TRUE,2,1
+chan_impedance,:CHAN{chan}:IMP,,TRUE,str,TRUE,str,"['ONEMEG', 'FIFTY']",Input impedance of the channel ,channel,TRUE,2,1
+chan_invert,:CHAN{chan}:INV,,TRUE,int,TRUE,int,"[0,1]",Invert channel? ,channel,TRUE,2,1
+chan_label,:CHAN{chan}:LAB,,TRUE,str,TRUE,str,,Waveform label ,channel,TRUE,2,1
+chan_offset,:CHAN{chan}:OFFS,,TRUE,float,TRUE,float,,Voltage offset of the channel,channel,TRUE,2,1
+chan_probe,:CHAN{chan}:PROB,,TRUE,float,TRUE,float,,Attenuation of a probe,channel,TRUE,2,1
+chan_range,:CHAN{chan}:RANG,,TRUE,float,TRUE,float,,Vertical full-scale range value ,channel,TRUE,2,1
+chan_scale,:CHAN{chan}:SCAL,,TRUE,float,TRUE,float,,Vertical units per division,channel,TRUE,2,1
+chan_units,:CHAN{chan}:UNIT,,TRUE,float,TRUE,float,"['VOLT','AMP']",Units of vertical axis,channel,TRUE,2,1
+chan_vernier,:CHAN{chan}:VERN,,TRUE,int,TRUE,int,"[0,1]",Fine vertical control on/off,channel,TRUE,2,1
 demo_function,:DEMO:FUNC,,TRUE,str,TRUE,str,"['SIN', 'NOIS', 'PHAS', 'LFS', 'AM', 'RFB', 'FMB', 'HARM', 'COUP', 'RING', 'SING', 'CLK', 'RUNT']",,demo,TRUE,,
 demo_output,:DEMO:OUTP,,TRUE,int,TRUE,int,"[0,1]",Demo output on or off ,demo,TRUE,,
 display_annotate,:DISP:ANN:TEXT,,TRUE,str,TRUE,str,,ASCII string to display on the oscillosocope,display,FALSE,,
@@ -39,7 +39,7 @@ time_window_scale,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window scale,time,
 trigger_sweep,:TRIG:SWE,,TRUE,str,TRUE,str,"['AUTO', 'NORM']",Trigger sweep mode,trigger,TRUE,,
 trigger_mode,:TRIG:MODE,,TRUE,str,TRUE,str,"['EDGE', 'GLIT', 'PATT']",Trigger pattern,trigger,TRUE,,
 trigger_force,:TRIG:FORC,,FALSE,none,TRUE,none,,Force a trigger,trigger,TRUE,,
-trigger_level,":TRIG:LEV {value}, CHAN{channel}",:TRIG:LEV? CHAN{channel},TRUE,float,TRUE,float,,Set level for triggering ,trigger,TRUE,2,1
+trigger_level,":TRIG:LEV {value}, CHAN{chan}",:TRIG:LEV? CHAN{chan},TRUE,float,TRUE,float,,Set level for triggering ,trigger,TRUE,2,1
 trigger_holdoff,:TRIG:HOLD,,TRUE,float,TRUE,float,,Trigge holdoff,trigger,TRUE,,
 trigger_hfreject,:TRIG:HFR,,TRUE,int,TRUE,int,,Trigger high-frequency reject,trigger,TRUE,,
 trigger_slope,:TRIG:SLOP,,TRUE,str,TRUE,str,"['NEG', 'POS', 'EITH', 'ALT']",Trigger slope,trigger,TRUE,,

@@ -41,7 +41,9 @@ class RigolPowerSupply(SCPI):
                  cmd_list,
                  comm_handle,
                  name='pwr',
-                 unconnected=False):
+                 unconnected=False,
+                 channels=(1, 2, 3)):
+        self._channels = channels
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
 
@@ -146,7 +148,7 @@ class KeysightMultimeter(SCPI):
 
     def burst_volt(self, reads_per_trigger=1, aperture=1e-3,
                     trig_source='BUS', trig_count=1, trig_slope = 'POS',
-                    volt_range=10, trig_delay=None):
+                    volt_range=None, trig_delay=None):
         """
         measure a burst of triggered voltage readings
         """
@@ -156,8 +158,9 @@ class KeysightMultimeter(SCPI):
             self.set('trig_slope', trig_slope)
         self.set('trig_count', trig_count)
         self.set('sample_count', reads_per_trigger)
-        self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'}) # turn off auto-range
-        self.set('volt_range', volt_range, configs={'ac_dc': 'DC'}) # set range
+        if volt_range is not None:
+            self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'}) # turn off auto-range
+            self.set('volt_range', volt_range, configs={'ac_dc': 'DC'}) # set range
         if trig_delay is not None:
             self.set('trig_delay', trig_delay)
         self.set('initialize')
@@ -171,7 +174,7 @@ class KeysightMultimeter(SCPI):
 
     def burst_volt_timer(self, reads_per_trigger=256, aperture=20e-6,
                          trig_source='EXT', trig_count=1, trig_slope='POS',
-                         volt_range=10, trig_delay=0, sample_timer=0.4096e-3,
+                         volt_range=None, trig_delay=0, sample_timer=0.4096e-3,
                          repeats=16):
         """
         measure a burst of triggered voltage readings
@@ -181,11 +184,13 @@ class KeysightMultimeter(SCPI):
         self.set('trig_source', trig_source)  # BUS = remote interface (host); EXT = external signal
         if trig_source == 'EXT':
             self.set('trig_slope', trig_slope)
-        self.set('volt_autozero', 0, configs={'ac_dc': 'DC'})
+        self.set('volt_autozero_dc', 0)
         self.set('trig_count', trig_count)
         self.set('sample_count', reads_per_trigger)
-        self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'}) # turn off auto-range
-        self.set('volt_range', volt_range, configs={'ac_dc': 'DC'}) # set range
+        if volt_range is not None:
+            self.set('volt_range_auto', 0, configs={'ac_dc': 'DC'})  # turn off auto-range
+            self.set('volt_range', volt_range, configs={'ac_dc': 'DC'})  # set range
+
         self.set('sample_source', 'TIM')
         self.set('sample_timer', sample_timer)
         if trig_delay is not None:
@@ -261,20 +266,24 @@ class KeysightMultimeter(SCPI):
 
         return data_array
 
-## create ADA2200 instance
-reg_map = {'serial_interface': 			0x0000,  # MSBs
-           'chip_type': 				0x0006,
-           'filter1':					0x0011,
-           'analog_pin':				0x0028,
-           'sync_control':				0x0029,
-           'demod_control':				0x002A,
-           'clock_config':				0x002B}
 
-regs = []
-for r in reg_map:
-    regs.append(Register(name=r, address=reg_map[r],
-                         read_write='R/W', is_config=True))
+def create_ada2200():
 
-aardvark = AA()  # communication adapter
-ada2200_scpi = IC(regs, aardvark,
-                  interface='SPI', name='ADA2200')
+    # register map
+    reg_map = {'serial_interface': 			0x0000,  # MSBs
+               'chip_type': 				0x0006,
+               'filter1':					0x0011,
+               'analog_pin':				0x0028,
+               'sync_control':				0x0029,
+               'demod_control':				0x002A,
+               'clock_config':				0x002B}
+
+    regs = []
+    for r in reg_map:
+        regs.append(Register(name=r, address=reg_map[r],
+                             read_write='R/W', is_config=True))
+
+    aardvark = AA()  # communication adapter
+    ada2200_scpi = IC(regs, aardvark,
+                      interface='SPI', name='ADA2200')
+    return ada2200_scpi

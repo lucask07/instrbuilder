@@ -54,10 +54,10 @@ lia.in_gnd.set('float')
 lia.in_config.set('A')
 lia.in_couple.set('DC')
 lia.freq.set(5000)
-lia.sensitivity.set(1.0) # 1 V RMS full-scale
+lia.sensitivity.set(1.0)  # 1 V RMS full-scale
 tau = 0.01
 lia.tau.set(tau)
-lia.sample_rate.set(32) # 32 Hz
+lia.sample_rate.set(32)  # 32 Hz
 # maximum settle is 9*tau (filter-slope of 24-db/oct
 max_settle = 9*tau
 lia.filt_slope.set('6-db/oct')

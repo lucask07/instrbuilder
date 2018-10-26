@@ -25,6 +25,8 @@ from ophyd.device import Kind
 from ophyd.ee_instruments import generate_ophyd_obj
 from instrument_opening import open_by_name
 
+from instruments import create_ada2200
+
 # ------------------------------------------------
 #           Multimeter
 # ------------------------------------------------
@@ -35,8 +37,7 @@ dmm = DMM(name='multimeter')
 # ------------------------------------------------
 #           ADA2200 SPI Control with Aardvark
 # ------------------------------------------------
-from instruments import ada2200_scpi
-
+ada2200_scpi = create_ada2200()
 SPI, component_dict = generate_ophyd_obj(name='ada2200_spi', scpi_obj=ada2200_scpi)
 ada2200 = SPI(name='ada2200')
 
