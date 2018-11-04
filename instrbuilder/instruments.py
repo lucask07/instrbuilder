@@ -272,11 +272,15 @@ def create_ada2200():
     # register map
     reg_map = {'serial_interface': 			0x0000,  # MSBs
                'chip_type': 				0x0006,
-               'filter1':					0x0011,
+               'filter0':					0x0011,
                'analog_pin':				0x0028,
                'sync_control':				0x0029,
                'demod_control':				0x002A,
+               'digital_pin':               0x002C,
                'clock_config':				0x002B}
+    # add other filter configuration registers
+    for i in range(1, 23):
+        reg_map['filter{}'.format(i)] = 0x0011 + i
 
     regs = []
     for r in reg_map:

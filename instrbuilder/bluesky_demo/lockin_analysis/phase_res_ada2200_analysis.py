@@ -45,7 +45,7 @@ print('Offset measured as: {} [V]'.format(offset))
 
 plt.figure()
 plt.plot(df['osc_meas_phase'], df['dmm_burst_volt_timer_mean'] - offset,
-         marker='*', LineStyle='None')
+         marker='*', LineStyle='None', color='k')
 plt.xlabel('Phase [deg]')
 plt.ylabel('Magnitude [V]')
 plt.grid(True)

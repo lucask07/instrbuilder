@@ -3,6 +3,7 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
+
 # standard library imports
 import sys
 import os
@@ -11,6 +12,7 @@ import functools
 
 # imports that may need installation
 import numpy as np
+import matplotlib.pyplot as plt
 from bluesky import RunEngine
 from bluesky.callbacks import LiveTable, LivePlot
 from bluesky.callbacks.best_effort import BestEffortCallback
@@ -19,11 +21,15 @@ import bluesky.preprocessors as bpp
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg
 from bluesky import utils
+from bluesky.plan_stubs import checkpoint, abs_set, trigger_and_read, pause
 from databroker import Broker
 
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen, FunctionGen2, ManualDevice, BasicStatistics
-import scpi
+from ophyd.ee_instruments import generate_ophyd_obj, BasicStatistics, \
+    FilterStatistics, ManualDevice
+from instrument_opening import open_by_name
+from instruments import create_ada2200
+
 
 RE = RunEngine({})
 bec = BestEffortCallback()
@@ -36,115 +42,175 @@ db = Broker.named('local_file')  # a broker poses queries for saved data sets
 RE.subscribe(db.insert)
 
 # ------------------------------------------------
-#           Lock-In Amplifier
+#           Multimeter
 # ------------------------------------------------
-lia = LockIn(name='lia')
-if lia.unconnected:
-    sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
-lia.reset.set(0)
-RE.md['lock_in'] = lia.id.get()
+scpi_dmm = open_by_name(name='my_multi')
+scpi_dmm.name = 'dmm'
+DMM, component_dict = generate_ophyd_obj(name='Multimeter', scpi_obj=scpi_dmm)
+dmm = DMM(name='multimeter')
 
-# setup lock-in
-# similar to a stage, but specific to this experiment
-test_frequency = 5e6/512/8
-lia.reset.set(None)
-lia.fmode.set('Ext')
-lia.in_gnd.set('float')
-lia.in_config.set('A')
-lia.in_couple.set('DC')
-lia.freq.set(test_frequency)
-lia.sensitivity.set(20e-6)  # 20 uV RMS full-scale
-tau = 0.1
-lia.tau.set(tau)
-# maximum settle to 99% accuracy is 9*tau for a filter-slope of 24-db/oct
-# max_settle = 9*tau*4
+# configure for fast burst reads
+dmm.volt_autozero_dc.set(0)
+dmm.volt_aperture.set(20e-6)
+dmm.volt_range_auto_dc.set(0)  # turn off auto-range
+dmm.volt_range_dc.set(10)      # set range
 
-max_settle = 12*tau
-lia.filt_slope.set('24-db/oct')
-lia.res_mode.set('normal')
+# create an object that returns statistics calculated on the arrays returned by read_buffer
+# the name is derived from the parent
+# (e.g. lockin and from the signal that returns an array e.g. read_buffer)
+dmm_burst_stats = BasicStatistics(name='', array_source=dmm.burst_volt_timer)
+dmm_filter_stats = FilterStatistics(name='', array_source=dmm.burst_volt_timer)
 
-lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
-lia.disp_val.name = 'lockin_A'  # reading the magnitude from the instrument; change the name for clarity
+# ------------------------------------------------
+#           Power Supply
+# ------------------------------------------------
+scpi_pwr = open_by_name(name='rigol_pwr1')
+scpi_pwr.name = 'pwr'
+PWR, component_dict = generate_ophyd_obj(name='pwr_supply', scpi_obj=scpi_pwr)
+pwr = PWR(name='pwr_supply')
+
+# disable outputs
+pwr.out_state_chan1.set('OFF')
+pwr.out_state_chan2.set('OFF')
+pwr.out_state_chan3.set('OFF')
+
+# over-current
+pwr.ocp_chan1.set(0.06)
+pwr.ocp_chan2.set(0.06)
+pwr.ocp_chan3.set(0.06)
+
+# over-voltage
+pwr.ovp_chan1.set(3)
+pwr.ovp_chan2.set(3)
+pwr.ovp_chan3.set(5.5)
+
+# voltage
+pwr.v_chan1.set(2.5)  # split rails (-2.5 V)
+pwr.v_chan2.set(2.5)  # split rails (2.5 V)
+pwr.v_chan3.set(5)    # single supply (5 V)
+
+# current
+pwr.i_chan1.set(0.04)
+pwr.i_chan2.set(0.04)
+pwr.i_chan3.set(0.04)
+
+# enable outputs
+pwr.out_state_chan1.set('ON')
+pwr.out_state_chan2.set('ON')
+pwr.out_state_chan3.set('ON')
+
+# ------------------------------------------------
+#           ADA2200 SPI Control with Aardvark
+# ------------------------------------------------
+ada2200_scpi = create_ada2200()
+SPI, component_dict = generate_ophyd_obj(name='ada2200_spi', scpi_obj=ada2200_scpi)
+ada2200 = SPI(name='ada2200')
+
+ada2200.serial_interface.set(0x10)  # enables SDO (bit 4,3 = 1)
+ada2200.demod_control.set(0x18)     # bit 3: 0 = SDO to RCLK
+ada2200.analog_pin.set(0x02)        # extra 6 dB of gain for single-ended inputs
+ada2200.clock_config.set(0x06)      # divide input clk by x16
+
 # ------------------------------------------------
 #           Function Generator
 # ------------------------------------------------
+fg_scpi = open_by_name(name='new_function_gen')   # name within the configuration file (config.yaml)
+fg_scpi.name = 'fg'
+FG, component_dict = generate_ophyd_obj(name='fg', scpi_obj=fg_scpi)
+fg = FG(name='fg')
 
-fg = FunctionGen(name='fg')
 if fg.unconnected:
     sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['fg'] = fg.id.get()
 
 # setup control of the frequency sweep
-fg.freq.delay = max_settle
+tau = 10e-3
+fg.freq.delay = tau * 9
+test_frequency = 390.58
 
 # configure the function generator
 fg.reset.set(None)  # start fresh
-fg.function.set('SIN')
+fg.function.set('SQU')
 fg.load.set(50)
 fg.freq.set(test_frequency)
-fg.v.set(20e-3)  # gives 90% of full-scale at a sensitivity of 20uV and 60 dB attenuation
+fg.v.set(2e-3)  #
+fg.freq.set(0.00001)
 fg.offset.set(0)
 fg.output.set('ON')
 
-# ------------------------------------------------
-#           Function Generator2
-# ------------------------------------------------
-
-fg2 = FunctionGen2(name='fg2')
-if fg2.unconnected:
-    sys.exit('Function Generator is not connected, exiting blueksy demo')
-RE.md['fg2'] = fg2.id.get()
-
-# setup control of the frequency sweep
-fg2.freq.delay = max_settle
-fg2.v.delay = max_settle
-# configure the function generator
-fg2.reset.set(None)  # start fresh
-fg2.function.set('SIN')
-fg2.load.set(50)
-fg2.freq.set(test_frequency)
-fg2.v.set(0.1)
-fg2.offset.set(0)
-fg2.output.set('OFF')
-
-# ------------------------------------------------
-#           Setup Supplemental Data
-# ------------------------------------------------
-from bluesky.preprocessors import SupplementalData
-baseline_detectors = []
-for dev in [fg, lia]:
-    for name in dev.component_names:
-        if getattr(dev, name).kind == Kind.config:
-            baseline_detectors.append(getattr(dev, name))
-sd = SupplementalData(baseline=baseline_detectors, monitors=[], flyers=[])
-RE.preprocessors.append(sd)
+dmm.burst_volt_timer.stage()
+time.sleep(0.1)
 
 # --------------------------------------------------------
 #                   Get a baseline with averaging
 # --------------------------------------------------------
-uid_baseline = RE(count([lia.disp_val], num=40, delay=0.2),
-                  LiveTable(['lockin_A']),
-                  # input parameters below are added to metadata
-                  attenuator='60dB',
-                  purpose='dynamic_reserve_SR810',
-                  operator='Lucas',
-                  dut='SR810',
-                  preamp='yes_AD8655',
-                  notes='baseline-no-interferer')
+dets = [dmm.burst_volt_timer,
+        dmm_burst_stats.mean,
+        dmm_filter_stats.filter_6dB_mean,
+        dmm_filter_stats.filter_6dB_std,
+        dmm_filter_stats.filter_24dB_mean,
+        dmm_filter_stats.filter_24dB_std]
+
+# shorten names for the LiveTable
+dmm_burst_stats.mean.name = 'mean'
+dmm_filter_stats.filter_6dB_mean.name = 'filter_6dB_mean'
+dmm_filter_stats.filter_6dB_std.name = 'filter_6dB_std'
+dmm_filter_stats.filter_24dB_mean.name = 'filter_24dB_mean'
+dmm_filter_stats.filter_24dB_std.name = 'filter_24dB_std'
+
+# prime the statistics measurements with a trigger, otherwise 'describe' fails due to
+#  None type
+for det in dets:
+    det.trigger()
+
+input('50 Ohm attenuators only. Resume?')
+uid_offset = RE(count(dets,
+                      num=5, delay=0.2),
+                      LiveTable(dets),
+                      # input parameters below are added to metadata
+                      attenuator='50OhmTerm',
+                      purpose='offset_ADA2200',
+                      operator='Lucas',
+                      dut='ADA2200',
+                      preamp='yes_AD8655',
+                      notes='offset-no-inputs')
+
+# baseline measurement
+offset = db[uid_offset[0]].table()
+measured_offset = np.mean(offset['filter_6dB_mean'])
+
+print('Measured offset value of {}'.format(measured_offset))
+input('Replace RCLK input, keep 50 Ohm on interferer: Resume?')
+
+
+uid_baseline = RE(count(dets,
+                        num=20, delay=0.2),
+                        LiveTable(dets),
+                        # input parameters below are added to metadata
+                        attenuator='53dB',
+                        purpose='dynamic_reserve_ADA2200',
+                        operator='Lucas',
+                        dut='ADA2200',
+                        preamp='yes_AD8655',
+                        notes='baseline-no-interferer')
 
 # baseline measurement
 baseline = db[uid_baseline[0]].table()
-expected_value = np.mean(baseline['lockin_A'])
+expected_value = np.mean(baseline['filter_6dB_mean'])
+
+print('Measured expected value of {}'.format(expected_value))
+input('Replace both inputs: Resume?')
 # --------------------------------------------------------
 #                   Run a 2D sweep of the FG2 frequency and amplitude
 # --------------------------------------------------------
 
 
-def calc_error_deviation(value, baseline):
-    return abs((value-baseline)/baseline*100)
+def calc_error_deviation(value, baseline_meas, measured_offset):
+    return abs((value-baseline_meas)/(baseline_meas - measured_offset)*100)
 
 
-calc_per_error = functools.partial(calc_error_deviation, baseline=expected_value)
+calc_per_error = functools.partial(calc_error_deviation, baseline_meas=expected_value,
+                                   measured_offset=measured_offset)
 
 
 def target_value(detectors, target_field, motor, start, stop,
@@ -309,50 +375,65 @@ def target_value(detectors, target_field, motor, start, stop,
     return (yield from adaptive_sweep())
 
 #  Construct frequency array to test over, specifically add harmonics
-freq_arr = np.logspace(1.8, 4.5, 40)  # 63 - 31622
+# freq_arr = np.logspace(1.8, 4.5, 40)  # 63 - 31622
+freq_arr = np.logspace(1.4, 3.4, 40)  # 25.1 - 2511
+# freq_arr = np.logspace(1.4, 3.4, 20)  # 25.1 - 2511
 harmonic_multiplier = np.array([1, 0.998, 1.002, 1.03, 0.97, 1.01, 0.99])
-harmonics = [1/3, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+# harmonic_multiplier = np.array([0.998, 1.002])
 
-harmonics = [0.5, 1, 2]
-freq_arr = np.array([])
+harmonics = [1/3, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+harmonics = [1/3, 0.5, 1, 2, 3, 4, 8]
+
+# harmonics = [0.5, 1, 2]
+# freq_arr = np.array([])
 
 for hrm in harmonics:
     freq_arr = np.append(freq_arr, test_frequency*hrm*harmonic_multiplier)
 freq_arr = np.sort(freq_arr)
 print('Total number of points: {}'.format(len(freq_arr)))
 
-fg2.output.set('ON')
-fg2.freq.set(freq_arr[0])
+fg.output.set('ON')
+fg.freq.set(freq_arr[0])
 time.sleep(tau*12)
 
-uid = RE(target_value([lia.disp_val], 'lockin_A',
-         motor=fg2.v, start=0.02, stop=8,
+# specific setup needed to read ADA2200 registers,
+#  so do ahead of the experiment run, and then re-enable RCLK output
+ada2200.serial_interface.set(0x18)  # enables SDO (bit 4,3 = 1)
+ada2200.demod_control.set(0x10)  # SDO to RCLK
+ada_config = ada2200.read_configuration()
+ada2200.serial_interface.set(0x10)  # enables SDO (bit 4,3 = 1)
+ada2200.demod_control.set(0x18)     # bit 3: 0 = SDO to RCLK
+
+uid = RE(target_value(dets, 'filter_6dB_mean',
+         motor=fg.v, start=0.01, stop=6.1,
          min_step=0.025, target_val=5,
          calc_function=calc_per_error, accuracy=50e-3,
-         outer_motor=fg2.freq, outer_steps=freq_arr),
-         LiveTable(['lockin_A', 'fgen2_freq', 'fgen2_v']),
+         outer_motor=fg.freq, outer_steps=freq_arr),
+         LiveTable(dets),
          # input parameters below are added to metadata
-         attenuator_fg1='60dB',
-         attenuator_fg2='20dB',
-         purpose='dynamic_reserve_SR810',
+         attenuator_RCLK='53dB',
+         attenuator_fg2='0dB',
+         purpose='dynamic_reserve_ADA2200',
          operator='Lucas',
-         dut='SR810',
+         dut='ADA2200',
          preamp='yes_AD8655',
          notes='modified setup and measured amp; switch to 50Ohm output for FGs',
-         transfer_function_fg1='0.00193',
-         transfer_function_fg2='0.19',
+         transfer_function_fg1='?',
+         transfer_function_fg2='?',
          fg_config=fg.read_configuration(),
-         fg2_config=fg2.read_configuration(),
-         lia_config=lia.read_configuration())
+         ada2200_config=ada_config,
+         dmm_config=dmm.read_configuration())
 
-# ------------------------------------------------
-#   	(briefly) Investigate the captured data
-# ------------------------------------------------
+fg.output.set('OFF')
 
-# baseline measurement
-baseline = db[uid_baseline[0]].table()
-expected_value = np.mean(baseline['lockin_A'])
-
+# # ------------------------------------------------
+# #   	(briefly) Investigate the captured data
+# # ------------------------------------------------
+#
+# # baseline measurement
+# baseline = db[uid_baseline[0]].table()
+# expected_value = np.mean(baseline['lockin_A'])
+#
 # get data into a pandas data-frame
 header = db[uid[0]]  # db is a DataBroker instance
 print(header.table())
@@ -361,8 +442,8 @@ df = header.table()
 h = db[-1]
 df_meta = h.table('baseline')
 
-# print('These configuration values are saved to baseline data:')
-# print(df_meta.columns.values)
+print('These configuration values are saved to baseline data:')
+print(df_meta.columns.values)
 
 import matplotlib.pyplot as plt
 '''
@@ -374,4 +455,7 @@ for int_v in df['fgen2_v'].unique():
 plt.legend()
 '''
 
-plt.plot(df['fgen2_v'], df['lockin_A'], marker='*')
+plt.plot(df['fg_v'], df['filter_6dB_mean'], marker='*')
+
+print('UID baseline = {}'.format(uid_baseline))
+print('UID = {}'.format(uid))

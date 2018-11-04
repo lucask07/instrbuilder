@@ -27,7 +27,7 @@ for fs in df['lockin_filt_slope'].unique():
 
 plt.grid(True)
 plt.legend()
-plt.ylabel('R [V RMS]')
+plt.ylabel('A [V RMS]')
 plt.xlabel('f [Hz]')
 plt.savefig(os.path.join(figure_dir, 'freq_res_sr810_preamp.eps'))
 

@@ -120,7 +120,7 @@ ada2200.clock_config.set(0x06)      # divide input clk by x16
 # adjust range of DMM based on input?           dmm.volt_range_dc.set(1)
 # use the scope to quantify input :             amplitude, RMS, dc average (at Att = 0 dB)
 
-# input at 0 dB : 2.71V Pk-pk, 1.6205 V avg over N-cycles; AC RMS 1.233
+# input (after amplifier) at 0 dB : 2.71V Pk-pk, 1.6205 V avg over N-cycles; AC RMS 1.233
 # input at 30 dB: 95 mV pk-pk, 1.6319 V avg over N-cycles; AC RMS 35.80
 # input at 390.58 Hz (with divide x16 of input clock)
 # ------------------------------------------------
@@ -161,9 +161,9 @@ def custom_step(detectors, motor, step):
 ada2200.serial_interface.set(0x18)  # enables SDO (bit 4,3 = 1)
 ada2200.demod_control.set(0x10)  # SDO to RCLK
 ada_config = ada2200.read_configuration()
-
 ada2200.serial_interface.set(0x10)  # enables SDO (bit 4,3 = 1)
 ada2200.demod_control.set(0x18)     # bit 3: 0 = SDO to RCLK
+
 dmm_config = dmm.read_configuration()
 
 dmm.burst_volt_timer.stage()

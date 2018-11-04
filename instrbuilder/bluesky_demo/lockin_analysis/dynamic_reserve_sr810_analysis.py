@@ -44,9 +44,6 @@ for config_name in ['tau', 'res_mode', 'sensitivity']:  # 'filt_slope'
 x = []
 y = []
 
-# Done: add a dashed line at the center frequency
-# Done: add collection around fc/2, fc/3, 3fc
-# Done: semilog data collection?
 # revisit the definition of dynamic reserve. Should my signal be within 10% of full-scale?
 
 percent_error = 5

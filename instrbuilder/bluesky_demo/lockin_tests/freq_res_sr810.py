@@ -111,6 +111,9 @@ fg.freq.set(f1)
 lia.filt_slope.set(0)
 time.sleep(tau*12)
 # grid_scan is a pre-configured Bluesky plan
+
+lia.disp_val.name = 'amp'  # change name for Bluesky LiveTable
+
 uid = RE(grid_scan([lia.disp_val],
          lia.filt_slope, 0, 3, 4,
          fg.freq, f1, f2, 60, False),

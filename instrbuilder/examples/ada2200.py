@@ -8,10 +8,6 @@ import os
 import sys
 import wrapt
 
-# TODO remove this addpath
-# p = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
-# sys.path.append(p)
-
 from command import Register
 from ic import IC
 from ic import AA  # aardvark adapter

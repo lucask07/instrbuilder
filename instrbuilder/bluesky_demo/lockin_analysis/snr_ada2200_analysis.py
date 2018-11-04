@@ -33,20 +33,28 @@ att = df['att_val']
 offset_corrected_val = -(df[signal_name] - df[signal_name][len(att)])
 val_std = df[noise_name]
 
-ax.plot(att[0:(len(att) - 1)], offset_corrected_val[0:(len(att) - 1)], marker='x')
+ax.plot(att[0:(len(att) - 1)], offset_corrected_val[0:(len(att) - 1)], marker='x', color='k')
 plt.grid(True)
 ax.set(xlabel='Attenuation [dB]', ylabel='Out [V]')
 ax.set_yscale('log')
 
 ax2 = fig.add_subplot(2, 1, 2)
-ax2.plot(att[0:(len(att) - 1)], val_std[0:(len(att) - 1)]*1000, marker='x')
+ax2.plot(att[0:(len(att) - 1)], val_std[0:(len(att) - 1)]*1000, marker='x', color='k')
+ylims = ax2.get_ylim()
+ax2.set_ylim(0, ylims[1])
 ax2.set(xlabel='Attenuation. [dB]', ylabel='Noise [mV]')
 plt.grid(True)
 
 plt.tight_layout()
-plt.savefig(os.path.join(figure_dir, 'snr_ada2200.eps'))
-plt.savefig(os.path.join(figure_dir, 'snr_ada2200.png'))
+# plt.savefig(os.path.join(figure_dir, 'snr_ada2200.eps'))
+# plt.savefig(os.path.join(figure_dir, 'snr_ada2200.png'))
 
 snr = offset_corrected_val[0:(len(att) - 1)]/val_std[0:(len(att) - 1)]
 snr_bits = np.log2(snr)
 print(np.log2(snr))
+input_signal = 2.71  # volts pk-pk at 0 attenuation
+print('Noise (no input) = {} [mV]'.format(val_std[len(att)]*1000))
+
+# 2.71V Pk-pk, 1.6205 V avg over N-cycles; AC RMS 1.233
+
+header['start']['ada2200_config']
