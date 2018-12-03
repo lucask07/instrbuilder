@@ -3,7 +3,6 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-
 from instrument_opening import open_by_name
 import time
 

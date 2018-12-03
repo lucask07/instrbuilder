@@ -13,7 +13,6 @@ import pprint
 Demonstrate databroker capabilities
 """
 
-
 def equivalence_check(config1, config2):
 
     verbose = False

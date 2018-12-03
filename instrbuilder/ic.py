@@ -255,15 +255,16 @@ class AA(object):
             return self.read_spi(addr_instruction)
 
         if interface is 'I2C':
-            return self.read_i2c(slave_address, addr_instruction, num_bytes_to_read)
+            return self.read_i2c(slave_address, addr_instruction, num_bytes_to_read)[0]
 
     def write(self, interface, addr_instruction, data, slave_address=None):
+        # for i2c addr_instruction is the sub_address
 
         if interface is 'SPI':
             return self.write_spi(addr_instruction, data)
 
         if interface is 'I2C':
-            return self.read_i2c(slave_address, addr_instruction, data)
+            return self.write_i2c(slave_address, addr_instruction, data)
 
     def close(self):
         # Close the device
