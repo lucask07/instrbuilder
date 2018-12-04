@@ -12,7 +12,7 @@ from command import Register
 from ic import IC
 from ic import AA  # aardvark adapter
 
-print('Running ADA2200 SPI example')
+print('Running ADA2200 (demodulator) SPI example')
 print('-'*40)
 
 reg_map = {'serial_interface': 			0x0000,  #MSBs

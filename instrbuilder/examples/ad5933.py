@@ -7,7 +7,7 @@ from command import Register
 from ic import IC
 from ic import AA  # aardvark adapter
 
-print('Running AD9533 SPI example')
+print('Running AD5933 (impedance analyzer) I2C example')
 print('-'*40)
 
 reg_map = {'creg1': 		0x80,  #MSBs

@@ -16,26 +16,6 @@ from ic import IC
 from ic import AA  # aardvark adapter
 
 
-# TODO: Extra capabilities should be moved somewhere else
-def filewriter(data, filename, filetype='png'):
-    ''' Write a list or np.array of unsigned bytes to a file 
-
-    Parameters
-    ----------
-    data : list or np.array
-        data to save to file
-    write : str 
-        filename without extension (if no directory is provided will save to cwd)
-    filetype : str 
-        type of file: options implemented are 'png' and 'npy'
-    '''
-    print('Saving file: {}'.format(filename + '.' + filetype))
-    if filetype == 'png':
-        with open(filename + '.' + filetype, 'wb') as out_f:
-            out_f.write(bytearray(data))
-    elif filetype == 'npy':
-        np.save(filename + '.' + filetype, data)
-
 class RigolPowerSupply(SCPI):
     def __init__(self,
                  cmd_list,
@@ -46,6 +26,7 @@ class RigolPowerSupply(SCPI):
         self._channels = channels
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
+
 
 class AgilentFunctionGen(SCPI):
     def __init__(self,
@@ -109,8 +90,6 @@ class SRSLockIn(SCPI):
             cmd_list, comm_handle, name=name, unconnected=unconnected)
 
         if unconnected:
-            # TODO: Remove this hack.
-            #       How to ensure the commands unconnected value works with the getter conversion function?
             self._cmds['ch1_disp']._unconnected_val = b'1,0\r'
 
 
@@ -128,8 +107,9 @@ class KeysightMultimeter(SCPI):
         self._cmds['burst_volt'].getter_override = self.burst_volt
         self._cmds['burst_volt_timer'].getter_override = self.burst_volt_timer
 
-        # Override getter functions -- these overrides should be compatible with Bluesky
+    # Override getter functions -- these overrides should be compatible with Bluesky
     #                              (in other words return a signal value, which can be an np.array)
+
     def hardcopy(self):
         """ Transfers a hard-copy (image) of the screen to the host as a  """
 
@@ -141,7 +121,9 @@ class KeysightMultimeter(SCPI):
         return np.array(img_data, dtype='B')  # unsigned byte
         # see: https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.dtypes.html
 
-    # Composite functions (examples)
+    # ------ Composite functions (examples) ------
+    #
+    # --------------------------------------------
     def save_hardcopy(self, filename, filetype='png'):
         """ get the hardcopy data from the display and save to a file """
         filewriter(self.hardcopy(), filename, filetype)
@@ -150,6 +132,7 @@ class KeysightMultimeter(SCPI):
                     trig_source='BUS', trig_count=1, trig_slope = 'POS',
                     volt_range=None, trig_delay=None):
         """
+        Composite function to measure a burst of voltages
         measure a burst of triggered voltage readings
         """
         self.set('volt_aperture', aperture)
@@ -208,7 +191,6 @@ class KeysightMultimeter(SCPI):
             total_arr = np.append(total_arr, x)
         return total_arr
 
-
     def burst_volt_setup(self, reads_per_trigger=1, aperture=1e-3,
                          trig_source='EXT', trig_count=1, trig_slope='POS',
                          volt_range=10, trig_delay=None):
@@ -237,14 +219,10 @@ class KeysightMultimeter(SCPI):
             if trig_source == 'BUS':
                 print('Sending (bus) trigger command')
                 self.set('trig')
-            # print('Expecting {} readings'.format(trig_count * reads_per_trigger))
 
             while self.get('operation_complete') == 0:
                 time.sleep(0.005)
             self.set('store_data', filename.format(i), )
-
-        # Timing of this function showed that it is not a method to optimize speed
-        # 200 measurements triggered at 780 Hz (256 ms of capture time) required 613 ms with the file-saving
 
     def burst_volt_upload(self, repeats=4):
         # read and unpack the binary data (8 byte IEEE-754 format)
@@ -269,7 +247,7 @@ class KeysightMultimeter(SCPI):
 
 def create_ada2200():
 
-    # register map
+    # ADA2200 register map
     reg_map = {'serial_interface': 			0x0000,  # MSBs
                'chip_type': 				0x0006,
                'filter0':					0x0011,
@@ -291,3 +269,23 @@ def create_ada2200():
     ada2200_scpi = IC(regs, aardvark,
                       interface='SPI', name='ADA2200')
     return ada2200_scpi
+
+
+def filewriter(data, filename, filetype='png'):
+    ''' Write a list or np.array of unsigned bytes to a file
+
+    Parameters
+    ----------
+    data : list or np.array
+        data to save to file
+    write : str
+        filename without extension (if no directory is provided will save to cwd)
+    filetype : str
+        type of file: options implemented are 'png' and 'npy'
+    '''
+    print('Saving file: {}'.format(filename + '.' + filetype))
+    if filetype == 'png':
+        with open(filename + '.' + filetype, 'wb') as out_f:
+            out_f.write(bytearray(data))
+    elif filetype == 'npy':
+        np.save(filename + '.' + filetype, data)

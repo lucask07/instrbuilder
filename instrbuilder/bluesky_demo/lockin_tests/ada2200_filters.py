@@ -3,6 +3,10 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
+"""
+Sandbox for testing scipy filters that act on arrays of data from bluesky
+"""
+
 import os
 # imports that may need installation
 import scipy.signal as signal
@@ -20,6 +24,7 @@ def create_filter(order, sample_rate, tau):
                             rp=None, rs=None, btype='lowpass', analog=False,
                             ftype='butter', output='ba')
     return num, denom
+
 
 def apply_filter(arr, num, denom, sample_rate, tau):
 

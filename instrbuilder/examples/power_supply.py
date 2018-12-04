@@ -8,7 +8,6 @@ import time
 
 pwr = open_by_name(name='rigol_pwr1')   # name within the configuration file (config.yaml)
 
-
 pwr.get('v', configs={'chan': 1})
 pwr.get('i', configs={'chan': 1})
 
@@ -27,4 +26,3 @@ pwr.set('out_state', 'OFF', configs={'chan': 1})
 pwr.get('meas_i', configs={'chan': 1})
 
 pwr.get('meas_v', configs={'chan': 1})
-

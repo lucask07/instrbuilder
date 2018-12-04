@@ -3,6 +3,14 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
+"""
+Evaluate the dynamic reserve of the ADA2200;
+
+Instruments Used: power supply, multimeter, Aardvark i2c for ADA2200 control
+
+Corresponds to manuscript Figure 9
+
+"""
 
 # standard library imports
 import sys
@@ -32,12 +40,7 @@ from instruments import create_ada2200
 
 
 RE = RunEngine({})
-bec = BestEffortCallback()
-# Send all metadata/data captured to the BestEffortCallback.
-# RE.subscribe(bec) # in this demo we will explicitly define LiveTables and Plots
-
 db = Broker.named('local_file')  # a broker poses queries for saved data sets
-
 # Insert all metadata/data captured into db.
 RE.subscribe(db.insert)
 
