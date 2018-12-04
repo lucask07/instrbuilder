@@ -18,12 +18,7 @@ from databroker import Broker
 
 from ophyd.device import Kind
 from ophyd.ee_instruments import generate_ophyd_obj
-
 from instrument_opening import open_by_name
-print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
-scpi_lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)
-LIA, component_dict = generate_ophyd_obj(name='LockIn', scpi=scpi_lia)
-lia = LIA(name='lockin')
 
 RE = RunEngine({})
 bec = BestEffortCallback()
@@ -38,11 +33,10 @@ RE.subscribe(db.insert)
 # ------------------------------------------------
 #           Lock-In Amplifier
 # ------------------------------------------------
-lia = LockIn(name='lia')
-if lia.unconnected:
-    sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
-lia.reset.set(0)
-RE.md['lock_in'] = lia.id.get()
+print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
+scpi_lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)
+LIA, component_dict = generate_ophyd_obj(name='LockIn', scpi_obj=scpi_lia)
+lia = LIA(name='lockin')
 
 # setup lock-in
 # similar to a stage, but specific to this experiment
@@ -70,8 +64,11 @@ lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
 # ------------------------------------------------
 #           Function Generator
 # ------------------------------------------------
+fg_scpi = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
+fg_scpi.name = 'fg'
+FG, component_dict = generate_ophyd_obj(name='fg', scpi_obj=fg_scpi)
+fg = FG(name='fg')
 
-fg = FunctionGen(name='fg')
 if fg.unconnected:
     sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['fg'] = fg.id.get()
@@ -123,7 +120,8 @@ uid = RE(grid_scan([lia.disp_val],
          purpose='freq_resolution_SR810',
          operator='Lucas',
          dut='SR810',
-         preamp='yes_AD8655',
+         preamp='none',
+         notes='test new ophyd object generation',
          fg_config=fg.read_configuration(),
          lia_config=lia.read_configuration())
 

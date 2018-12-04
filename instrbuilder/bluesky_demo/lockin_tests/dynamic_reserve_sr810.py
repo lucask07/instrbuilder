@@ -22,7 +22,8 @@ from bluesky import utils
 from databroker import Broker
 
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen, FunctionGen2, ManualDevice, BasicStatistics
+from ophyd.ee_instruments import generate_ophyd_obj
+from instrument_opening import open_by_name
 import scpi
 
 RE = RunEngine({})
@@ -38,9 +39,10 @@ RE.subscribe(db.insert)
 # ------------------------------------------------
 #           Lock-In Amplifier
 # ------------------------------------------------
-lia = LockIn(name='lia')
-if lia.unconnected:
-    sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
+print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
+scpi_lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)
+LIA, component_dict = generate_ophyd_obj(name='LockIn', scpi_obj=scpi_lia)
+lia = LIA(name='lockin')
 lia.reset.set(0)
 RE.md['lock_in'] = lia.id.get()
 
@@ -68,8 +70,11 @@ lia.disp_val.name = 'lockin_A'  # reading the magnitude from the instrument; cha
 # ------------------------------------------------
 #           Function Generator
 # ------------------------------------------------
+fg_scpi = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
+fg_scpi.name = 'fg'
+FG, component_dict = generate_ophyd_obj(name='fg', scpi_obj=fg_scpi)
+fg = FG(name='fg')
 
-fg = FunctionGen(name='fg')
 if fg.unconnected:
     sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['fg'] = fg.id.get()
