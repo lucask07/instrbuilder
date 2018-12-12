@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; instrbuilder 0.1a documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_demo.html">Interfacing an Instrbuilder Instrument to Bluesky</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_utils.html">Bluesky Lab Utilities</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/backups.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-scpi"></span><dl class="class">
+<dt id="scpi.SCPI">
+<em class="property">class </em><code class="descclassname">scpi.</code><code class="descname">SCPI</code><span class="sig-paren">(</span><em>cmd_list</em>, <em>comm_handle</em>, <em>name='not named'</em>, <em>unconnected=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>A SCPI (or SCPI like) instrument with a list of commands. The instrument has methods to get and set info of each command.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Instrument error log lookup. How to load? Import as csv?</li>
+<li>Automatic checker: send values out of range and read-back, note precisions, etc.</li>
+<li>Organization of classes, what inherits from what? Override Serial initialization stuff</li>
+<li>Create docstrings for each method of SCPI class</li>
+</ul>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cmd_list</strong> : Command</p>
+<blockquote>
+<div><p>A list of commands. Each command is an object of the class Command</p>
+</div></blockquote>
+<p><strong>comm_handle</strong> : Communication object</p>
+<blockquote>
+<div><p>handle to the (general) hardware interface
+Example is the pyvisa instrument object: inst
+Needed when commands are overriden
+must have a:</p>
+<blockquote>
+<div><p>write method (Examples are pySerial write() or pyvisa inst.write())
+and an ask method (Examples are pySerial ask() and pyvisa inst.query())</p>
+</div></blockquote>
+</div></blockquote>
+<p><strong>name</strong> : str, optional</p>
+<blockquote>
+<div><p>Name of the instrument</p>
+</div></blockquote>
+<p><strong>unconnected</strong> : bool, optional</p>
+<blockquote class="last">
+<div><p>For simulation &amp; testing without instruments
+If true a “fake” ask and write command are configured. Ask always returns the same value (getter_debug_value).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="scpi.SCPI.check_set_range">
+<code class="descname">check_set_range</code><span class="sig-paren">(</span><em>value</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.check_set_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.check_set_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if the value to be set is within range</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scpi.SCPI.read_comm_err">
+<code class="descname">read_comm_err</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.read_comm_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.read_comm_err" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read if the instrument has flagged a communciation error 
+The csv command file must have a getter with name comm_error that returns a bool</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scpi.SCPI.test_all">
+<code class="descname">test_all</code><span class="sig-paren">(</span><em>skip_subsystem=['setup', 'status', 'system'], skip_commands=['fast_transfer', 'reset']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.test_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.test_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test all commands by setting and getting to determine if: 
+1) the instrument reports a communcation error
+2) the return value is of an unexpected type or an error threshold away from what was set</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>skip_subsystem</strong> : list (of strings), default = [‘setup’, ‘status’]</p>
+<blockquote>
+<div><p>subsystems to skip, an example might be commands in the status subsystem
+that reset the instrument</p>
+</div></blockquote>
+<p><strong>skip_commands</strong> : list (of strings), default = [‘fast_transfer’, ‘reset’]</p>
+<blockquote>
+<div><p>Commands to skip</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict</p>
+<blockquote class="last">
+<div><p>Keys are each commands tested, value is True (command succeeded) or False (command errored)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scpi.SCPI.test_command">
+<code class="descname">test_command</code><span class="sig-paren">(</span><em>name</em>, <em>set_vals=None</em>, <em>get_configs={}</em>, <em>set_configs={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.test_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.test_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test a command by setting and getting to determine if: 
+1) the instrument reports a communcation error
+2) the return value is of an unexpected type or an error threshold away from what was set</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
+<blockquote>
+<div><p>Name of the command</p>
+</div></blockquote>
+<p><strong>set_vals</strong> : list, optional</p>
+<blockquote>
+<div><p>A list of values to test by a sequence of set and get.
+If not provided the low and high limits are used</p>
+</div></blockquote>
+<p><strong>get_configs</strong> : dict, optional</p>
+<blockquote>
+<div><p>A dictionary of configs to send the get command</p>
+</div></blockquote>
+<p><strong>set_configs</strong> : dict, optional</p>
+<blockquote>
+<div><p>A dictionary of configs to send the set command</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
+<blockquote class="last">
+<div><p>True if the command is successful, False otherwise.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<p>Failed attempts to get color</p>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1a',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

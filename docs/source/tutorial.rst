@@ -38,7 +38,6 @@ Let's open an oscilloscope in order to demonstrate more complex setters and gett
   print('Oscilloscope measurements: Average voltage: {} \nPeak-to-peak voltage: {}\n'.format(v_average, v_pkpk))
   print('Frequency: {} [kHz]'.format(v_freq/1000))
 
-
 **Help** is available both at the single command level and is color-coded nicely in an iPython terminal. Unfortunately coloroma color-coding is broken in the Sphinx documentation:
 
 .. ipython:: python
