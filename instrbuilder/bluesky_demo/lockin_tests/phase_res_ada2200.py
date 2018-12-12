@@ -3,11 +3,6 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-# TODO:
-#  port Aardvark to bluesky
-#  add dmm and fg config to metadata (was this causing an error)
-
-
 # standard library imports
 import sys
 import os
@@ -22,17 +17,12 @@ from bluesky.plans import scan, count
 from databroker import Broker
 
 from ophyd.device import Kind
-from ophyd.ee_instruments import MultiMeter, FunctionGen, BasicStatistics, Oscilloscope
-import scpi
-
-sys.path.append('/Users/koer2434/Google Drive/UST/research/point_of_care/lock_in/cots_comparisons/ada2200/')
-from ada2200 import *
+from ophyd.ee_instruments import generate_ophyd_obj, BasicStatistics, \
+    FilterStatistics, ManualDevice
+from instrument_opening import open_by_name
+from instruments import create_ada2200
 
 RE = RunEngine({})
-bec = BestEffortCallback()
-# Send all metadata/data captured to the BestEffortCallback.
-# RE.subscribe(bec) # in this demo we will explicitly define LiveTables and Plots
-
 db = Broker.named('local_file')  # a broker poses queries for saved data sets
 
 # Insert all metadata/data captured into db.
@@ -42,7 +32,11 @@ RE.subscribe(db.insert)
 #           Function Generator
 # ------------------------------------------------
 
-fg = FunctionGen(name='fg')
+fg_scpi = open_by_name(name='new_function_gen')   # name within the configuration file (config.yaml)
+fg_scpi.name = 'fg'
+FG, component_dict = generate_ophyd_obj(name='fg', scpi_obj=fg_scpi)
+fg = FG(name='fg')
+
 if fg.unconnected:
     sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['fg'] = fg.id.get()
@@ -64,7 +58,10 @@ fg.output.set('ON')
 #           Multimeter
 # ------------------------------------------------
 
-dmm = MultiMeter(name='dmm')
+scpi_dmm = open_by_name(name='my_multi')
+scpi_dmm.name = 'dmm'
+DMM, component_dict = generate_ophyd_obj(name='Multimeter', scpi_obj=scpi_dmm)
+dmm = DMM(name='multimeter')
 
 # configure for fast burst reads
 dmm.volt_autozero_dc.set(0)
@@ -76,12 +73,66 @@ dmm.volt_aperture.set(20e-6)
 dmm_burst_stats = BasicStatistics(name='', array_source=dmm.burst_volt_timer)
 
 # ------------------------------------------------
+#           Power Supply
+# ------------------------------------------------
+scpi_pwr = open_by_name(name='rigol_pwr1')
+scpi_pwr.name = 'pwr'
+PWR, component_dict = generate_ophyd_obj(name='pwr_supply', scpi_obj=scpi_pwr)
+pwr = PWR(name='pwr_supply')
+
+# disable outputs
+pwr.out_state_chan1.set('OFF')
+pwr.out_state_chan2.set('OFF')
+pwr.out_state_chan3.set('OFF')
+
+# over-current
+pwr.ocp_chan1.set(0.06)
+pwr.ocp_chan2.set(0.06)
+pwr.ocp_chan3.set(0.06)
+
+# over-voltage
+pwr.ovp_chan1.set(3)
+pwr.ovp_chan2.set(3)
+pwr.ovp_chan3.set(5.5)
+
+# voltage
+pwr.v_chan1.set(2.5)  # split rails (-2.5 V)
+pwr.v_chan2.set(2.5)  # split rails (2.5 V)
+pwr.v_chan3.set(5)    # single supply (5 V)
+
+# current
+pwr.i_chan1.set(0.04)
+pwr.i_chan2.set(0.04)
+pwr.i_chan3.set(0.04)
+
+# enable outputs
+pwr.out_state_chan1.set('ON')
+pwr.out_state_chan2.set('ON')
+pwr.out_state_chan3.set('ON')
+
+# ------------------------------------------------
+#           ADA2200 SPI Control with Aardvark
+# ------------------------------------------------
+ada2200_scpi = create_ada2200()
+SPI, component_dict = generate_ophyd_obj(name='ada2200_spi', scpi_obj=ada2200_scpi)
+ada2200 = SPI(name='ada2200')
+
+ada2200.serial_interface.set(0x10)  # enables SDO (bit 4,3 = 1)
+ada2200.demod_control.set(0x18)     # bit 3: 0 = SDO to RCLK
+ada2200.analog_pin.set(0x02)        # extra 6 dB of gain for single-ended inputs
+ada2200.clock_config.set(0x06)      # divide input clk by x16
+
+# ------------------------------------------------
 #           Oscilloscope
 # ------------------------------------------------
-
 # Oscilloscope Channel 1 is RCLK from ADA2200
 # Oscilloscope Channel 2 is Input Sinusoid from function generator
-osc = Oscilloscope(name='osc')
+
+osc_scpi = open_by_name(name='msox_scope')  # name within the configuration file (config.yaml)
+osc_scpi.name = 'scope'
+OSC, component_dict = generate_ophyd_obj(name='osc', scpi_obj=osc_scpi)
+osc = OSC(name='scope')
+
 osc.time_reference.set('CENT')
 osc.time_scale.set(200e-6)
 osc.acq_type.set('NORM')
