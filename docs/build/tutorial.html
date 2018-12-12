@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; instrbuilder 0.1a documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example Instrument" href="example_instrument.html" />
+    <link rel="prev" title="Instrbuilder: Easy Instrument Control with Python" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_demo.html">Interfacing an Instrbuilder Instrument to Bluesky</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_utils.html">Bluesky Lab Utilities</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>(system setup should be completed first)</p>
+<p>The name and address of instruments are stored in a configuration file within the user’s home directory.</p>
+<ul class="simple">
+<li>Open an instrument</li>
+</ul>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">instrument_opening</span> <span class="kn">import</span> <span class="n">open_by_name</span>
+
+<span class="gp">In [2]: </span><span class="n">fg</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;old_fg&#39;</span><span class="p">)</span>   <span class="c1"># name within the configuration file (config.yaml)</span>
+<span class="go">Opened Instrument: Agilent Technologies,33220A,MY44060286,2.07-2.06-22-2</span>
+</pre></div>
+</div>
+<p>Now using the instrument object <cite>fg</cite> execute a simple <cite>set</cite> and <cite>get</cite> combination.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+<span class="gp">In [4]: </span><span class="k">print</span><span class="p">(</span><span class="n">fg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">))</span>
+<span class="go">0.5</span>
+
+<span class="gp">In [5]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="gp">In [6]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;freq&#39;</span><span class="p">,</span> <span class="mf">3.12e3</span><span class="p">)</span>
+
+<span class="gp">In [7]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;ON&#39;</span><span class="p">)</span>  <span class="c1"># this is an example of a lookup table conversion &#39;ON&#39; -&gt; 1</span>
+</pre></div>
+</div>
+<p>Let’s open an oscilloscope in order to demonstrate more complex setters and getters</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
+<span class="go">Opened Instrument: KEYSIGHT TECHNOLOGIES,MSO-X 3034T,MY58030693,07.20.2017102614</span>
+
+<span class="gp">In [9]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;time_range&#39;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">)</span>
+
+<span class="gp">In [10]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;chan_scale&#39;</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="gp">In [11]: </span><span class="n">v_average</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;VAV&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="gp">In [12]: </span><span class="n">v_pkpk</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;VPP&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="gp">In [13]: </span><span class="n">v_freq</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;FREQ&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
+<span class="go">Oscilloscope measurements: Average voltage: 1.027 </span>
+<span class="go">Peak-to-peak voltage: 2.17</span>
+
+
+<span class="gp">In [15]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Frequency: {} [kHz]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_freq</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
+<span class="go">                                                                               Frequency: 3.1235999999999997 [kHz]</span>
+</pre></div>
+</div>
+<p><strong>Help</strong> is available both at the single command level and is color-coded nicely in an iPython terminal. Unfortunately coloroma color-coding is broken in the Sphinx documentation:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">)</span>
+<span class="go">Help for command [32moffset[0m in subsystem: output:</span>
+<span class="go">    voltage offset, range depends on amplitude </span>
+<span class="go">    Allowable range is: [-4.99, 4.99]</span>
+<span class="go">    Returns: float</span>
+</pre></div>
+</div>
+<p>And for all commands with the option to include only some subsystems:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help_all</span><span class="p">(</span><span class="n">subsystem_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">])</span>
+<span class="go">=====================================</span>
+
+<span class="go">Help for Subsytem: [31moutput[0m:</span>
+
+
+<span class="go">Help for command [32mfunction[0m in subsystem: output:</span>
+<span class="go">    output function, sin; square, etc.</span>
+<span class="go">    Allowable range is: [&#39;SIN&#39;, &#39;SQU&#39;, &#39;RAMP&#39;, &#39;PULS&#39;, &#39;NOIS&#39;, &#39;DC&#39;, &#39;USER&#39;]</span>
+<span class="go">    Returns: str_strip</span>
+
+<span class="go">Help for command [32mfreq[0m in subsystem: output:</span>
+<span class="go">    output frequency in Hz</span>
+<span class="go">    Allowable range is: [0, 20000000.0]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32mv[0m in subsystem: output:</span>
+<span class="go">    voltage amplitude</span>
+<span class="go">    Allowable range is: [0.01, 10]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32moffset[0m in subsystem: output:</span>
+<span class="go">    voltage offset, range depends on amplitude </span>
+<span class="go">    Allowable range is: [-4.99, 4.99]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32mphase[0m in subsystem: output:</span>
+<span class="go">    phase with respect to sync and rear-panel connectors</span>
+<span class="go">    Allowable range is: [-360, 360]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32mv_low[0m in subsystem: output:</span>
+<span class="go">    need to check this one</span>
+<span class="go">    Allowable range is: [0, 1]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32mv_high[0m in subsystem: output:</span>
+<span class="go">    need to check this one</span>
+<span class="go">    Allowable range is: [0, 1]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32munit[0m in subsystem: output:</span>
+<span class="go">    voltage unit</span>
+<span class="go">    Allowable range is: [&#39;VPP&#39;, &#39;VRMS&#39;, &#39;DBM&#39;]</span>
+<span class="go">    Returns: str_strip</span>
+
+<span class="go">Help for command [32moutput[0m in subsystem: output:</span>
+<span class="go">    turn output on or off</span>
+<span class="go">    Allowable range is: [0.0, 1.0]</span>
+<span class="go">    Returns: int</span>
+<span class="go">    This command utilizes a lookup table on get and set:</span>
+<span class="go">     {&#39;OFF&#39;: 0.0, &#39;ON&#39;: 1.0}</span>
+
+<span class="go">Help for command [32mduty_cycle[0m in subsystem: output:</span>
+<span class="go">    square wave</span>
+<span class="go">    Allowable range is: [0, 100]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32msymmetry[0m in subsystem: output:</span>
+<span class="go">    ramp</span>
+<span class="go">    Allowable range is: [0, 100]</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32mload[0m in subsystem: output:</span>
+<span class="go">    output load (50 Ohm or High-Z). Ohms or &#39;MIN&#39;, &#39;MAX&#39;</span>
+<span class="go">    Returns: float</span>
+
+<span class="go">Help for command [32mpolarity[0m in subsystem: output:</span>
+<span class="go">    invert the output or not</span>
+<span class="go">    Allowable range is: [&#39;NORM&#39;, &#39;INV&#39;]</span>
+<span class="go">    Returns: str_strip</span>
+
+<span class="go">Help for command [32msync[0m in subsystem: output:</span>
+<span class="go">    sync to external reference</span>
+<span class="go">    Allowable range is: [0.0, 1.0]</span>
+<span class="go">    Returns: int</span>
+<span class="go">    This command utilizes a lookup table on get and set:</span>
+<span class="go">     {&#39;OFF&#39;: 0.0, &#39;ON&#39;: 1.0}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_instrument.html" class="btn btn-neutral float-right" title="Example Instrument" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Instrbuilder: Easy Instrument Control with Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1a',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

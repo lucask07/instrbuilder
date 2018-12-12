@@ -1,86 +1,52 @@
 Tutorial 
 **************************************************
+(system setup should be completed first)
 
-Import needed modules and configure paths to the CSV file that describes the commands of the instrument:
+The name and address of instruments are stored in a configuration file within the user's home directory.
 
-.. code-block:: python
-
-  import os
-  import yaml
-  from scpi import init_instrument
-
-  yaml_config = open('config.yaml', 'r')
-  configs = yaml.load(yaml_config)
-
-  # get paths to the lockin amplifier CSV files 
-  commands = 'commands.csv'
-  lookups = 'lookup.csv'
-  instrument = 'srs810'
-
-  cmd_map = os.path.join(configs['base_directory'], configs['csv_directory'], 
-              instrument, commands)
-  lookup_file = os.path.join(configs['base_directory'], configs['csv_directory'], 
-              instrument, lookups)
-
-  # configure the transport method (pyserial) and the device address        
-  addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
-
-
-.. ipython:: python
-  :suppress:
-
-  import os
-  import yaml
-  from scpi import init_instrument
-
-  yaml_config = open('../instrbuilder/config.yaml', 'r')
-  configs = yaml.load(yaml_config)
-
-  # get lockin amplifier CSV paths
-  commands = 'commands.csv'
-  lookups = 'lookup.csv'
-
-  instrument = 'srs810'
-  cmd_map = os.path.join(configs['base_directory'], configs['csv_directory'], 
-              instrument, commands)
-  lookup_file = os.path.join(configs['base_directory'], configs['csv_directory'], 
-              instrument, lookups)
-
-  # configure the transport method (pyserial) and the device address
-  addr = {'pyserial': '/dev/tty.USA19H14112434P1.1'}
-
-Initialize the instrument object `lia` and execute a simple `get` and `set`.
+* Open an instrument
 
 .. ipython:: python
 
-  lia, lia_serial = init_instrument(cmd_map, addr = addr,
-    lookup = lookup_file, init_write = 'OUTX 0')
+  from instrument_opening import open_by_name
+  fg = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
 
-  print(lia.get('phase'))
-  ret = lia.set(0.1, 'phase')
-
-
-A more complex Lock-in Amplifier `set`. This example requires an input dictionary `configs`. Here we set the lock-in display to show "R" -- magnitude (using the lookup-table).
-
+Now using the instrument object `fg` execute a simple `set` and `get` combination.
 
 .. ipython:: python
 
-  ret = lia.set(value = 'R', name = 'ch1_disp', configs = {'ratio': 0})
+  _ = fg.set('offset', 0.5)
+  print(fg.get('offset'))
+  _ = fg.set('v', 1) 
+  _ = fg.set('freq', 3.12e3)
+  _ = fg.set('output', 'ON')  # this is an example of a lookup table conversion 'ON' -> 1
 
-  # note the ASCII string of this command shows:
-  print(lia._cmds['ch1_disp'].ascii_str)
+Let's open an oscilloscope in order to demonstrate more complex setters and getters
 
-  lia.help('ch1_disp')
+.. ipython:: python
+
+  osc = open_by_name(name='msox_scope')  # name within the configuration file (config.yaml)
+
+  _ = osc.set('time_range', 1e-3)
+  _ = osc.set('chan_scale', 1.2, configs={'chan': 1})
+  v_average = osc.get('meas', configs={'meas_type': 'VAV', 'chan': 1})
+  v_pkpk = osc.get('meas', configs={'meas_type': 'VPP', 'chan': 1})
+  v_freq = osc.get('meas', configs={'meas_type': 'FREQ', 'chan': 1})
+
+.. ipython:: python
+
+  print('Oscilloscope measurements: Average voltage: {} \nPeak-to-peak voltage: {}\n'.format(v_average, v_pkpk))
+  print('Frequency: {} [kHz]'.format(v_freq/1000))
 
 
 **Help** is available both at the single command level and is color-coded nicely in an iPython terminal. Unfortunately coloroma color-coding is broken in the Sphinx documentation:
 
 .. ipython:: python
 
-  lia.help('phase')
+  fg.help('offset')
 
 And for all commands with the option to include only some subsystems:
 
 .. ipython:: python
 
-  lia.help_all(subsystem_list = ['input_filter'])
+  fg.help_all(subsystem_list = ['output'])
