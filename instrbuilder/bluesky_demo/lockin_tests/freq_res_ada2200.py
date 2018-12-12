@@ -18,13 +18,8 @@ from databroker import Broker
 
 from ophyd.device import Kind
 from ophyd.ee_instruments import LockIn, FunctionGen, MultiMeter
-import scpi
 
 RE = RunEngine({})
-bec = BestEffortCallback()
-# Send all metadata/data captured to the BestEffortCallback.
-# RE.subscribe(bec) # in this demo we will explicitly define LiveTables and Plots
-
 db = Broker.named('local_file')  # a broker poses queries for saved data sets
 
 # Insert all metadata/data captured into db.

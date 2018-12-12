@@ -24,13 +24,8 @@ from databroker import Broker
 from ophyd.device import Kind
 from ophyd.ee_instruments import generate_ophyd_obj
 from instrument_opening import open_by_name
-import scpi
 
 RE = RunEngine({})
-bec = BestEffortCallback()
-# Send all metadata/data captured to the BestEffortCallback.
-# RE.subscribe(bec) # in this demo we will explicitly define LiveTables and Plots
-
 db = Broker.named('local_file')  # a broker poses queries for saved data sets
 
 # Insert all metadata/data captured into db.
@@ -94,11 +89,10 @@ fg.output.set('ON')
 # ------------------------------------------------
 #           Function Generator2
 # ------------------------------------------------
-
-fg2 = FunctionGen2(name='fg2')
-if fg2.unconnected:
-    sys.exit('Function Generator is not connected, exiting blueksy demo')
-RE.md['fg2'] = fg2.id.get()
+fg2_scpi = open_by_name(name='new_function_gen')   # name within the configuration file (config.yaml)
+fg2_scpi.name = 'fg2'
+FG, component_dict = generate_ophyd_obj(name='fg2', scpi_obj=fg2_scpi)
+fg2 = FG(name='fg2')
 
 # setup control of the frequency sweep
 fg2.freq.delay = max_settle

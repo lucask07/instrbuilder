@@ -1,4 +1,3 @@
-
 # Lucas J. Koerner
 # 05/2018
 # koerner.lucas@stthomas.edu
@@ -19,14 +18,10 @@ from bluesky.plans import list_scan
 from databroker import Broker
 
 from ophyd.device import Kind
-from ophyd.ee_instruments import LockIn, FunctionGen, MultiMeter, ManualDevice, BasicStatistics
-import scpi
+from ophyd.ee_instruments import generate_ophyd_obj, ManualDevice
+from instrument_opening import open_by_name
 
 RE = RunEngine({})
-bec = BestEffortCallback()
-# Send all metadata/data captured to the BestEffortCallback.
-# RE.subscribe(bec) # in this demo we will explicitly define LiveTables and Plots
-
 db = Broker.named('local_file')  # a broker poses queries for saved data sets
 
 # Insert all metadata/data captured into db.
@@ -35,9 +30,12 @@ RE.subscribe(db.insert)
 # ------------------------------------------------
 #           Lock-In Amplifier
 # ------------------------------------------------
-lia = LockIn(name='lia')
-if lia.unconnected:
-    sys.exit('LockIn amplifier is not connected, exiting blueksy demo')
+print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
+scpi_lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)
+LIA, component_dict = generate_ophyd_obj(name='LockIn', scpi_obj=scpi_lia)
+lia = LIA(name='lockin')
+lia.reset.set(0)
+RE.md['lock_in'] = lia.id.get()
 
 # create an object that returns statistics calculated on the arrays returned by read_buffer
 # the name is derived from the parent (e.g. lockin and from the signal that returns an array e.g. read_buffer)
@@ -72,11 +70,11 @@ lia.ch1_disp.set('R')  # magnitude, i.e. sqrt(I^2 + Q^2)
 # ------------------------------------------------
 #           Function Generator
 # ------------------------------------------------
-
-fg = FunctionGen(name='fg')
-if fg.unconnected:
-    sys.exit('Function Generator is not connected, exiting blueksy demo')
-RE.md['lock_in'] = fg.id.get()
+fg_scpi = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
+fg_scpi.name = 'fg'
+FG, component_dict = generate_ophyd_obj(name='fg', scpi_obj=fg_scpi)
+fg = FG(name='fg')
+RE.md['fg'] = fg.id.get()
 
 # setup control of the frequency sweep
 fg.freq.delay = max_settle
