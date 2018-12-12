@@ -3,14 +3,10 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 """
-Use RCLK as the input signal
-need a high-input impedance square-wave to sine wave generator
-[or maybe don't bother with conversion]
-(but limit phase shift), since the attenuators
-load the signal and then the multimeter isn't triggered
+Use RCLK as the input signal after buffering by 
+with a (high-impedance) comparator 
+RCLK then passed through attenuators 
 
-Use the same setup for dynamic reserve
-    Function generator can inject the signal
 """
 
 # standard library imports
@@ -113,13 +109,7 @@ ada2200.demod_control.set(0x18)     # bit 3: 0 = SDO to RCLK
 ada2200.analog_pin.set(0x02)        # extra 6 dB of gain for single-ended inputs
 ada2200.clock_config.set(0x06)      # divide input clk by x16
 
-
-# TODO
-# add in 6dB of gain since single-ended input  -- DONE
-# measure ada2200 offset, disable RCLK out? :   disable with ada2200.demod_control.set(0x10)
-# adjust range of DMM based on input?           dmm.volt_range_dc.set(1)
-# use the scope to quantify input :             amplitude, RMS, dc average (at Att = 0 dB)
-
+# Measurements with oscilloscope:
 # input (after amplifier) at 0 dB : 2.71V Pk-pk, 1.6205 V avg over N-cycles; AC RMS 1.233
 # input at 30 dB: 95 mV pk-pk, 1.6319 V avg over N-cycles; AC RMS 35.80
 # input at 390.58 Hz (with divide x16 of input clock)
@@ -127,7 +117,6 @@ ada2200.clock_config.set(0x06)      # divide input clk by x16
 #           Attenuator (must be manually changed)
 # ------------------------------------------------
 att = ManualDevice(name='att')
-
 
 # ------------------------------------------------
 #   Run a measurement (with a custom per step)
