@@ -1,0 +1,40 @@
+csv_directory: /Users/koer2434/Google Drive/UST/research/instrbuilder/instruments
+cmd_name: commands.csv
+lookup_name: lookup.csv
+instruments:
+  mso_scope:
+    address:
+      pyvisa: USB0::0x0957::0x17A9::MY52160418::INSTR
+    csv_folder: keysight/oscilloscope/MSOX3000
+    python_class: KeysightMSOX3000
+  new_function_gen:
+    address:
+      pyvisa: USB0::0x0957::0x2B07::MY57700733::INSTR
+    csv_folder: keysight/function_gen/33500B/
+    python_class: AgilentFunctionGen
+  srs_lockin:
+    address:
+      pyserial: /dev/tty.USA19H141113P1.1
+    address_can_change: true
+    csv_folder: srs/lock_in/sr810/
+    python_class: SRSLockIn
+  my_multi:
+    address:
+      pyvisa: USB0::0x2A8D::0x0101::MY57503303::INSTR
+    python_class: KeysightMultimeter
+    csv_folder: keysight/multimeter/34465A
+  old_fg:
+    address:
+      pyvisa: USB0::0x0957::0x0407::MY44060286::INSTR
+    python_class: AgilentFunctionGen
+    csv_folder: keysight/function_gen/33500B
+  rigol_pwr1:
+    address:
+      pyvisa: USB0::0x1AB1::0x0E11::DP8C201601369::INSTR
+    python_class: RigolPowerSupply
+    csv_folder: rigol/supply/DP832
+  msox_scope:
+    address:
+      pyvisa: USB0::0x2A8D::0x1774::MY58030693::INSTR
+    python_class: KeysightOscilloscope
+    csv_folder: keysight/oscilloscope/MSOX3000
