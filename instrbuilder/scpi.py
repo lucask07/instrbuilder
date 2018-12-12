@@ -300,7 +300,7 @@ class SCPI(object):
             print('     ' + str(self._cmds[index].lookup))
 
     def log_all_getters(self, filename=None, suppress_stdout=False):
-        # TODO - get getters with needed configurations
+        # TODO - read getters the need a configuration input 
         keys = []
         results = []
         for key in self._cmds:
@@ -367,7 +367,7 @@ class SCPI(object):
         """
 
         comm_error = False
-        allowed_err = 0.02  # TODO: determine error magnitude that is allowed
+        allowed_err = 0.02  # TODO: determine error magnitude that is allowed for automated checking
 
         if (len(self._cmds[name].get_config_keys) != len(get_configs)) or (len(
                 self._cmds[name].set_config_keys) != len(set_configs)):
@@ -496,17 +496,6 @@ class SCPI(object):
         pprint.pprint(all_tests)
         print('Returns True if command is successful')
         return all_tests
-
-
-class SCPI_Test(object):
-    # TODO
-    """ test each setter/getter combination """
-    # check range, set and then get
-    # check error codes
-    # test each getter
-    # test each setter
-    # test each misc
-    pass
 
 
 class PyVisaUSB(object):

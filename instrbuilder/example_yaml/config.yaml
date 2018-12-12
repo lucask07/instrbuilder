@@ -1,3 +1,10 @@
+# An example YAML file
+# This stores configurations in the user's home directory at ~/.instrbuilder/config.yaml
+# configurations: 
+#   1) 'csv_directory' directory of the csv files (of commands)
+#   2) 'cmd_name' name of the commands file 
+#   3) 'lookup_name' name of the lookup file 
+#   4) instrument details including name, python class, and address 
 csv_directory: /Users/koer2434/Google Drive/UST/research/instrbuilder/instruments
 cmd_name: commands.csv
 lookup_name: lookup.csv
