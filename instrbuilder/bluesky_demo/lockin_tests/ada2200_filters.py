@@ -14,7 +14,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from databroker import Broker
 from matplotlib import rcParams
+from plot_configs import params, dpi, figure_dir
 
+rcParams.update(params)
 
 def create_filter(order, sample_rate, tau):
     cutoff_freq = 1 / (2 * np.pi * tau)
@@ -39,18 +41,6 @@ def apply_filter(arr, num, denom, sample_rate, tau):
 
     return arr_downsample[0], arr_downsample
 
-
-figure_dir = '/Users/koer2434/Google Drive/UST/research/bluesky/manuscript/bluesky_manuscript/figures/'
-params = {
-   'axes.labelsize': 8,
-   'font.size': 8,
-   'legend.fontsize': 10,
-   'xtick.labelsize': 10,
-   'ytick.labelsize': 10,
-   'text.usetex': True,
-   'figure.figsize': [4.5, 4.5]
-   }
-rcParams.update(params)
 plt.figure(dpi=300)
 
 db = Broker.named('local_file')  # a broker poses queries for saved data sets)
