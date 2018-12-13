@@ -181,44 +181,46 @@
 </pre></div>
 </div>
 <p>Now using the instrument object <cite>fg</cite> execute a simple <cite>set</cite> and <cite>get</cite> combination.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
 
 <span class="gp">In [4]: </span><span class="k">print</span><span class="p">(</span><span class="n">fg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">))</span>
 <span class="go">0.5</span>
 
-<span class="gp">In [5]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">In [5]: </span><span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 
-<span class="gp">In [6]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;freq&#39;</span><span class="p">,</span> <span class="mf">3.12e3</span><span class="p">)</span>
+<span class="gp">In [6]: </span><span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;freq&#39;</span><span class="p">,</span> <span class="mf">3.12e3</span><span class="p">);</span>
 
-<span class="gp">In [7]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;ON&#39;</span><span class="p">)</span>  <span class="c1"># this is an example of a lookup table conversion &#39;ON&#39; -&gt; 1</span>
+<span class="gp">In [7]: </span><span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;MAX&#39;</span><span class="p">);</span>
+
+<span class="gp">In [8]: </span><span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;ON&#39;</span><span class="p">);</span>  <span class="c1"># this is an example of a lookup table conversion &#39;ON&#39; -&gt; 1</span>
 </pre></div>
 </div>
 <p>Let’s open an oscilloscope in order to demonstrate more complex setters and getters</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
 <span class="go">Opened Instrument: KEYSIGHT TECHNOLOGIES,MSO-X 3034T,MY58030693,07.20.2017102614</span>
 
-<span class="gp">In [9]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;time_range&#39;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">)</span>
+<span class="gp">In [10]: </span><span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;time_range&#39;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">);</span>
 
-<span class="gp">In [10]: </span><span class="n">_</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;chan_scale&#39;</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">In [11]: </span><span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;chan_scale&#39;</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span>
 
-<span class="gp">In [11]: </span><span class="n">v_average</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;VAV&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">In [12]: </span><span class="n">v_average</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;VAV&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span>
 
-<span class="gp">In [12]: </span><span class="n">v_pkpk</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;VPP&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">In [13]: </span><span class="n">v_pkpk</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;VPP&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span>
 
-<span class="gp">In [13]: </span><span class="n">v_freq</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;FREQ&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">In [14]: </span><span class="n">v_freq</span> <span class="o">=</span> <span class="n">osc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas&#39;</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meas_type&#39;</span><span class="p">:</span> <span class="s1">&#39;FREQ&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">});</span>
 </pre></div>
 </div>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
-<span class="go">Oscilloscope measurements: Average voltage: 1.0324 </span>
-<span class="go">Peak-to-peak voltage: 2.17</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
+<span class="go">Oscilloscope measurements: Average voltage: 0.5146 </span>
+<span class="go">Peak-to-peak voltage: 1.21</span>
 
 
-<span class="gp">In [15]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Frequency: {} [kHz]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_freq</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
-<span class="go">                                                                                Frequency: 3.1191999999999998 [kHz]</span>
+<span class="gp">In [16]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Frequency: {} [kHz]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_freq</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
+<span class="go">                                                                                Frequency: 3.1222 [kHz]</span>
 </pre></div>
 </div>
 <p><strong>Help</strong> is available both at the single command level and is color-coded nicely in an iPython terminal. Unfortunately coloroma color-coding is broken in the Sphinx documentation:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">)</span>
 <span class="go">Help for command [32moffset[0m in subsystem: output:</span>
 <span class="go">    voltage offset, range depends on amplitude </span>
 <span class="go">    Allowable range is: [-4.99, 4.99]</span>
@@ -226,7 +228,7 @@
 </pre></div>
 </div>
 <p>And for all commands with the option to include only some subsystems:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help_all</span><span class="p">(</span><span class="n">subsystem_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">])</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [18]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help_all</span><span class="p">(</span><span class="n">subsystem_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">])</span>
 <span class="go">=====================================</span>
 
 <span class="go">Help for Subsytem: [31moutput[0m:</span>

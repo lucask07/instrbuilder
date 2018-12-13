@@ -15,11 +15,12 @@ Now using the instrument object `fg` execute a simple `set` and `get` combinatio
 
 .. ipython:: python
 
-  _ = fg.set('offset', 0.5)
+  fg.set('offset', 0.5);
   print(fg.get('offset'))
-  _ = fg.set('v', 1) 
-  _ = fg.set('freq', 3.12e3)
-  _ = fg.set('output', 'ON')  # this is an example of a lookup table conversion 'ON' -> 1
+  fg.set('v', 1);
+  fg.set('freq', 3.12e3);
+  fg.set('load', 'MAX');
+  fg.set('output', 'ON');  # this is an example of a lookup table conversion 'ON' -> 1
 
 Let's open an oscilloscope in order to demonstrate more complex setters and getters
 
@@ -27,11 +28,11 @@ Let's open an oscilloscope in order to demonstrate more complex setters and gett
 
   osc = open_by_name(name='msox_scope')  # name within the configuration file (config.yaml)
 
-  _ = osc.set('time_range', 1e-3)
-  _ = osc.set('chan_scale', 1.2, configs={'chan': 1})
-  v_average = osc.get('meas', configs={'meas_type': 'VAV', 'chan': 1})
-  v_pkpk = osc.get('meas', configs={'meas_type': 'VPP', 'chan': 1})
-  v_freq = osc.get('meas', configs={'meas_type': 'FREQ', 'chan': 1})
+  osc.set('time_range', 1e-3);
+  osc.set('chan_scale', 1.2, configs={'chan': 1});
+  v_average = osc.get('meas', configs={'meas_type': 'VAV', 'chan': 1});
+  v_pkpk = osc.get('meas', configs={'meas_type': 'VPP', 'chan': 1});
+  v_freq = osc.get('meas', configs={'meas_type': 'FREQ', 'chan': 1});
 
 .. ipython:: python
 
