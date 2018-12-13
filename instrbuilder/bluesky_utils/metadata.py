@@ -77,7 +77,7 @@ print('Found {} runs with the ADA2200 as the DUT'.format(len(list(headers))))
 # search results are loaded lazily and do not return a list, access via
 if len(list(headers)) > 0:
     pprint.pprint(list(headers)[0]['start'])
-    pprint.pprint(list(headers)[0]['descriptors']
+    pprint.pprint(list(headers)[0]['descriptors'])
 
 # Search for all runs involving ADA2200 duts
 headers = db(dut='ADA2200', since='2018-06-23')
