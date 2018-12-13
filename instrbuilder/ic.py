@@ -89,17 +89,78 @@ class IC(object):
             print('register {} does not have R/W configured'.format(name))
             return -1
 
+## Portions of the code for the AA class 
+#  below are vendored from the TotalPhase Aardvark API:
+
+#==========================================================================
+# Copyright (c) 2002-2008 Total Phase, Inc.
+# All rights reserved.
+# www.totalphase.com
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# - Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+#
+# - Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+#
+# - Neither the name of Total Phase, Inc. nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE. 
+#==========================================================================
+
 
 class AA(object):
     """An Aardvark I2C adapter
 
         Parameters
         ----------
+        comm : Aardvark object
+            handle to the opened instrument 
+
+        Methods
+        ----------
+        open() : 
+
+        configure_i2c(bit_rate) : 
+
+        configure_spi(SPI_BITRATE=1000) : 
+
+        write_i2c(slave_addr, sub_addr, value) : 
+
+        read_i2c(slave_addr, sub_addr, num_bytes_to_read=1) : 
+        
+        read_spi(instruction) : 
+
+        ask(interface, addr_instruction, slave_address=None,
+             num_bytes_to_read=1) : 
+            more generic ask command that propagates to upper-layers
+
+        write(interface, addr_instruction, data, slave_address=None) :
+            more generic write command that propagates to upper-layers
+
     """
 
-    def __init__(self):
+    def __init__(self, bitrate = 1000):
         self.comm = self.open()  # handle to the opened Aardvark
-        self._bitrate = 1000
+        self._bitrate = bitrate
         self.configure_i2c(self._bitrate)
         self.configure_spi()
 
@@ -133,6 +194,10 @@ class AA(object):
         return aa_open(ports[0])
 
     def configure_i2c(self, bit_rate):
+        """
+        configure the I2C system
+        """
+
         # Ensure that the I2C subsystem is enabled
         aa_configure(self.comm, AA_CONFIG_SPI_I2C)
 
@@ -269,6 +334,3 @@ class AA(object):
     def close(self):
         # Close the device
         aa_close(self.comm)
-
-    def close(self):
-        pass

@@ -3,7 +3,6 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-
 def get_bit(value, bit):
     """
     Returns single bit from byte
@@ -16,7 +15,8 @@ def get_bit(value, bit):
 
     Returns
     -------
-    0 or 1
+    int : 
+        0 or 1
 
     """
     bit_val = 1 if (value & 2 ** (bit) != 0) else 0
@@ -35,7 +35,8 @@ def set_bit(value, bit):
 
     Returns
     -------
-    int with new value
+    int :
+        new value
 
     """
     return value | 2 ** bit
@@ -53,7 +54,7 @@ def clear_bit(value, bit):
 
     Returns
     -------
-    int with new value
-
+    int : 
+        new value
     """
     return value & ((2 ** 8 - 1) - bit ** 2)

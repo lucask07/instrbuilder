@@ -3,6 +3,11 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
+'''
+The SCPI module includes the SCPI class, functions to convert return values, and builds 
+a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.
+'''
+
 # standard library imports
 import warnings
 import time
@@ -22,11 +27,6 @@ from pyvisa.constants import StatusCode
 # local package imports
 from command import Command
 import utils
-
-'''
-The SCPI module includes the SCPI class, functions to convert return values, and builds 
-a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.
-'''
 
 # -----------------------------------------
 # a dictionary of functions that are used to convert return values from getters
@@ -61,6 +61,17 @@ def str_strip(str_in):
 
 
 def keysight_error(str_in):
+    """ detect for an error return, specific to Keysight. 
+
+    Parameters
+    ----------
+    str_in : string
+        input string to check 
+
+    Returns 
+    ----------
+    bool
+    """
     return str_in[0:2] != '+0'
 
 
@@ -97,12 +108,6 @@ getter_debug_value = '7'  # when running headless (no instruments attached) all 
 class SCPI(object):
     """A SCPI (or SCPI like) instrument with a list of commands. The instrument has methods to get and set info of each command.
 
-    .. todo::
-        * Instrument error log lookup. How to load? Import as csv?
-        * Automatic checker: send values out of range and read-back, note precisions, etc.
-        * Organization of classes, what inherits from what? Override Serial initialization stuff
-        * Create docstrings for each method of SCPI class
-
     Parameters
     ----------
     cmd_list : Command
@@ -119,6 +124,46 @@ class SCPI(object):
     unconnected : bool, optional
         For simulation & testing without instruments
         If true a "fake" ask and write command are configured. Ask always returns the same value (getter_debug_value).
+
+    Attributes
+    ----------
+    unconnected : bool
+        if True the instrument is unconnected and returns appropriately 
+        configured garbage values just for testing
+    vendor_id : str
+        id returned by the identification command
+    name : str
+        name the user assigns 
+    comm_handle : object 
+        the communication object (could be from pyvisa or pyserial)
+
+    Methods
+    ----------
+    get(name, configs={}) : 
+        get the value for the command of a given name 
+
+    set(name, value=None, configs={}) : 
+        set a value for the command of name 
+
+    list_cmds() : 
+        print all cmds
+
+    help_all(subsystem_list=None) : 
+        list help for all commands (or for commands within a list of subsystems)
+
+    help(name): 
+        print help on a command of the provided name 
+
+    log_all_getters(filename=None, suppress_stdout=False):
+        write all values that can be read to a file or to stdout
+
+    test_command(name, set_vals=None, get_configs={}, set_configs={}): 
+        test a specific command by sending a value and checking the readback of that value 
+
+    test_all(skip_subsystem=['setup', 'status', 'system'],
+                 skip_commands=['fast_transfer', 'reset']) : 
+        test all commands 
+
     """
 
     def __init__(self,
@@ -174,8 +219,7 @@ class SCPI(object):
         try:
             val = self._cmds[name].getter_type(ret_val)
             # check if a lookup table exists
-            if bool(self._cmds[name]
-                    .lookup):  # bool(dict) --> checks if dictionary is empty
+            if bool(self._cmds[name].lookup):  # bool(dict) --> checks if dictionary is empty
                 try:
                     # check if this value matches a key in the lookup table
                     val = list(self._cmds[name].lookup.keys())[list(
@@ -192,6 +236,22 @@ class SCPI(object):
                 ret_val, type(ret_val), self._cmds[name].getter_type))
 
     def set(self, name, value=None, configs={}):
+    """ set a value 
+    
+    Parameters
+    ----------
+    name : string
+        name of the command (first column in the csv file)
+    value : Union[str, int, float, None]
+        the value to set  
+    configs : dict, optional
+        special configurations beyond the 'value'; specified in the csv file
+
+    Returns 
+    ----------
+    str : TODO check this and fix? 
+
+    """
         cmd_str = self._cmds[name].ascii_str
 
         if value is not None:
@@ -213,7 +273,18 @@ class SCPI(object):
         return self._write(cmd_str)
 
     def check_set_range(self, value, name):
-        ''' check if the value to be set is within range '''
+        """ check if the value to be set is within range 
+        Parameters
+        ----------
+        name : string
+            name of the command (first column in the csv file)
+        value : Union[str, int, float, None]
+            the value to set  
+
+        Returns 
+        ----------
+        bool  
+        """
         if self._cmds[name].limits is None:
             return True
 
@@ -236,23 +307,47 @@ class SCPI(object):
                 self.out_of_range_warning(value, name)
                 return False
 
+
     def out_of_range_warning(self, value, name):
+        """ throw a warning 
+
+        Parameters
+        ----------
+        value : Union[str, int, float, None]
+            the value to set  
+        name : string
+            name of the command (first column in the csv file)
+
+        Returns 
+        ----------
+        UserWarning  
+        """
         warnings.warn(
             '\n  {} value of {} is out of the range of {}'.format(
                 name, value, self._cmds[name].limits), UserWarning)
 
+
     def list_cmds(self):
+        """ list all commands """
         for key in self._cmds:
             print('{}'.format(self._cmds[key].name))
 
-    def help_all(self, subsystem_list=None):
 
+    def help_all(self, subsystem_list=None):
+        """ print help for all commands 
+
+        Parameters
+        ----------
+        subsystem_list : list, optional
+            a list of subsystems to limit the printing to   
+        name : string
+            name of the command (first column in the csv file)
+
+        """
         if subsystem_list is None:
             # get all subsystems
             subsystems = [self._cmds[d].subsystem for d in self._cmds]
-            subsystems = [
-                s if s is not None else 'Unassigned' for s in subsystems
-            ]
+            subsystems = [s if s is not None else 'Unassigned' for s in subsystems]
             # create a list of unique subsystems
             subsystem_set = set(subsystems)
         else:
@@ -269,38 +364,61 @@ class SCPI(object):
                     self.help(k)
                     print('')
 
-    def help(self, index):
-        if self._cmds[index].subsystem is not None:
-            sub_sys = ' in subsystem: {}'.format(self._cmds[index].subsystem)
+    def help(self, name):
+        """ print help for a single command 
+
+        Parameters
+        ----------
+        name : str
+            the name of the command
+
+        """
+        if self._cmds[name].subsystem is not None:
+            sub_sys = ' in subsystem: {}'.format(self._cmds[name].subsystem)
         else:
             sub_sys = ''
 
         print(
-            f'Help for command {colorama.Fore.GREEN}{self._cmds[index].name}{colorama.Style.RESET_ALL}{sub_sys}:'
+            f'Help for command {colorama.Fore.GREEN}{self._cmds[name].name}{colorama.Style.RESET_ALL}{sub_sys}:'
         )
-        print('    {}'.format(self._cmds[index].doc))
-        if self._cmds[index].limits is not None:
+        print('    {}'.format(self._cmds[name].doc))
+        if self._cmds[name].limits is not None:
             print('    Allowable range is: {}'.format(
-                self._cmds[index].limits))
-            if len(self._cmds[index].set_config_keys) > 0:
+                self._cmds[name].limits))
+            if len(self._cmds[name].set_config_keys) > 0:
                 print(
                     '    The setter needs a configuration dictionary with keys: {}'.
-                    format(', '.join(self._cmds[index].set_config_keys)))
+                    format(', '.join(self._cmds[name].set_config_keys)))
 
-        if self._cmds[index].getter:
+        if self._cmds[name].getter:
             print('    Returns: {}'.format(
-                self._cmds[index].getter_type.__name__))
-            if len(self._cmds[index].set_config_keys) > 0:
+                self._cmds[name].getter_type.__name__))
+            if len(self._cmds[name].set_config_keys) > 0:
                 print(
                     '    Getting a value needs a configuration dictionary with keys: {}'.
-                    format(', '.join(self._cmds[index].get_config_keys)))
+                    format(', '.join(self._cmds[name].get_config_keys)))
 
-        if len(self._cmds[index].lookup) > 0:
+        if len(self._cmds[name].lookup) > 0:
             print('    This command utilizes a lookup table on get and set:')
-            print('     ' + str(self._cmds[index].lookup))
+            print('     ' + str(self._cmds[name].lookup))
 
     def log_all_getters(self, filename=None, suppress_stdout=False):
-        # TODO - read getters the need a configuration input 
+        """ save all gettable values to a file and send to stdout
+        
+        Parameters
+        ----------
+        filename : str, optional
+            name of the file (if None no file is saved)
+        suppress_stdout : bool, optional
+            if True the getters will not be printed to stdout
+
+        Returns 
+        ----------
+        dict :
+            dictionary with the command name as keys and the results as values  
+
+        """
+        # TODO - read getters that need a configuration input 
         keys = []
         results = []
         for key in self._cmds:
@@ -325,7 +443,14 @@ class SCPI(object):
 
     def read_comm_err(self):
         """ Read if the instrument has flagged a communciation error 
-            The csv command file must have a getter with name comm_error that returns a bool """
+            The csv command file must have a getter with name comm_error that returns a bool 
+
+        Returns 
+        ----------
+        bool :
+            if True a comm error was detected
+
+        """
         try:
             return self.get('comm_error')
         except KeyError as inst:
@@ -499,11 +624,16 @@ class SCPI(object):
 
 
 class PyVisaUSB(object):
-    """A USBPyVISA instrument
+    """A USBPyVISA instrument (connected via a USB cable)
 
-        Parameters
-        ----------
-        address: the address of the device
+    Parameters
+    ----------
+    address: str 
+        the address of the device
+
+    Attributes
+    ----------
+    comm : visa communciation object 
     """
 
     def __init__(self, address):
@@ -516,6 +646,14 @@ class PyVisaUSB(object):
 
     def open_visa(self, addr):
         """ open a VISA object 
+        Parameters
+        ----------
+        addr : str
+            the address of the device
+
+        Returns
+        ----------
+        PyVISA object
 
         .. todo::
            * determine if error flag
@@ -525,8 +663,7 @@ class PyVisaUSB(object):
         mgr = visa.ResourceManager()
         resources = mgr.list_resources()
         if addr in resources:
-            # open device
-            # TODO check return value
+            # open device  TODO: check return value
             obj = mgr.open_resource(addr)
         elif addr not in resources:
             print(
@@ -542,10 +679,37 @@ class PyVisaUSB(object):
         return obj
 
     def ask(self, cmd):
+        """ Send a query to the instrument 
+
+        Parameters
+        ----------
+        cmd : str
+            the ASCII string sent to the device
+
+        Returns
+        ----------
+        str :
+            ASCII string returned by the device 
+
+        """
         res = self.comm.query(cmd)
         return res
 
     def write(self, cmd):
+        """ Write a command to the instrument 
+
+        Parameters
+        ----------
+        cmd : str
+            the ASCII string sent to the device
+
+        Returns
+        ----------
+        bool :
+            if True transaction was successful  
+        str :
+            returned value    todo: check this  
+        """
         ret = self.comm.write(cmd)
         return ret[1] == StatusCode.success, ret
 
@@ -554,6 +718,29 @@ class PyVisaUSB(object):
 
 
 class Serial(object):
+    """A PySerial instrument (connected via a serial cable, i.e. RS232)
+
+    Parameters
+    ----------
+    ser_port : str 
+        the address of the device (example on a MAC is '/dev/tty.USA19H141113P1.1')
+
+    baudrate : int, optional
+        the serial channel baudrate to configure
+
+    parity : str, optional
+        options given by serial.PARITY_NONE, serial.PARITY_EVEN, serial.PARITY_ODD
+
+    bytesize : int, optional
+        options given by serial.EIGHTBITS, serial.FIVEBITS, serial.SEVENBITS
+
+    Attributes
+    ----------
+    ser : the serial communciation object 
+
+    terminator : the termination character to send 
+
+    """
     def __init__(self, ser_port, **kwargs):
         self.ser = serial.Serial(
             port=ser_port,
@@ -612,8 +799,31 @@ class Serial(object):
 
 
 def init_instrument(cmd_map, addr, lookup=None, **kwargs):
+    """
+    initialize an instrument with its address and CSV file of commands 
 
-    # Read CSV file of commands
+    Parameters
+    ----------
+    cmd_map : str
+        path to the CSV file of instrument commands 
+    addr : dict 
+        key is one of pyserial, pyvisa; value is the address of the instrument
+    lookup : str, optional
+        filename of the CSV file of lookup table
+
+    Returns
+    ----------
+    list : 
+        list of commands that will be used for building the instrument
+
+    object : 
+        communication handle
+
+    bool : 
+        True if instrument is not connected  
+    """
+
+    # Read CSV file of commands using Pandas
     df = pd.read_csv(cmd_map)
     # strip white space and end-of-line from column headers
     df = df.rename(columns=lambda x: x.strip())
