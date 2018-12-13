@@ -211,20 +211,7 @@
 </div>
 <p>Open an oscilloscope in order to demonstrate more complex setters and getters:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
-<span class="go">Error: {} is not a named instrument in the configuration file</span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-9-adce7386cc8b&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
-
-<span class="nn">~/Google Drive/UST/research/instrbuilder/instrbuilder/instrument_opening.py</span> in <span class="ni">open_by_name</span><span class="nt">(name, name_attached, filename)</span>
-<span class="g g-Whitespace">    </span><span class="mi">257</span> 
-<span class="g g-Whitespace">    </span><span class="mi">258</span>     <span class="n">cmd_map</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
-<span class="ne">--&gt; </span><span class="mi">259</span>                            <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;instruments&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;csv_folder&#39;</span><span class="p">],</span>
-<span class="g g-Whitespace">    </span><span class="mi">260</span>                            <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;cmd_name&#39;</span><span class="p">])</span>
-<span class="g g-Whitespace">    </span><span class="mi">261</span> 
-
-<span class="ne">KeyError</span>: &#39;msox_scope&#39;
+<span class="go">Opened Instrument: KEYSIGHT TECHNOLOGIES,MSO-X 3034T,MY58030693,07.20.2017102614</span>
 
 <span class="gp">In [10]: </span><span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;time_range&#39;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">);</span>
 
@@ -255,20 +242,12 @@
 </div>
 <p>Print oscilloscope measurements</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [21]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-21-c440d73b8f8d&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
+<span class="go">Oscilloscope measurements: Average voltage: 0.49938 </span>
+<span class="go">Peak-to-peak voltage: 1.01</span>
 
-<span class="ne">NameError</span>: name &#39;v_average&#39; is not defined
 
 <span class="gp">In [22]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Frequency: {} [kHz]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_freq</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                         ---------------------------------------------------------------------------</span>
-<span class="go">NameError                                 Traceback (most recent call last)</span>
-<span class="go">&lt;ipython-input-22-9ebd24ca0aa0&gt; in &lt;module&gt;()</span>
-<span class="go">----&gt; 1 print(&#39;Frequency: {} [kHz]&#39;.format(v_freq/1000))</span>
-
-<span class="go">NameError: name &#39;v_freq&#39; is not defined</span>
+<span class="go">                                                                                 Frequency: 3.1201999999999996 [kHz]</span>
 </pre></div>
 </div>
 </div>
