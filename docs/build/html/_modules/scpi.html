@@ -169,6 +169,11 @@
 <span class="c1"># koerner.lucas@stthomas.edu</span>
 <span class="c1"># University of St. Thomas</span>
 
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The SCPI module includes the SCPI class, functions to convert return values, and builds </span>
+<span class="sd">a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
 <span class="c1"># standard library imports</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -188,11 +193,6 @@
 <span class="c1"># local package imports</span>
 <span class="kn">from</span> <span class="nn">command</span> <span class="k">import</span> <span class="n">Command</span>
 <span class="kn">import</span> <span class="nn">utils</span>
-
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">The SCPI module includes the SCPI class, functions to convert return values, and builds </span>
-<span class="sd">a SCPI object (using the function init_instrument) from a CSV file of commands and lookups.</span>
-<span class="sd">&#39;&#39;&#39;</span>
 
 <span class="c1"># -----------------------------------------</span>
 <span class="c1"># a dictionary of functions that are used to convert return values from getters</span>
@@ -227,6 +227,17 @@
 
 
 <span class="k">def</span> <span class="nf">keysight_error</span><span class="p">(</span><span class="n">str_in</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; detect for an error return, specific to Keysight. </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    str_in : string</span>
+<span class="sd">        input string to check </span>
+
+<span class="sd">    Returns </span>
+<span class="sd">    ----------</span>
+<span class="sd">    bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">str_in</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;+0&#39;</span>
 
 
@@ -263,12 +274,6 @@
 <div class="viewcode-block" id="SCPI"><a class="viewcode-back" href="../scpi.html#scpi.SCPI">[docs]</a><span class="k">class</span> <span class="nc">SCPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A SCPI (or SCPI like) instrument with a list of commands. The instrument has methods to get and set info of each command.</span>
 
-<span class="sd">    .. todo::</span>
-<span class="sd">        * Instrument error log lookup. How to load? Import as csv?</span>
-<span class="sd">        * Automatic checker: send values out of range and read-back, note precisions, etc.</span>
-<span class="sd">        * Organization of classes, what inherits from what? Override Serial initialization stuff</span>
-<span class="sd">        * Create docstrings for each method of SCPI class</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    cmd_list : Command</span>
@@ -285,6 +290,46 @@
 <span class="sd">    unconnected : bool, optional</span>
 <span class="sd">        For simulation &amp; testing without instruments</span>
 <span class="sd">        If true a &quot;fake&quot; ask and write command are configured. Ask always returns the same value (getter_debug_value).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    unconnected : bool</span>
+<span class="sd">        if True the instrument is unconnected and returns appropriately </span>
+<span class="sd">        configured garbage values just for testing</span>
+<span class="sd">    vendor_id : str</span>
+<span class="sd">        id returned by the identification command</span>
+<span class="sd">    name : str</span>
+<span class="sd">        name the user assigns </span>
+<span class="sd">    comm_handle : object </span>
+<span class="sd">        the communication object (could be from pyvisa or pyserial)</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    ----------</span>
+<span class="sd">    get(name, configs={}) : </span>
+<span class="sd">        get the value for the command of a given name </span>
+
+<span class="sd">    set(name, value=None, configs={}) : </span>
+<span class="sd">        set a value for the command of name </span>
+
+<span class="sd">    list_cmds() : </span>
+<span class="sd">        print all cmds</span>
+
+<span class="sd">    help_all(subsystem_list=None) : </span>
+<span class="sd">        list help for all commands (or for commands within a list of subsystems)</span>
+
+<span class="sd">    help(name): </span>
+<span class="sd">        print help on a command of the provided name </span>
+
+<span class="sd">    log_all_getters(filename=None, suppress_stdout=False):</span>
+<span class="sd">        write all values that can be read to a file or to stdout</span>
+
+<span class="sd">    test_command(name, set_vals=None, get_configs={}, set_configs={}): </span>
+<span class="sd">        test a specific command by sending a value and checking the readback of that value </span>
+
+<span class="sd">    test_all(skip_subsystem=[&#39;setup&#39;, &#39;status&#39;, &#39;system&#39;],</span>
+<span class="sd">                 skip_commands=[&#39;fast_transfer&#39;, &#39;reset&#39;]) : </span>
+<span class="sd">        test all commands </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -340,8 +385,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter_type</span><span class="p">(</span><span class="n">ret_val</span><span class="p">)</span>
             <span class="c1"># check if a lookup table exists</span>
-            <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">lookup</span><span class="p">):</span>  <span class="c1"># bool(dict) --&gt; checks if dictionary is empty</span>
+            <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">):</span>  <span class="c1"># bool(dict) --&gt; checks if dictionary is empty</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># check if this value matches a key in the lookup table</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">list</span><span class="p">(</span>
@@ -357,7 +401,24 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Returned </span><span class="si">{}</span><span class="s1">; with type = </span><span class="si">{}</span><span class="s1">; expects = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">ret_val</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret_val</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter_type</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{}):</span>
+<div class="viewcode-block" id="SCPI.set"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">configs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot; set a value </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : string</span>
+<span class="sd">            name of the command (first column in the csv file)</span>
+<span class="sd">        value : Union[str, int, float, None]</span>
+<span class="sd">            the value to set  </span>
+<span class="sd">        configs : dict, optional</span>
+<span class="sd">            special configurations beyond the &#39;value&#39;; specified in the csv file</span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        ----------</span>
+<span class="sd">        str </span>
+<span class="sd">            .. todo:: check this and fix? </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cmd_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">ascii_str</span>
 
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -376,10 +437,23 @@
             <span class="n">cmd_str</span> <span class="o">=</span> <span class="n">cmd_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
         <span class="c1"># send the command to the instrument</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">cmd_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">cmd_str</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SCPI.check_set_range"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.check_set_range">[docs]</a>    <span class="k">def</span> <span class="nf">check_set_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; check if the value to be set is within range &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; check if the value to be set is within range </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : string</span>
+<span class="sd">            name of the command (first column in the csv file)</span>
+<span class="sd">        value : Union[str, int, float, None]</span>
+<span class="sd">            the value to set  </span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        ----------</span>
+<span class="sd">        bool  </span>
+<span class="sd">            True if in range </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
@@ -402,23 +476,47 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">out_of_range_warning</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="k">def</span> <span class="nf">out_of_range_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SCPI.out_of_range_warning"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.out_of_range_warning">[docs]</a>    <span class="k">def</span> <span class="nf">out_of_range_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; throw a warning </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Union[str, int, float, None]</span>
+<span class="sd">            the value to set  </span>
+<span class="sd">        name : string</span>
+<span class="sd">            name of the command (first column in the csv file)</span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        ----------</span>
+<span class="sd">        UserWarning  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> value of </span><span class="si">{}</span><span class="s1"> is out of the range of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">list_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SCPI.list_cmds"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.list_cmds">[docs]</a>    <span class="k">def</span> <span class="nf">list_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; list all commands &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">help_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subsystem_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
+<div class="viewcode-block" id="SCPI.help_all"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.help_all">[docs]</a>    <span class="k">def</span> <span class="nf">help_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subsystem_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; print help for all commands </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subsystem_list : list, optional</span>
+<span class="sd">            a list of subsystems to limit the printing to   </span>
+<span class="sd">        name : string</span>
+<span class="sd">            name of the command (first column in the csv file)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">subsystem_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># get all subsystems</span>
             <span class="n">subsystems</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">subsystem</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">]</span>
-            <span class="n">subsystems</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">s</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;Unassigned&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subsystems</span>
-            <span class="p">]</span>
+            <span class="n">subsystems</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;Unassigned&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subsystems</span><span class="p">]</span>
             <span class="c1"># create a list of unique subsystems</span>
             <span class="n">subsystem_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">subsystems</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -433,40 +531,63 @@
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">subsystem</span> <span class="o">==</span> <span class="n">s</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">subsystem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sub_sys</span> <span class="o">=</span> <span class="s1">&#39; in subsystem: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">subsystem</span><span class="p">)</span>
+<div class="viewcode-block" id="SCPI.help"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.help">[docs]</a>    <span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; print help for a single command </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            the name of the command</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">subsystem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sub_sys</span> <span class="o">=</span> <span class="s1">&#39; in subsystem: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">subsystem</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sub_sys</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
         <span class="nb">print</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">&#39;Help for command </span><span class="si">{colorama.Fore.GREEN}{self._cmds[index].name}{colorama.Style.RESET_ALL}{sub_sys}</span><span class="s1">:&#39;</span>
+            <span class="n">f</span><span class="s1">&#39;Help for command </span><span class="si">{colorama.Fore.GREEN}{self._cmds[name].name}{colorama.Style.RESET_ALL}{sub_sys}</span><span class="s1">:&#39;</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">doc</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">doc</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    Allowable range is: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span><span class="p">))</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
                     <span class="s1">&#39;    The setter needs a configuration dictionary with keys: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span>
-                    <span class="nb">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)))</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)))</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">getter</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    Returns: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">getter_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getter_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_config_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
                     <span class="s1">&#39;    Getting a value needs a configuration dictionary with keys: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span>
-                    <span class="nb">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">get_config_keys</span><span class="p">)))</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get_config_keys</span><span class="p">)))</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    This command utilizes a lookup table on get and set:&#39;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;     &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;     &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">log_all_getters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suppress_stdout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># TODO - read getters the need a configuration input </span>
+<div class="viewcode-block" id="SCPI.log_all_getters"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.log_all_getters">[docs]</a>    <span class="k">def</span> <span class="nf">log_all_getters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suppress_stdout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; save all gettable values to a file and send to stdout</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str, optional</span>
+<span class="sd">            name of the file (if None no file is saved)</span>
+<span class="sd">        suppress_stdout : bool, optional</span>
+<span class="sd">            if True the getters will not be printed to stdout</span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict</span>
+<span class="sd">            dictionary with the command name as keys and the results as values  </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO - read getters that need a configuration input </span>
         <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">:</span>
@@ -487,11 +608,18 @@
                 <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">result</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="SCPI.read_comm_err"><a class="viewcode-back" href="../scpi.html#scpi.SCPI.read_comm_err">[docs]</a>    <span class="k">def</span> <span class="nf">read_comm_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Read if the instrument has flagged a communciation error </span>
-<span class="sd">            The csv command file must have a getter with name comm_error that returns a bool &quot;&quot;&quot;</span>
+<span class="sd">            The csv command file must have a getter with name comm_error that returns a bool </span>
+
+<span class="sd">        Returns </span>
+<span class="sd">        ----------</span>
+<span class="sd">        bool</span>
+<span class="sd">            if True a comm error was detected</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;comm_error&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">inst</span><span class="p">:</span>
@@ -508,16 +636,13 @@
 <span class="sd">        </span>
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-
 <span class="sd">            name : str</span>
 <span class="sd">                Name of the command </span>
 <span class="sd">            set_vals : list, optional</span>
 <span class="sd">                A list of values to test by a sequence of set and get.</span>
 <span class="sd">                If not provided the low and high limits are used </span>
-
 <span class="sd">            get_configs : dict, optional</span>
 <span class="sd">                A dictionary of configs to send the get command</span>
-
 <span class="sd">            set_configs : dict, optional</span>
 <span class="sd">                A dictionary of configs to send the set command</span>
 
@@ -665,11 +790,16 @@
 
 
 <span class="k">class</span> <span class="nc">PyVisaUSB</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A USBPyVISA instrument</span>
+    <span class="sd">&quot;&quot;&quot;A USBPyVISA instrument (connected via a USB cable)</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        address: the address of the device</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    address: str </span>
+<span class="sd">        the address of the device</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    comm : visa communciation object </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
@@ -682,6 +812,14 @@
 
     <span class="k">def</span> <span class="nf">open_visa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; open a VISA object </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        addr : str</span>
+<span class="sd">            the address of the device</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        PyVISA object</span>
 
 <span class="sd">        .. todo::</span>
 <span class="sd">           * determine if error flag</span>
@@ -691,8 +829,7 @@
         <span class="n">mgr</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
         <span class="n">resources</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
-            <span class="c1"># open device</span>
-            <span class="c1"># TODO check return value</span>
+            <span class="c1"># open device  TODO: check return value</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">addr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
@@ -708,10 +845,37 @@
         <span class="k">return</span> <span class="n">obj</span>
 
     <span class="k">def</span> <span class="nf">ask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Send a query to the instrument </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cmd : str</span>
+<span class="sd">            the ASCII string sent to the device</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        str</span>
+<span class="sd">            ASCII string returned by the device </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
 
     <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Write a command to the instrument </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cmd : str</span>
+<span class="sd">            the ASCII string sent to the device</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bool</span>
+<span class="sd">            if True transaction was successful  </span>
+<span class="sd">        str</span>
+<span class="sd">            returned value   .. todo:: check this  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">StatusCode</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">ret</span>
 
@@ -720,6 +884,29 @@
 
 
 <span class="k">class</span> <span class="nc">Serial</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A PySerial instrument (connected via a serial cable, i.e. RS232)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ser_port : str </span>
+<span class="sd">        the address of the device (example on a MAC is &#39;/dev/tty.USA19H141113P1.1&#39;)</span>
+
+<span class="sd">    baudrate : int, optional</span>
+<span class="sd">        the serial channel baudrate to configure</span>
+
+<span class="sd">    parity : str, optional</span>
+<span class="sd">        options given by serial.PARITY_NONE, serial.PARITY_EVEN, serial.PARITY_ODD</span>
+
+<span class="sd">    bytesize : int, optional</span>
+<span class="sd">        options given by serial.EIGHTBITS, serial.FIVEBITS, serial.SEVENBITS</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ser : the serial communciation object </span>
+
+<span class="sd">    terminator : the termination character to send </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ser_port</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span>
             <span class="n">port</span><span class="o">=</span><span class="n">ser_port</span><span class="p">,</span>
@@ -778,8 +965,31 @@
 
 
 <span class="k">def</span> <span class="nf">init_instrument</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">lookup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    initialize an instrument with its address and CSV file of commands </span>
 
-    <span class="c1"># Read CSV file of commands</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cmd_map : str</span>
+<span class="sd">        path to the CSV file of instrument commands </span>
+<span class="sd">    addr : dict </span>
+<span class="sd">        key is one of pyserial, pyvisa; value is the address of the instrument</span>
+<span class="sd">    lookup : str, optional</span>
+<span class="sd">        filename of the CSV file of lookup table</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    list : </span>
+<span class="sd">        list of commands that will be used for building the instrument</span>
+
+<span class="sd">    object : </span>
+<span class="sd">        communication handle</span>
+
+<span class="sd">    bool : </span>
+<span class="sd">        True if instrument is not connected  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Read CSV file of commands using Pandas</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cmd_map</span><span class="p">)</span>
     <span class="c1"># strip white space and end-of-line from column headers</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>

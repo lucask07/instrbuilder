@@ -236,22 +236,23 @@ class SCPI(object):
                 ret_val, type(ret_val), self._cmds[name].getter_type))
 
     def set(self, name, value=None, configs={}):
-    """ set a value 
-    
-    Parameters
-    ----------
-    name : string
-        name of the command (first column in the csv file)
-    value : Union[str, int, float, None]
-        the value to set  
-    configs : dict, optional
-        special configurations beyond the 'value'; specified in the csv file
+        """ set a value 
+        
+        Parameters
+        ----------
+        name : string
+            name of the command (first column in the csv file)
+        value : Union[str, int, float, None]
+            the value to set  
+        configs : dict, optional
+            special configurations beyond the 'value'; specified in the csv file
 
-    Returns 
-    ----------
-    str : TODO check this and fix? 
+        Returns 
+        ----------
+        str 
+            .. todo:: check this and fix? 
 
-    """
+        """
         cmd_str = self._cmds[name].ascii_str
 
         if value is not None:
@@ -274,6 +275,7 @@ class SCPI(object):
 
     def check_set_range(self, value, name):
         """ check if the value to be set is within range 
+        
         Parameters
         ----------
         name : string
@@ -284,6 +286,7 @@ class SCPI(object):
         Returns 
         ----------
         bool  
+            True if in range 
         """
         if self._cmds[name].limits is None:
             return True
@@ -414,7 +417,7 @@ class SCPI(object):
 
         Returns 
         ----------
-        dict :
+        dict
             dictionary with the command name as keys and the results as values  
 
         """
@@ -447,7 +450,7 @@ class SCPI(object):
 
         Returns 
         ----------
-        bool :
+        bool
             if True a comm error was detected
 
         """
@@ -467,16 +470,13 @@ class SCPI(object):
         
             Parameters
             ----------
-
             name : str
                 Name of the command 
             set_vals : list, optional
                 A list of values to test by a sequence of set and get.
                 If not provided the low and high limits are used 
-
             get_configs : dict, optional
                 A dictionary of configs to send the get command
-
             set_configs : dict, optional
                 A dictionary of configs to send the set command
 
@@ -688,7 +688,7 @@ class PyVisaUSB(object):
 
         Returns
         ----------
-        str :
+        str
             ASCII string returned by the device 
 
         """
@@ -705,10 +705,10 @@ class PyVisaUSB(object):
 
         Returns
         ----------
-        bool :
+        bool
             if True transaction was successful  
-        str :
-            returned value    todo: check this  
+        str
+            returned value   .. todo:: check this  
         """
         ret = self.comm.write(cmd)
         return ret[1] == StatusCode.success, ret

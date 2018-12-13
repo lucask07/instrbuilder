@@ -146,7 +146,7 @@ class AA(object):
         write_i2c(slave_addr, sub_addr, value) : 
 
         read_i2c(slave_addr, sub_addr, num_bytes_to_read=1) : 
-        
+
         read_spi(instruction) : 
 
         ask(interface, addr_instruction, slave_address=None,
@@ -194,9 +194,7 @@ class AA(object):
         return aa_open(ports[0])
 
     def configure_i2c(self, bit_rate):
-        """
-        configure the I2C system
-        """
+        """ configure the I2C system """
 
         # Ensure that the I2C subsystem is enabled
         aa_configure(self.comm, AA_CONFIG_SPI_I2C)
@@ -226,12 +224,11 @@ class AA(object):
 
         # Setup the clock phase
         mode = 0
-        """
-        print("  mode 0 : pol = 0, phase = 0")
-        print("  mode 1 : pol = 0, phase = 1")
-        print("  mode 2 : pol = 1, phase = 0")
-        print("  mode 3 : pol = 1, phase = 1")
-        """
+        
+        # print("  mode 0 : pol = 0, phase = 0")
+        # print("  mode 1 : pol = 0, phase = 1")
+        # print("  mode 2 : pol = 1, phase = 0")
+        # print("  mode 3 : pol = 1, phase = 1")
         aa_spi_configure(self.comm, mode >> 1, mode & 1, AA_SPI_BITORDER_MSB)
 
         # Set the bitrate
@@ -309,9 +306,7 @@ class AA(object):
 
     def ask(self, interface, addr_instruction, slave_address=None,
              num_bytes_to_read=1):
-        """
-        read a register using either SPI or i2c
-        """
+        """ read a register using either SPI or i2c """
 
         if interface is 'SPI':
             if addr_instruction is None:
@@ -323,6 +318,7 @@ class AA(object):
             return self.read_i2c(slave_address, addr_instruction, num_bytes_to_read)[0]
 
     def write(self, interface, addr_instruction, data, slave_address=None):
+        """ general write data over a specified interface """
         # for i2c addr_instruction is the sub_address
 
         if interface is 'SPI':
@@ -332,5 +328,5 @@ class AA(object):
             return self.write_i2c(slave_address, addr_instruction, data)
 
     def close(self):
-        # Close the device
+        """ Close the device """
         aa_close(self.comm)
