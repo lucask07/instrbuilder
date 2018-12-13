@@ -94,6 +94,7 @@
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Interfacing an Instrbuilder Instrument to Bluesky</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#package-imports">Package imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#open-instruments">Open instruments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#capture-supplemental-configuration-data">Capture Supplemental (configuration data)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-bluesky-measurements">Run Bluesky Measurements</a></li>
@@ -177,24 +178,26 @@
   <div class="section" id="interfacing-an-instrbuilder-instrument-to-bluesky">
 <h1>Interfacing an Instrbuilder Instrument to Bluesky<a class="headerlink" href="#interfacing-an-instrbuilder-instrument-to-bluesky" title="Permalink to this headline">¶</a></h1>
 <p>Instrbuilder is designed to interface easily with Bluesky and Ophyd from NSLS-II.
-This example is stored on _github: <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py">https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py</a>
-————————————-
-Package imports
-————————————-
-.. code-block:: python</p>
-<blockquote>
-<div><p>from bluesky import RunEngine
-from bluesky.callbacks import LiveTable
-from bluesky.plans import scan, count
-from databroker import Broker</p>
-<p>from ophyd.device import Kind
-from ophyd.ee_instruments import generate_ophyd_obj
-from instrument_opening import open_by_name</p>
-<p>RE = RunEngine({})
-db = Broker.named(‘local_file’)  # a broker poses queries for saved data sets</p>
-<p># Insert all metadata/data captured into db.
-RE.subscribe(db.insert);</p>
-</div></blockquote>
+This example is stored on github in <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py">fg_oscilloscope_basics.py</a></p>
+<div class="section" id="package-imports">
+<h2>Package imports<a class="headerlink" href="#package-imports" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bluesky</span> <span class="kn">import</span> <span class="n">RunEngine</span>
+<span class="kn">from</span> <span class="nn">bluesky.callbacks</span> <span class="kn">import</span> <span class="n">LiveTable</span>
+<span class="kn">from</span> <span class="nn">bluesky.plans</span> <span class="kn">import</span> <span class="n">scan</span><span class="p">,</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">databroker</span> <span class="kn">import</span> <span class="n">Broker</span>
+
+<span class="kn">from</span> <span class="nn">ophyd.device</span> <span class="kn">import</span> <span class="n">Kind</span>
+<span class="kn">from</span> <span class="nn">ophyd.ee_instruments</span> <span class="kn">import</span> <span class="n">generate_ophyd_obj</span>
+<span class="kn">from</span> <span class="nn">instrument_opening</span> <span class="kn">import</span> <span class="n">open_by_name</span>
+
+<span class="n">RE</span> <span class="o">=</span> <span class="n">RunEngine</span><span class="p">({})</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Broker</span><span class="o">.</span><span class="n">named</span><span class="p">(</span><span class="s1">&#39;local_file&#39;</span><span class="p">)</span>  <span class="c1"># a broker poses queries for saved data sets</span>
+
+<span class="c1"># Insert all metadata/data captured into db.</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="open-instruments">
 <h2>Open instruments<a class="headerlink" href="#open-instruments" title="Permalink to this headline">¶</a></h2>
 <p><strong>Open and configure the Function Generator</strong></p>

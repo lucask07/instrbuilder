@@ -2,7 +2,8 @@ Interfacing an Instrbuilder Instrument to Bluesky
 **************************************************
 
 Instrbuilder is designed to interface easily with Bluesky and Ophyd from NSLS-II. 
-This example is stored on _github: https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py
+This example is stored on github in `fg_oscilloscope_basics.py <https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py>`_
+
 -------------------------------------
 Package imports
 -------------------------------------

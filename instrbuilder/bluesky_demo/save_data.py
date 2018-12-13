@@ -48,7 +48,7 @@ def to_hdf(uid, df, data_dir=default_data_dir):
 
     filename = 'test_data_{}.hdf'.format(filename)
     fullfile = os.path.join(data_dir,
-                            filename)  #TODO: what does the hdf key do?
+            filename)  # .. todo:: what does the hdf key do?
     print('saving table as: {}'.format(filename))
     print(' to directory: {}'.format(data_dir))
     df.to_hdf(fullfile, key='test_id')

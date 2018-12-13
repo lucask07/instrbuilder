@@ -95,7 +95,7 @@ print(len(list(list(headers)[0]['descriptors'][0]['configuration'].keys())))
 # what function (sine, square, triangle) was the function generator?
 list(headers)[0]['descriptors'][0]['configuration']['fgen_function']['data']['fgen_function']
 
-# TODO: dictionary of configurations seems to be doubly nested, can this be fixed?
+# .. todo:: dictionary of configurations seems to be doubly nested, can this be fixed?
 # --------------------------------------------------------------------
 #                   Instrument configuration equivalence checks
 # --------------------------------------------------------------------

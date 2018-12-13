@@ -11,11 +11,8 @@ import math
 import ast
 from collections import defaultdict
 import functools
-# imports that may need installation
-import pandas as pd
-import colorama
-import numpy as np
 
+# required package from TotalPhase
 from aardvark_py import *
 
 # local package imports

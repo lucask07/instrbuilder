@@ -423,7 +423,7 @@ class SCPI(object):
             dictionary with the command name as keys and the results as values  
 
         """
-        # TODO - read getters that need a configuration input 
+        # .. todo:: read getters that need a configuration input 
         keys = []
         results = []
         for key in self._cmds:
@@ -494,7 +494,7 @@ class SCPI(object):
         """
 
         comm_error = False
-        allowed_err = 0.02  # TODO: determine error magnitude that is allowed for automated checking
+        allowed_err = 0.02  # .. todo:: determine error magnitude that is allowed for automated checking
 
         if (len(self._cmds[name].get_config_keys) != len(get_configs)) or (len(
                 self._cmds[name].set_config_keys) != len(set_configs)):
@@ -667,7 +667,7 @@ class PyVisaUSB(object):
         mgr = visa.ResourceManager()
         resources = mgr.list_resources()
         if addr in resources:
-            # open device  TODO: check return value
+            # open device  .. todo:: check return value
             obj = mgr.open_resource(addr)
         elif addr not in resources:
             print(

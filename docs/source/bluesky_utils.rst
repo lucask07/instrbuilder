@@ -1,7 +1,7 @@
 Bluesky Lab Utilities
 ******************************
 
-Example utilities for Bluesky (particularly data analysis) are found within _metadata.py: https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_utils/metadata.py
+Example utilities for Bluesky (particularly data analysis) are found within `metadata.py <https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_utils/metadata.py>`_
 
 .. module:: metadata
 

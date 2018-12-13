@@ -11,5 +11,5 @@ class DataSave():
     def __init__(self, **kwds):
         self.__dict__.update(kwds)
 
-#TODO: file_type has no impact
+#.. todo:: file_type has no impact
 data_save = DataSave(directory=save_path, file_type='.npy')
