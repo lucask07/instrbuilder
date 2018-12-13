@@ -87,6 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../scpi.html">SCPI Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../command_testing.html">Command Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registers.html">Integrated Circuit Registers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul>
@@ -453,6 +454,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        bool  </span>
 <span class="sd">            True if in range </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -490,6 +492,7 @@
 <span class="sd">        Returns </span>
 <span class="sd">        ----------</span>
 <span class="sd">        UserWarning  </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> value of </span><span class="si">{}</span><span class="s1"> is out of the range of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -800,6 +803,7 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    comm : visa communciation object </span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
@@ -824,6 +828,7 @@
 <span class="sd">        .. todo::</span>
 <span class="sd">           * determine if error flag</span>
 <span class="sd">           * enable or disable of lookup table   </span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mgr</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
@@ -875,6 +880,7 @@
 <span class="sd">            if True transaction was successful  </span>
 <span class="sd">        str</span>
 <span class="sd">            returned value   .. todo:: check this  </span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">StatusCode</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">ret</span>
@@ -979,14 +985,13 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    list : </span>
+<span class="sd">    list </span>
 <span class="sd">        list of commands that will be used for building the instrument</span>
-
-<span class="sd">    object : </span>
+<span class="sd">    object</span>
 <span class="sd">        communication handle</span>
-
-<span class="sd">    bool : </span>
+<span class="sd">    bool </span>
 <span class="sd">        True if instrument is not connected  </span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Read CSV file of commands using Pandas</span>

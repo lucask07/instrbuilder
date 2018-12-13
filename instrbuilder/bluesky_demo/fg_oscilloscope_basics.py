@@ -3,13 +3,7 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-# standard library imports
-import sys
-import os
-
 # imports that may need installation
-import matplotlib.pyplot as plt
-import numpy as np
 from bluesky import RunEngine
 from bluesky.callbacks import LiveTable
 from bluesky.plans import scan, count
@@ -32,21 +26,17 @@ fg_scpi = open_by_name(name='old_fg')   # name within the configuration file (co
 fg_scpi.name = 'fg'
 FG, component_dict = generate_ophyd_obj(name='fg', scpi_obj=fg_scpi)
 fg = FG(name='fg')
-
-if fg.unconnected:
-    sys.exit('Function Generator is not connected, exiting blueksy demo')
 RE.md['fg'] = fg.id.get()
 
-# setup control of the frequency sweep
-fg.freq.delay = 0.05
-fg.phase.delay = 0.05
+# setup control of the amplitude sweep
+fg.v.delay = 0.05
 
 # configure the function generator
 fg.reset.set(None)  # start fresh
 fg.function.set('SIN')
 fg.load.set('INF')
 fg.freq.set(1000)
-fg.v.set(2)  
+fg.v.set(1.6)  
 fg.offset.set(0)
 fg.output.set('ON')
 
@@ -60,10 +50,13 @@ osc = OSC(name='scope')
 
 osc.time_reference.set('CENT')
 osc.time_scale.set(200e-6)
+
 osc.acq_type.set('NORM')
 osc.trigger_slope.set('POS')
 osc.trigger_sweep.set('NORM')
-osc.trigger_level_chan1.set(3.3/2)
+osc.trigger_level_chan1.set(0)
+osc.chan_scale_chan1.set(0.3)
+osc.chan_offset_chan1.set(0)
 osc.trigger_source.set(1)
 
 # ------------------------------------------------
@@ -82,15 +75,14 @@ RE.preprocessors.append(sd)
 # -----------------------------------------------------
 #                   Run a Measurement: sweep FG phase
 # ----------------------------------------------------
-for i in range(1):
-    # scan is a pre-configured Bluesky plan, which steps one motor
-    uid = RE(
-        scan([osc.meas_vavg_chan1, osc.meas_vpp_chan1, osc.meas_freq_chan1], fg.v,
-             1, 1.6, 10),
-        LiveTable([fg.v, osc.meas_vavg_chan1, osc.meas_vpp_chan1, osc.meas_freq_chan1]),
-        # the parameters below will be metadata
-        purpose='oscilloscope_function_gen_demo',
-        operator='Lucas')
+# scan is a pre-configured Bluesky plan, which steps one motor
+uid = RE(
+    scan([osc.meas_vavg_chan1, osc.meas_vpp_chan1, osc.meas_freq_chan1], fg.v,
+         1, 1.6, 5),
+    LiveTable([fg.v, osc.meas_vavg_chan1, osc.meas_vpp_chan1, osc.meas_freq_chan1]),
+    # the parameters below will be metadata
+    purpose='oscilloscope_function_gen_demo',
+    operator='Lucas')
 
 # ------------------------------------------------
 #   	(briefly) Investigate the captured data

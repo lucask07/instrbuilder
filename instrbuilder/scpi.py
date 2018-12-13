@@ -287,6 +287,7 @@ class SCPI(object):
         ----------
         bool  
             True if in range 
+
         """
         if self._cmds[name].limits is None:
             return True
@@ -324,6 +325,7 @@ class SCPI(object):
         Returns 
         ----------
         UserWarning  
+
         """
         warnings.warn(
             '\n  {} value of {} is out of the range of {}'.format(
@@ -634,6 +636,7 @@ class PyVisaUSB(object):
     Attributes
     ----------
     comm : visa communciation object 
+    
     """
 
     def __init__(self, address):
@@ -658,6 +661,7 @@ class PyVisaUSB(object):
         .. todo::
            * determine if error flag
            * enable or disable of lookup table   
+        
         """
 
         mgr = visa.ResourceManager()
@@ -709,6 +713,7 @@ class PyVisaUSB(object):
             if True transaction was successful  
         str
             returned value   .. todo:: check this  
+        
         """
         ret = self.comm.write(cmd)
         return ret[1] == StatusCode.success, ret
@@ -813,14 +818,13 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
 
     Returns
     ----------
-    list : 
+    list 
         list of commands that will be used for building the instrument
-
-    object : 
+    object
         communication handle
-
-    bool : 
+    bool 
         True if instrument is not connected  
+    
     """
 
     # Read CSV file of commands using Pandas

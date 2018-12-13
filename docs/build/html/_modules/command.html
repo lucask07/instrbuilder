@@ -87,6 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../scpi.html">SCPI Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../command_testing.html">Command Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registers.html">Integrated Circuit Registers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul>
@@ -172,17 +173,11 @@
 <span class="c1"># standard library imports</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-
 <div class="viewcode-block" id="Command"><a class="viewcode-back" href="../command.html#command.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A command to be sent to an instrument </span>
 
 <span class="sd">    .. todo::</span>
-
 <span class="sd">       * Add a switch to enable or disable the lookup table </span>
 <span class="sd">       * defaults for long getters and setters</span>
 <span class="sd">       * long getters/setters: need range requirements and names for 2nd and beyond getter inputs</span>
@@ -310,7 +305,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">returns_image</span> <span class="o">=</span> <span class="n">returns_image</span></div>
 
 
-<span class="k">class</span> <span class="nc">Register</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Register"><a class="viewcode-back" href="../registers.html#command.Register">[docs]</a><span class="k">class</span> <span class="nc">Register</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A register of an integrated circuit to read or set</span>
@@ -340,7 +335,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_config</span> <span class="o">=</span> <span class="n">is_config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">returns_image</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">returns_image</span> <span class="o">=</span> <span class="kc">False</span></div>
 </pre></div>
 
            </div>

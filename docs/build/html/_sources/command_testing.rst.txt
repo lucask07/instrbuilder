@@ -8,5 +8,3 @@ A command named `comm_error` **is required** in the commands.csv file to test co
 
 .. py:class:: SCPI     
 
-	.. automethod:: test_command
-	.. automethod:: test_all

@@ -6,17 +6,11 @@
 # standard library imports
 import re
 
-"""
-
-"""
-
-
 class Command(object):
     """
     A command to be sent to an instrument 
 
     .. todo::
-
        * Add a switch to enable or disable the lookup table 
        * defaults for long getters and setters
        * long getters/setters: need range requirements and names for 2nd and beyond getter inputs

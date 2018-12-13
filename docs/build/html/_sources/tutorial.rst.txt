@@ -14,7 +14,7 @@ Open an instrument
   fg = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)
 
 ----------------------------------------------
-Execute a simple `set` and `get` combination
+Simple `set` and `get` combination
 ----------------------------------------------
 
 .. ipython:: python
@@ -66,13 +66,17 @@ Help
 =========
 **Help** is available both at the single command level. In an iPython terminal help outputs are nicely color coded. Unfortunately, coloroma color-coding is broken in the Sphinx documentation. 
 
+----------------------------------------------
 Help on a **single command**: 
+----------------------------------------------
 
 .. ipython:: python
 
   fg.help('offset')
-
+  
+----------------------------------------------------------------
 Help on **all commands** (or all commands in a subsystem):
+----------------------------------------------------------------
 
 .. ipython:: python
 

@@ -87,15 +87,20 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#open-an-instrument">Open an instrument</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#execute-a-simple-set-and-get-combination">Execute a simple <cite>set</cite> and <cite>get</cite> combination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simple-set-and-get-combination">Simple <cite>set</cite> and <cite>get</cite> combination</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#help">Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#help">Help</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#help-on-a-single-command">Help on a <strong>single command</strong>:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#help-on-all-commands-or-all-commands-in-a-subsystem">Help on <strong>all commands</strong> (or all commands in a subsystem):</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registers.html">Integrated Circuit Registers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul>
@@ -186,8 +191,8 @@
 <span class="go">Opened Instrument: Agilent Technologies,33220A,MY44060286,2.07-2.06-22-2</span>
 </pre></div>
 </div>
-<div class="section" id="execute-a-simple-set-and-get-combination">
-<h3>Execute a simple <cite>set</cite> and <cite>get</cite> combination<a class="headerlink" href="#execute-a-simple-set-and-get-combination" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="simple-set-and-get-combination">
+<h3>Simple <cite>set</cite> and <cite>get</cite> combination<a class="headerlink" href="#simple-set-and-get-combination" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">fg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
 
 <span class="gp">In [4]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Readback of Function Generator offset = {} [V]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">)))</span>
@@ -235,12 +240,12 @@
 </div>
 <p>Print oscilloscope measurements</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [21]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
-<span class="go">Oscilloscope measurements: Average voltage: 0.50088 </span>
-<span class="go">Peak-to-peak voltage: 1.01</span>
+<span class="go">Oscilloscope measurements: Average voltage: 0.5009 </span>
+<span class="go">Peak-to-peak voltage: 1.02</span>
 
 
 <span class="gp">In [22]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Frequency: {} [kHz]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_freq</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
-<span class="go">                                                                                 Frequency: 3.1203000000000003 [kHz]</span>
+<span class="go">                                                                                Frequency: 3.1197 [kHz]</span>
 </pre></div>
 </div>
 </div>
@@ -248,7 +253,8 @@
 <div class="section" id="help">
 <h2>Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
 <p><strong>Help</strong> is available both at the single command level. In an iPython terminal help outputs are nicely color coded. Unfortunately, coloroma color-coding is broken in the Sphinx documentation.</p>
-<p>Help on a <strong>single command</strong>:</p>
+<div class="section" id="help-on-a-single-command">
+<h3>Help on a <strong>single command</strong>:<a class="headerlink" href="#help-on-a-single-command" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [23]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">)</span>
 <span class="go">Help for command [32moffset[0m in subsystem: output:</span>
 <span class="go">    voltage offset, range depends on amplitude </span>
@@ -256,7 +262,9 @@
 <span class="go">    Returns: float</span>
 </pre></div>
 </div>
-<p>Help on <strong>all commands</strong> (or all commands in a subsystem):</p>
+</div>
+<div class="section" id="help-on-all-commands-or-all-commands-in-a-subsystem">
+<h3>Help on <strong>all commands</strong> (or all commands in a subsystem):<a class="headerlink" href="#help-on-all-commands-or-all-commands-in-a-subsystem" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">fg</span><span class="o">.</span><span class="n">help_all</span><span class="p">(</span><span class="n">subsystem_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">])</span>
 <span class="go">=====================================</span>
 
@@ -336,6 +344,7 @@
 <span class="go">    This command utilizes a lookup table on get and set:</span>
 <span class="go">     {&#39;OFF&#39;: 0.0, &#39;ON&#39;: 1.0}</span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>

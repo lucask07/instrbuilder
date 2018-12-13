@@ -14,7 +14,15 @@ Demonstrate databroker capabilities
 """
 
 def equivalence_check(config1, config2):
+    """ check equivalence between to configurations (dictionaries)
 
+    Parameters
+    ----------
+    config1 : dict
+        
+    config2 : dict
+
+    """
     verbose = False
     debug = False
     print('------------')
