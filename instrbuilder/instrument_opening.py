@@ -53,6 +53,21 @@ def find_instrument_classes():
     return instrument_classes
 
 
+def init_yaml(csv_dir = '/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments', 
+              cmd_name = 'commands.csv', lookup_name = 'lookup.csv', filename = 'config.yaml'):
+    """ expectation is that a YAML file does not already exist"""
+
+    configs = {}
+    configs['csv_directory'] = csv_dir
+    configs['cmd_name'] = cmd_name 
+    configs['lookup_name'] = lookup_name 
+
+    # write to YAML file
+    with open(os.path.join(home, filename), 'w+') as f:
+        # see: https://pyyaml.org/wiki/PyYAMLDocumentation (for default_flow_style)
+        yaml.dump(configs, f, default_flow_style=False)
+    return
+
 def user_input(address, interface=None, name=None, filename='config.yaml'):
     """
     Gather user input for adding an instrument to the YAML configuration file
@@ -70,7 +85,7 @@ def user_input(address, interface=None, name=None, filename='config.yaml'):
         The configuration dictionary that will be used to append the YAML
     """
     # read current YAML
-    yaml_config = open(os.path.join(home, filename), 'r')
+    yaml_config = open(os.path.join(home, filename), 'r+')
     current_configs = yaml.safe_load(yaml_config)
 
     ok = False
@@ -131,9 +146,8 @@ def append_to_yaml(new_configs, filename='config.yaml'):
     None
 
     """
-
     # read current YAML
-    yaml_config = open(os.path.join(home, filename), 'r')
+    yaml_config = open(os.path.join(home, filename), 'r+')
     configs = yaml.safe_load(yaml_config)
 
     if 'instruments' in new_configs.keys():
@@ -144,6 +158,8 @@ def append_to_yaml(new_configs, filename='config.yaml'):
     os.rename(os.path.join(home, filename), os.path.join(home, filename).replace('.yaml', '_backup.yaml'))
 
     # append new dictionary to old dictionary
+    if 'instruments' not in configs:
+        configs['instruments'] = {}
     configs['instruments'].update(new_configs)
 
     # write to YAML file
@@ -155,19 +171,24 @@ def append_to_yaml(new_configs, filename='config.yaml'):
 
 def detect_instruments(filename='config.yaml'):
     """
-    Detect PyVISA instruments connected to the computer and return their addresses.
+    Detect PyVISA instruments connected to the computer return their addresses
+    and add to YAML.
 
     Returns
     -------
-    (list, list):
+    list 
         a list of all PyVISA addresses found
+    list
         a list of all PyVISA addresses found that are not in the config file
     """
 
-    yaml_config = open(os.path.join(home, filename), 'r')
-    configs = yaml.safe_load(yaml_config)
-    # print('Current configs: ')
-    # print(configs)
+    try:
+        yaml_config = open(os.path.join(home, filename), 'r')
+        configs = yaml.safe_load(yaml_config)
+    except OSError as e: 
+        print('except')
+        configs = {}
+        configs['instruments'] = []
 
     device_addrs = find_visa_connected()
     usb_addrs = [k for k in device_addrs if 'USB0' in k]
@@ -187,7 +208,10 @@ def detect_instruments(filename='config.yaml'):
     print('-' * 40)
 
     # create list of the addresses tracked in the config file
-    config_addr = [list(x['address'].values())[0] for x in configs['instruments'].values()]
+    try:
+        config_addr = [list(x['address'].values())[0] for x in configs['instruments'].values()]
+    except:
+        config_addr = []
     # print('Addresses in configuration file: ')
     # print(config_addr)
 

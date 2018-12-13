@@ -24,8 +24,10 @@ Instrbuilder allows you to:
 .. toctree::
    :caption: Stand-Alone Usage
    :maxdepth: 1
-   system requirements
+
+   system_requirements
    installation
+   adding_instruments
    tutorial
    example_instrument
    scpi

@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Example Instrument" href="example_instrument.html" />
-    <link rel="prev" title="Instrbuilder: Easy Instrument Control with Python" href="index.html" /> 
+    <link rel="prev" title="Adding Instruments" href="adding_instruments.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -85,6 +85,8 @@
             
               <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#open-an-instrument">Open an instrument</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#simple-set-and-get-combination">Simple <cite>set</cite> and <cite>get</cite> combination</a></li>
@@ -209,7 +211,20 @@
 </div>
 <p>Open an oscilloscope in order to demonstrate more complex setters and getters:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
-<span class="go">Opened Instrument: KEYSIGHT TECHNOLOGIES,MSO-X 3034T,MY58030693,07.20.2017102614</span>
+<span class="go">Error: {} is not a named instrument in the configuration file</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-9-adce7386cc8b&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">osc</span> <span class="o">=</span> <span class="n">open_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;msox_scope&#39;</span><span class="p">)</span>  <span class="c1"># name within the configuration file (config.yaml)</span>
+
+<span class="nn">~/Google Drive/UST/research/instrbuilder/instrbuilder/instrument_opening.py</span> in <span class="ni">open_by_name</span><span class="nt">(name, name_attached, filename)</span>
+<span class="g g-Whitespace">    </span><span class="mi">257</span> 
+<span class="g g-Whitespace">    </span><span class="mi">258</span>     <span class="n">cmd_map</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configs</span><span class="p">[</span><span class="s1">&#39;csv_directory&#39;</span><span class="p">],</span>
+<span class="ne">--&gt; </span><span class="mi">259</span>                            <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;instruments&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;csv_folder&#39;</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">260</span>                            <span class="n">configs</span><span class="p">[</span><span class="s1">&#39;cmd_name&#39;</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">261</span> 
+
+<span class="ne">KeyError</span>: &#39;msox_scope&#39;
 
 <span class="gp">In [10]: </span><span class="n">osc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;time_range&#39;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">);</span>
 
@@ -240,12 +255,20 @@
 </div>
 <p>Print oscilloscope measurements</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [21]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
-<span class="go">Oscilloscope measurements: Average voltage: 0.49914 </span>
-<span class="go">Peak-to-peak voltage: 1.03</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-21-c440d73b8f8d&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Oscilloscope measurements: Average voltage: {} </span><span class="se">\n</span><span class="s1">Peak-to-peak voltage: {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_average</span><span class="p">,</span> <span class="n">v_pkpk</span><span class="p">))</span>
 
+<span class="ne">NameError</span>: name &#39;v_average&#39; is not defined
 
 <span class="gp">In [22]: </span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Frequency: {} [kHz]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v_freq</span><span class="o">/</span><span class="mi">1000</span><span class="p">))</span>
-<span class="go">                                                                                 Frequency: 3.1186 [kHz]</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                         ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-22-9ebd24ca0aa0&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 print(&#39;Frequency: {} [kHz]&#39;.format(v_freq/1000))</span>
+
+<span class="go">NameError: name &#39;v_freq&#39; is not defined</span>
 </pre></div>
 </div>
 </div>
@@ -360,7 +383,7 @@
         <a href="example_instrument.html" class="btn btn-neutral float-right" title="Example Instrument" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Instrbuilder: Easy Instrument Control with Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="adding_instruments.html" class="btn btn-neutral" title="Adding Instruments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

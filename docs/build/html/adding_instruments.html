@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Adding Instruments &mdash; instrbuilder 0.1a documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="System Requirements" href="system_requirements.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adding Instruments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#intialize-yaml">Intialize YAML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect-instruments">Detect Instruments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registers.html">Integrated Circuit Registers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_demo.html">Interfacing an Instrbuilder Instrument to Bluesky</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_utils.html">Bluesky Lab Utilities</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Adding Instruments</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/adding_instruments.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="adding-instruments">
+<h1>Adding Instruments<a class="headerlink" href="#adding-instruments" title="Permalink to this headline">¶</a></h1>
+<p>The name and address of instruments are stored in a configuration file within the user’s home directory (~/.instrbuilder/config.yaml).</p>
+<div class="section" id="intialize-yaml">
+<h2>Intialize YAML<a class="headerlink" href="#intialize-yaml" title="Permalink to this headline">¶</a></h2>
+<p>only required if a YAML file does not yet exist!!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">instrument_opening</span> <span class="kn">import</span> <span class="n">init_yaml</span><span class="p">,</span> <span class="n">detect_instruments</span>
+<span class="n">init_yaml</span><span class="p">(</span><span class="n">csv_dir</span><span class="p">,</span> <span class="n">cmd_name</span><span class="p">,</span> <span class="n">lookup_name</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="detect-instruments">
+<h2>Detect Instruments<a class="headerlink" href="#detect-instruments" title="Permalink to this headline">¶</a></h2>
+<p>it may help to run detect_instruments with only 1 instrument at a time turned on</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">detect_instruments</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><em>detect_instruments()</em> requests user input to configure the YAML file</p>
+<p>The <strong>resulting</strong> <em>config.yaml</em> file looks like:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">csv_directory</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments</span>
+<span class="l l-Scalar l-Scalar-Plain">cmd_name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">commands.csv</span>
+<span class="l l-Scalar l-Scalar-Plain">lookup_name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">lookup.csv</span>
+<span class="l l-Scalar l-Scalar-Plain">instruments</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">old_fg</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">address</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">pyvisa</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">USB0::0x0957::0x0407::MY44060286::INSTR</span>
+    <span class="l l-Scalar l-Scalar-Plain">python_class</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">KeysightFunctionGen</span>
+    <span class="l l-Scalar l-Scalar-Plain">csv_folder</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">keysight/function_gen/33500B</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="system_requirements.html" class="btn btn-neutral" title="System Requirements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1a',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
