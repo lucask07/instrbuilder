@@ -53,6 +53,9 @@ operation_complete,*OPC,,TRUE,int,TRUE,int,,Check if operation is complete,syste
 is_running,:OPER:COND,,TRUE,bit3_set,FALSE,none,,Check operation status register for if oscilloscope is running ,system,FALSE,,
 wait_trig,:OPER:COND,,TRUE,bit5_set,FALSE,none,,Trigger is armed,system,FALSE,,
 id,*IDN,,TRUE,str,FALSE,none,,retrieve instrument id ,system,TRUE,,
-meas,:MEAS:{meas_type} {chan},:MEAS:{meas_type}? CHAN{chan},TRUE,float,TRUE,none,,Generic measure command,measure,FALSE,,
-meas_phase,":MEAS:PHAS CHAN{chan1}, CHAN{chan2}",":MEAS:PHAS? CHAN{chan1}, CHAN{chan2}",TRUE,float,TRUE,none,,Measure phase between two signals,measure,FALSE,,
-meas_config,:MEAS:{meas_type} {info} {chan},:MEAS:{meas_type}? {info} CHAN{chan},TRUE,float,TRUE,none,,Measure command with extra config field,measure,FALSE,,
+meas,:MEAS:{meas_type} {chan},:MEAS:{meas_type}? CHAN{chan},TRUE,float,FALSE,none,,Generic measure command,measure,FALSE,2,1
+meas_vpp,:MEAS:VPP {chan},:MEAS:VPP? CHAN{chan},TRUE,float,FALSE,none,,Measure peak-peak voltage,measure,FALSE,,1
+meas_freq,:MEAS:FREQ {chan},:MEAS:FREQ? CHAN{chan},TRUE,float,FALSE,none,,Measure frequency,measure,FALSE,,1
+meas_vavg,:MEAS:VAV {chan},:MEAS:VAV? CHAN{chan},TRUE,float,FALSE,none,,Measure average voltage,measure,FALSE,,1
+meas_phase,":MEAS:PHAS CHAN{chan1}, CHAN{chan2}",":MEAS:PHAS? CHAN{chan1}, CHAN{chan2}",TRUE,float,FALSE,none,,Measure phase between two signals,measure,FALSE,,2
+meas_config,:MEAS:{meas_type} {info} {chan},:MEAS:{meas_type}? {info} CHAN{chan},TRUE,float,FALSE,none,,Measure command with extra config field,measure,FALSE,,3
