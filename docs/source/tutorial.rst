@@ -2,7 +2,8 @@ Tutorial
 **************************************************
 *system setup should be completed first*
 
-The name and address of instruments are stored in a configuration file within the user's home directory.
+This example expects a function generator connected to channel 1 of an oscilloscope.
+
 
 ====================
 Open an instrument
