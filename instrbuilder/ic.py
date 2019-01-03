@@ -13,7 +13,7 @@ from collections import defaultdict
 import functools
 
 # required package from TotalPhase
-from aardvark_py import *
+from .aardvark_py import *
 
 # local package imports
 from .command import Register
