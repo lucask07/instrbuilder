@@ -29,7 +29,7 @@ Documentation is online [https://lucask07.github.io/instrbuilder/build/html/] an
 
 ``instrbuilder`` supports a Register class that targets registers of an integrated circuit. The IC class supports reading and writing these registers via SPI or I2C. 
 
-``instrbuilder`` is part of a package that uses Bluesky (a NSLS-II package with documentation at [https://nsls-ii.github.io/]) to generate an instrument and experiment control environment that facilitates reproducible experiments. A full length manuscript that describes and demonstrates this effort is in press. 
+``instrbuilder`` is part of an environment that uses Bluesky to generate an instrument and experiment control environment that facilitates reproducible experiments. Bluesky was created for x-ray science by a team at the NSLS-II (see [https://nsls-ii.github.io/]). A full length manuscript that describes and demonstrates this effort is in press. 
 
 # Acknowledgements
 
