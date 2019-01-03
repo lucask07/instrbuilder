@@ -3,8 +3,7 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-import instrbuilder as instr
-from instr.instrument_opening import open_by_name
+from instrbuilder.instrument_opening import open_by_name
 import time
 
 pwr = open_by_name(name='rigol_pwr1')   # name within the configuration file (config.yaml)

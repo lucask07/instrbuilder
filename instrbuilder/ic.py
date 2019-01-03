@@ -16,8 +16,8 @@ import functools
 from aardvark_py import *
 
 # local package imports
-from command import Register
-import utils
+from .command import Register
+from . import utils
 
 
 class IC(object):

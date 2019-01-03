@@ -8,10 +8,9 @@ import os
 import sys
 import wrapt
 
-import instrbuilder as instr
-from instr.command import Register
-from instr.ic import IC
-from instr.ic import AA  # aardvark adapter
+from instrbuilder.command import Register
+from instrbuilder.ic import IC
+from instrbuilder.ic import AA  # aardvark adapter
 
 print('Running ADA2200 (demodulator) SPI example')
 print('-'*40)

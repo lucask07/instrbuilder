@@ -3,10 +3,9 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-import instrbuilder as instr
-from instr.command import Register
-from instr.ic import IC
-from instr.ic import AA  # aardvark adapter
+from instrbuilder.command import Register
+from instrbuilder.ic import IC
+from instrbuilder.ic import AA  # aardvark adapter
 
 print('Running AD5933 (impedance analyzer) I2C example')
 print('-'*40)

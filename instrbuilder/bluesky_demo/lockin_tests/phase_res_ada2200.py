@@ -19,8 +19,8 @@ from databroker import Broker
 from ophyd.device import Kind
 from ophyd.ee_instruments import generate_ophyd_obj, BasicStatistics, \
     FilterStatistics, ManualDevice
-from instrument_opening import open_by_name
-from instruments import create_ada2200
+from instrbuilder.instrument_opening import open_by_name
+from instrbuilder.instruments import create_ada2200
 
 RE = RunEngine({})
 db = Broker.named('local_file')  # a broker poses queries for saved data sets

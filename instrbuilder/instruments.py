@@ -9,11 +9,11 @@ import sys
 import time
 
 # local package imports
-from scpi import SCPI
+from .scpi import SCPI
 # for Aardvark SPI control
-from command import Register
-from ic import IC
-from ic import AA  # aardvark adapter
+from .command import Register
+from .ic import IC
+from .ic import AA  # aardvark adapter
 
 
 class RigolPowerSupply(SCPI):
