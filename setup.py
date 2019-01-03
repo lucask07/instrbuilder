@@ -1,7 +1,5 @@
 from __future__ import (absolute_import, division, print_function)
 import glob
-import versioneer
-
 import setuptools
 
 with open('requirements.txt') as f:
@@ -9,18 +7,19 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name='instrbuilder',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version="0.0.1",
     author='Lucas J. Koerner',
-    author_email=koerner.lucas@stthomas.edu,
+    author_email="koerner.lucas@stthomas.edu",
+    description="electrical instrument control",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license="MIT",
     url="https://lucask07.github.io/instrbuilder/build/html/",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
 )

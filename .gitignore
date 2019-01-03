@@ -1,4 +1,5 @@
 *.pyc
+*egg*
 *.DS_Store
 *.swp
 scratch_code.py
@@ -15,3 +16,9 @@ instrbuilder/bluesky_demo/custom_plan.py
 instrbuilder/scratch/*
 bluesky_demo/lockin_tests/freq_res_sr810_autogen.py
 *.so
+dist
+dist/
+dist/*
+build
+build/
+build/*
