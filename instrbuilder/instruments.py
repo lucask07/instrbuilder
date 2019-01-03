@@ -10,10 +10,6 @@ import time
 
 # local package imports
 from .scpi import SCPI
-# for Aardvark SPI control
-from .command import Register
-from .ic import IC
-from .ic import AA  # aardvark adapter
 
 
 class RigolPowerSupply(SCPI):
@@ -244,32 +240,45 @@ class KeysightMultimeter(SCPI):
 
         return data_array
 
+try:
+    # for Aardvark SPI control
+    from .command import Register
+    from .ic import IC
+    from .ic import AA  # aardvark adapter
 
-def create_ada2200():
+    def create_ada2200():
 
-    # ADA2200 register map
-    reg_map = {'serial_interface': 			0x0000,  # MSBs
-               'chip_type': 				0x0006,
-               'filter0':					0x0011,
-               'analog_pin':				0x0028,
-               'sync_control':				0x0029,
-               'demod_control':				0x002A,
-               'digital_pin':               0x002C,
-               'clock_config':				0x002B}
-    # add other filter configuration registers
-    for i in range(1, 23):
-        reg_map['filter{}'.format(i)] = 0x0011 + i
+        # ADA2200 register map
+        reg_map = {'serial_interface': 			0x0000,  # MSBs
+                   'chip_type': 				0x0006,
+                   'filter0':					0x0011,
+                   'analog_pin':				0x0028,
+                   'sync_control':				0x0029,
+                   'demod_control':				0x002A,
+                   'digital_pin':               0x002C,
+                   'clock_config':				0x002B}
+        # add other filter configuration registers
+        for i in range(1, 23):
+            reg_map['filter{}'.format(i)] = 0x0011 + i
 
-    regs = []
-    for r in reg_map:
-        regs.append(Register(name=r, address=reg_map[r],
-                             read_write='R/W', is_config=True))
+        regs = []
+        for r in reg_map:
+            regs.append(Register(name=r, address=reg_map[r],
+                                 read_write='R/W', is_config=True))
 
-    aardvark = AA()  # communication adapter
-    ada2200_scpi = IC(regs, aardvark,
-                      interface='SPI', name='ADA2200')
-    return ada2200_scpi
+        aardvark = AA()  # communication adapter
+        ada2200_scpi = IC(regs, aardvark,
+                          interface='SPI', name='ADA2200')
+        return ada2200_scpi
 
+except: 
+    def create_ada2200():
+        print('ADA2200 will not work. Aardvark not imported correctly!')
+        pass
+
+    print('IC (integrated circuit imports failed)')
+    print('The aardvark.so or dll must be in the cwd or an importable path')
+    print('Continuing anways...')
 
 def filewriter(data, filename, filetype='png'):
     ''' Write a list or np.array of unsigned bytes to a file
