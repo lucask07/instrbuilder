@@ -3,7 +3,8 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-from instrument_opening import open_by_name
+import instrbuilder as instr
+from instr.instrument_opening import open_by_name
 
 print('Warning ... The address to the serial adapter \n (E.g. /dev/tty.USA19H141113P1.1) can change ')
 lia = open_by_name(name='srs_lockin')   # name within the configuration file (config.yaml)

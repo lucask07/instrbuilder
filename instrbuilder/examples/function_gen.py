@@ -7,8 +7,8 @@
 Demonstrate the function generator within instrbuilder
 As an example of the automated testing of the command lists run 'test_all'
 '''
-
-from instrument_opening import open_by_name
+import instrbuilder as instr
+from instr.instrument_opening import open_by_name
 
 # fg = open_by_name(name='new_function_gen')   # name within the configuration file (config.yaml)
 fg = open_by_name(name='old_fg')   # name within the configuration file (config.yaml)

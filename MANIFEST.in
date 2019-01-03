@@ -1,0 +1,5 @@
+include README.md
+graft instruments/*
+include instrbuilder/example_yaml/*
+include aardvark.so
+global-exclude *.py[co]
