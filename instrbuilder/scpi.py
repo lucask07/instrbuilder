@@ -175,7 +175,7 @@ class SCPI(object):
         for cmd in cmd_list:
             self._cmds[cmd.name] = cmd
         self._write = comm_handle.write
-        self._ask = comm_handle.ask
+        self._ask = comm_handle.query
         self.unconnected = unconnected
 
         # get the vendor ID, which often includes firmware revision and other useful info.

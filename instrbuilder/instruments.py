@@ -275,10 +275,10 @@ except:
     def create_ada2200():
         print('ADA2200 will not work. Aardvark not imported correctly!')
         pass
-
+    print("Error: ", sys.exc_info()[0])
     print('IC (integrated circuit imports failed)')
     print('The aardvark.so or dll must be in the cwd or an importable path')
-    print('Continuing anways...')
+    print('Continuing anyways, since many may not use this portion...')
 
 def filewriter(data, filename, filetype='png'):
     ''' Write a list or np.array of unsigned bytes to a file

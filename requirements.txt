@@ -10,7 +10,7 @@ databroker
 colorama
 matplotlib
 bluesky
-ophyd
+git+https://github.com/lucask07/ophyd@master#egg=ophyd
 pyserial
 wrapt
 PyYAML
