@@ -14,7 +14,7 @@ from ophyd.ee_instruments import generate_ophyd_obj
 from instrbuilder.instrument_opening import open_by_name
 
 RE = RunEngine({})
-db = Broker.named('local_file')  # a broker poses queries for saved data sets
+db = Broker.named('temp')  # a broker poses queries for saved data sets
 
 # Insert all metadata/data captured into db.
 RE.subscribe(db.insert)

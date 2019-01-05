@@ -26,7 +26,7 @@ def extract_requirements(filename):
 
 
 required = extract_requirements('requirements.txt')
-
+print(required)
 
 
 with open("README.md", "r") as fh:
@@ -34,7 +34,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='instrbuilder',
-    version="0.0.10",
+    version="0.0.12",
     author='Lucas J. Koerner',
     author_email="koerner.lucas@stthomas.edu",
     description="electrical instrument control",
@@ -47,7 +47,7 @@ setuptools.setup(
         'instruments/*']},
     include_package_data=True,
     install_requires=required,
-    dependency_links=dependency_links.
+    dependency_links=dependency_links,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

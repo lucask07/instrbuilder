@@ -13,7 +13,19 @@ from collections import defaultdict
 import functools
 
 # required package from TotalPhase
-from .aardvark_py import *
+try:
+    from .aardvark_py import *
+
+except:
+    print("Error: ", sys.exc_info()[0])
+    print('IC (integrated circuit imports failed)')
+    print('The aardvark.so or dll must be in the cwd or an importable path')
+    print('Continuing anyways, since many may not use this portion...')
+
+    class Nothing(): pass                                                                                                                                                                       
+    ic = Nothing()                                                                                                                                                                              
+    ic.IC = None               
+
 
 # local package imports
 from .command import Register
