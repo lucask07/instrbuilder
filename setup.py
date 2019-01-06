@@ -34,7 +34,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='instrbuilder',
-    version="0.0.12",
+    version="0.1.0",
     author='Lucas J. Koerner',
     author_email="koerner.lucas@stthomas.edu",
     description="electrical instrument control",
