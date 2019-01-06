@@ -27,6 +27,8 @@ username$ python -m pip install git+https://github.com/lucask07/ophyd@master#egg
 
 2. A YAML file is used to track your specific system configurations and instrument addresses (e.g.USB0::0x0957::0x0407::MY44060286::INSTR). Modify the example YAML file and move to ~/.instrbuilder/ OR create your own
 
+3. Try an example in the source code at *instrbuilder/examples/*. For example: *oscilloscope.py*
+
 ### Create Your Own YAML
 
 1. Initialize a YAML (specify the first parameter, the other 3 should always be default):
@@ -39,9 +41,5 @@ instrument_opening.init_yaml(csv_dir = 'where/your/commands_csv/files/are',
 		filename = 'config.yaml')
 ```
 
-2. **Add instruments** to the YAML function using ```instrument_opening.detect_instruments``` which prompts the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:
+2. **Add instruments** to the YAML function use the script found in instrbuilder\examples\add_instruments_to_config.py. This will prompt the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:
 
-```python 
-from instrbuilder import instrument_opening
-instrument_opening.detect_instruments()
-```
