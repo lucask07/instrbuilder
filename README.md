@@ -25,7 +25,7 @@ username$ python -m pip install git+https://github.com/lucask07/ophyd@master#egg
 
 1. Command lists for Keysight oscilloscopes, function generator, DMM; Rigol DC Power Supply (*commands.csv*) are included in the package at: *instrbuilder/instruments/* 
 
-2. Modify the example YAML file and move the ~/.instrbuilder/ OR create your own
+2. A YAML file is used to track your specific system configurations and instrument addresses (e.g.USB0::0x0957::0x0407::MY44060286::INSTR). Modify the example YAML file and move to ~/.instrbuilder/ OR create your own
 
 ### Create Your Own YAML
 
@@ -39,7 +39,7 @@ instrument_opening.init_yaml(csv_dir = 'where/your/commands_csv/files/are',
 		filename = 'config.yaml')
 ```
 
-2. **Add instruments** using a function that prompts the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:
+2. **Add instruments** to the YAML function using ```instrument_opening.detect_instruments``` which prompts the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:
 
 ```python 
 from instrbuilder import instrument_opening
