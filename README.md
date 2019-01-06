@@ -40,6 +40,5 @@ instrument_opening.init_yaml(csv_dir = 'where/your/commands_csv/files/are',
 		lookup_name = 'lookup.csv',
 		filename = 'config.yaml')
 ```
-
 2. **Add instruments** to the YAML function use the script found in instrbuilder\examples\add_instruments_to_config.py. This will prompt the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:
 
