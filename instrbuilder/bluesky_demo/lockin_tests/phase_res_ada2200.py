@@ -16,9 +16,18 @@ from bluesky.callbacks.best_effort import BestEffortCallback
 from bluesky.plans import scan, count
 from databroker import Broker
 
-from ophyd.device import Kind
-from ophyd.ee_instruments import generate_ophyd_obj, BasicStatistics, \
-    FilterStatistics, ManualDevice
+try:
+    from ophyd.device import Kind
+    from ophyd.ee_instruments import generate_ophyd_obj, BasicStatistics, \
+        FilterStatistics, ManualDevice
+except ModuleNotFoundError:
+    print('Ophyd fork is not installed')
+    print('First, (if needed) uninstall base ophyd:')
+    print('  $ python -m pip uninstall ophyd')
+    print('Next, install the fork:')
+    print('  $ python -m pip install git+https://github.com/lucask07/ophyd@master#egg=ophyd')
+
+
 from instrbuilder.instrument_opening import open_by_name
 from instrbuilder.instruments import create_ada2200
 
