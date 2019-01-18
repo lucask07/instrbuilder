@@ -3,9 +3,14 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 """
-Not much here 
+Create a directory for Bluesky data; only need if using Bluesky
 """
-save_path = '/Users/koer2434/Google Drive/UST/research/bluesky/data'
+import os
+home = os.path.expanduser("~")
+save_path = os.path.join(home, '.instrbuilder', 'data')
+
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
 
 class DataSave():
     def __init__(self, **kwds):
