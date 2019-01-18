@@ -44,6 +44,27 @@ class KeysightFunctionGen(SCPI):
             cmd_list, comm_handle, name=name, unconnected=unconnected)
 
 
+class RigolOscilloscope(SCPI):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='osc',
+                 unconnected=False):
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
+        # Override of "single line" SCPI functions
+        self._cmds['display_data'].getter_override = self.display_data
+
+    def display_data(self):
+
+        t = self.comm_handle.query_binary_values(
+            ':DISP:DATA? PNG, ON', datatype='B', header_fmt='ieee')
+        return np.array(t, dtype='B')
+
+    def save_display_data(self, filename, filetype='png'):
+        """ get the display_data from the display and save to a file """
+        filewriter(self.display_data(), filename, filetype)
+
 class KeysightOscilloscope(SCPI):
     def __init__(self,
                  cmd_list,

@@ -1,0 +1,43 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+acq_count,:ACQ:AVER,,TRUE,int,TRUE,int,"[2,65536]",Number of averages when acquisition mode is AVER,acquire,TRUE,,
+acq_points,:ACQ:MDEP,,TRUE,int,FALSE,float,,Returns the number of points the hardware will acquire from the input signal. This is not directly controllable,acquire,TRUE,,
+acq_sample_rate,:ACQ:SRAT,,TRUE,float,FALSE,none,,acquistion sample rate,acquire,TRUE,,
+acq_type,:ACQ:TYPE,,TRUE,str,TRUE,str,"['NORM', 'AVER', 'HRES','PEAK']",acquistion mode,acquire,TRUE,,
+chan_bwlimit,:CHAN{chan}:BWL {value},,TRUE,int,TRUE,int,"['20M','OFF']",Limit the badwidth of the channel,channel,TRUE,2,1
+chan_coupling,:CHAN{chan}:COUP,,TRUE,str,TRUE,str,"['AC','DC']",DC or AC input coupling of the channel,channel,TRUE,2,1
+chan_display,:CHAN{chan}:DISP,,TRUE,int,TRUE,int,"[0,1]",Turn on or off the channel display,channel,TRUE,2,1
+chan_invert,:CHAN{chan}:INV,,TRUE,int,TRUE,int,"[0,1]",Invert channel? ,channel,TRUE,2,1
+chan_offset,:CHAN{chan}:OFFS,,TRUE,float,TRUE,float,,Voltage offset of the channel,channel,TRUE,2,1
+chan_probe,:CHAN{chan}:PROB,,TRUE,float,TRUE,float,,Attenuation of a probe,channel,TRUE,2,1
+chan_range,:CHAN{chan}:RANG,,TRUE,float,TRUE,float,,Vertical full-scale range value ,channel,TRUE,2,1
+chan_scale,:CHAN{chan}:SCAL,,TRUE,float,TRUE,float,,Vertical units per division,channel,TRUE,2,1
+chan_units,:CHAN{chan}:UNIT,,TRUE,float,TRUE,float,"['VOLT','AMP']",Units of vertical axis,channel,TRUE,2,1
+chan_vernier,:CHAN{chan}:VERN,,TRUE,int,TRUE,int,"[0,1]",Fine vertical control on/off,channel,TRUE,2,1
+run_acq,:RUN,,FALSE,str,TRUE,str,,run acquisition,root,FALSE,,
+single_acq,:SING,,FALSE,str,TRUE,str,,single-shot trigger,root,FALSE,,
+stop_acq,:STOP,,FALSE,str,TRUE,str,,stop acquisition,root,FALSE,,
+time_mode,:TIM:MODE,,TRUE,str,TRUE,int,"['MAIN', 'XY', 'ROLL']",Timebase mode ,time,TRUE,,
+time_pos,:TIM:MAIN:OFFS,,TRUE,float,TRUE,int,,time offset (in seconds),time,TRUE,,
+time_delay_scale,:TIM:DEL:SCAL,,TRUE,float,TRUE,int,,time/div of the delayed timebase in seconds,time,TRUE,,
+time_range,:TIM:MAIN:SCAL,,TRUE,float,TRUE,int,,time/div in seconds ,time,TRUE,,
+time_delay_offs,:TIM:DEL:OFFS,,TRUE,float,TRUE,int,,offset of the delayed timebase in seconds,time,TRUE,,
+trigger_sweep,:TRIG:SWE,,TRUE,str,TRUE,str,"['AUTO', 'NORM', 'SING']",Trigger sweep mode,trigger,TRUE,,
+trigger_mode,:TRIG:MODE,,TRUE,str,TRUE,str,"['EDGE', 'RUNT', 'PATT']",Trigger pattern,trigger,TRUE,,
+trigger_force,:TFOR,,FALSE,none,TRUE,none,,Force a trigger,trigger,TRUE,,
+trigger_status,:TRIG:STAT,,TRUE,str,FALSE,none,,"Get trigger status: TD, WAIT, RUN, AUTO or STOP",trigger,TRUE,,
+trigger_level,:TRIG:EDGE:LEV {value},:TRIG:EDGE:LEV?,TRUE,float,TRUE,float,,Set level for triggering ,trigger,TRUE,1,
+trigger_holdoff,:TRIG:HOLD,,TRUE,float,TRUE,float,,Trigge holdoff,trigger,TRUE,,
+trigger_hfreject,:TRIG:NREJ,,TRUE,int,TRUE,int,,Trigger high-frequency (noise) reject,trigger,TRUE,,
+trigger_slope,:TRIG:EDGE:SLOP,,TRUE,str,TRUE,str,"['NEG', 'POS', 'EITH', 'ALT']",Trigger slope,trigger,TRUE,,
+trigger_source,:TRIG:EDGE:SOUR CHAN{value},:TRIG:EDGE:SOUR?,TRUE,str,TRUE,int,"[1,2,3,4]",Trigger source,trigger,TRUE,,
+waveform_source,:WAV:SOUR CHAN{value},:WAV:SOUR?,TRUE,str,TRUE,str,"['NORM','MAX','RAW']",The :WAVeform:POINts:MODE command sets the data record to be transferred with the :WAVeform:DATA? query,waveform,TRUE,,
+waveform_data,:WAV:DATA,,TRUE,composite?,FALSE,str,,download raw data from instrument,waveform,FALSE,,
+clear,*CLS,,FALSE,none,TRUE,none,,Clear instrument,system,FALSE,,
+reset,*RST,,FALSE,none,TRUE,none,,Reset instrument,system,FALSE,,
+operation_complete,*OPC,,TRUE,int,TRUE,int,,Check if operation is complete,system,FALSE,,
+id,*IDN,,TRUE,str,FALSE,none,,retrieve instrument id ,system,TRUE,,
+meas,":MEAS:ITEM {meas_type},CHAN{chan}",":MEAS:ITEM? {meas_type},CHAN{chan}",TRUE,float,FALSE,none,,Generic measure command,measure,FALSE,1,2
+meas_vpp,":MEAS:ITEM:VPP,CHAN{chan}",":MEAS:ITEM? VPP,CHAN{chan}",TRUE,float,FALSE,none,,Measure peak-peak voltage,measure,FALSE,,1
+meas_freq,":MEAS:ITEM:FREQ,CHAN{chan}",":MEAS:ITEM? FREQ,CHAN{chan}",TRUE,float,FALSE,none,,Measure frequency,measure,FALSE,,1
+meas_vavg,":MEAS:ITEM:VAVG,CHAN{chan}",":MEAS:ITEM? VAVG,CHAN{chan}",TRUE,float,FALSE,none,,Measure average voltage,measure,FALSE,,1
+display_data,:DISP:DATA,DISP:DATA? PNG 1,TRUE,pass_array,FALSE,none,,Download screenshot from the oscilloscope. Format options are forced to PNG and Color,display,FALSE,,

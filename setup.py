@@ -3,10 +3,11 @@ import glob
 import setuptools
 import re
 
-dependency_links = []
-VCS_PREFIXES = ('git+', 'hg+', 'bzr+', 'svn+')
 def extract_requirements(filename):
+    dependency_links = []
+    VCS_PREFIXES = ('git+', 'hg+', 'bzr+', 'svn+')
     requirements = []
+
     with open(filename) as requirements_file:
         lines = requirements_file.read().splitlines()
         for package in lines:
@@ -19,14 +20,17 @@ def extract_requirements(filename):
                 else:
                     raise ValueError('Please enter "#egg=package_name" at the'
                                      'end of the url.')
-
+            package = package.replace('-','==')  
             requirements.append(package)
 
-    return requirements
+    return requirements, dependency_links
 
 
-required = extract_requirements('requirements.txt')
+required, dependency_links = extract_requirements('requirements.txt')
+print('Setup required: ')
 print(required)
+print('Dependency links: ')
+print(dependency_links)
 
 
 with open("README.md", "r") as fh:
@@ -34,7 +38,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='instrbuilder',
-    version="0.1.0",
+    version="0.1.3",
     author='Lucas J. Koerner',
     author_email="koerner.lucas@stthomas.edu",
     description="electrical instrument control",
