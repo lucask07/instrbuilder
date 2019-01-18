@@ -54,6 +54,8 @@ instrument_opening.init_yaml(csv_dir = 'where/your/commands_csv/files/are')
 ```
 2. To **add instruments** to the YAML function use the script found in [instrbuilder/examples/add_instruments_to_config.py](https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/examples/add_instruments_to_config.py). This will prompt the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:
 
+3. An example YAML is available here [on GitHub](https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/example_yaml/config.yaml).
+
 ### Extra Installation Steps if Using the Bluesky Suite from NSLS-II
 1. If using the Bluesky suite uninstall ophyd and re-install from a git fork:
 
