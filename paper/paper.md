@@ -23,7 +23,7 @@ bibliography: paper.bib
 *instrbuilder* is an open-source Python package for control of electrical instruments. This package eases the development of high-level "drivers" to interface with oscilloscopes, power supplies, function generators, multimeters, or any instrument that uses ASCII textual string communication (such as SCPI [@scpi1999standard]). *instrbuilder* is particularly suited for prototyping and automating experiments in research laboratory setups within an IPython terminal. Our goals are to accelerate the development of automated data collection and improve the reproducibility of laboratory experiments.
 
 # Summary
-*instrbuilder* reads and writes data from instruments with serial (using PySerial [@pyserial]) or USB (using PyVISA [@pyvisa])interfaces and leverages the consistency of SCPI commands so that new instrument "drivers" can be created with a simple CSV file (example command files are included in the package). 
+*instrbuilder* reads and writes data from instruments with serial (using PySerial [@pyserial]) or USB (using PyVISA [@pyvisa]) interfaces and leverages the consistency of SCPI commands so that new instrument "drivers" can be created with a simple CSV file (example command files are included in the package). 
 An example write command to configure the offset of a function generator:
 ```python
 fg.set('offset', 0.5)
