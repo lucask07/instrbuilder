@@ -101,7 +101,7 @@ for i in range(8):
         i
     )] = lambda x: not bool(functools.partial(utils.get_bit, bit=i)(int(x)))
 #### -----------------------------------------
-divider_string = '=====================================\n'
+divider_string = '='*80 + '\n'
 getter_debug_value = '7'  # when running headless (no instruments attached) all getters return this arbitrary value
 
 
@@ -269,6 +269,10 @@ class SCPI(object):
         # allow for a setter with no value (e.g. '*RST')
         else:  # is the value is None
             cmd_str = cmd_str.format(value='').rstrip()
+
+        # for pytests 
+        if self.unconnected:
+            self._cmds[name]._unconnected_val = value
 
         # send the command to the instrument
         return self._write(cmd_str)
@@ -974,14 +978,15 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
     # unattached instrument
     else:
         unconnected = True
-    if unconnected:
+    if unconnected: #Targeting a PyVISA like instrument
         # allow for debugging without instruments attached:
         #   print command to stdout, always return getter_debug_value
         print(divider_string, end='')
-        print('Note!! Running in debug mode without instrument attached')
-        print('All commands sent to the instrument will be printed to stdout')
+        print('Running in debug mode without instrument attached')
+        print('All commands sent to the instrument will be printed to stdout.')
         print(
-            'Getters will always return {} (set by variable getter_debug_value)'.
+            'Unless specified by cmd attribute _unconnected_val' +  
+            ' \ngetters will always return {} (getter_debug_value)'.
             format(getter_debug_value))
         print(divider_string)
 
@@ -998,6 +1003,6 @@ def init_instrument(cmd_map, addr, lookup=None, **kwargs):
             print(str_input)
 
         inst_comm.write = write
-        inst_comm.ask = ask
+        inst_comm.query = ask
 
     return cmd_list, inst_comm, unconnected

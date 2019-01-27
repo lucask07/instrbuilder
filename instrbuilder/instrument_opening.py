@@ -272,3 +272,55 @@ def open_by_name(name, name_attached=None, filename='config.yaml'):
     InstrumentClass = getattr(instruments, configs['instruments'][name]['python_class'])
 
     return InstrumentClass(cmd_list, inst_comm, name, unconnected)
+
+def open_by_address(addr, csv_dir = None, csv_folder = 'tester', 
+                    instr_class = 'TestInstrument', cmd_name = 'commands.csv', 
+                    lookup_name = 'lookup.csv'):
+    """
+    Open an instrument by address and optionally use the system config file
+
+    Parameters
+    ----------
+    addr : dict
+        The address of the instrument as a dict; e.g. {'pyvisa': 'USB0::0x0957::0x17A9::MY52160418::INSTR'}
+    csv_dir : str
+        Base directory to the csv instrument command input files 
+    csv_folder : str
+        Folder for the commands.csv and lookup.csv files
+    instr_class : str
+        The name of the class in instruments.py
+    cmd_name :
+        The name of the csv file with commands
+    lookup_name :
+        The name of the csv file with a lookup map
+
+    Returns
+    -------
+
+    typical usage (for pytests)
+        t = open_by_address({'no_interface': 'no_address'})
+
+    An instrument object
+
+    """
+    configs = {}
+    configs['csv_directory'] = csv_dir
+    configs['cmd_name'] = cmd_name 
+    configs['lookup_name'] = lookup_name 
+
+    cmd_map = os.path.join(configs['csv_directory'],
+                           csv_folder,
+                           configs['cmd_name'])
+
+    lookup_file = os.path.join(configs['csv_directory'],
+                               csv_folder,
+                               configs['lookup_name'])
+
+    cmd_list, inst_comm, unconnected = init_instrument(
+        cmd_map, addr=addr, lookup=lookup_file)
+
+    InstrumentClass = getattr(instruments, instr_class)
+    name = 'tester'
+    return InstrumentClass(cmd_list, inst_comm, name, unconnected)
+
+

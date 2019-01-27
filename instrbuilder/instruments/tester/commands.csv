@@ -1,0 +1,61 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+acq_complete,:ACQ:COMP,,TRUE,int,TRUE,int,[100],The :ACQuire:COMPlete command affects the operation of the :DIGitize command. It specifies the minimum completion criteria for an acquisition.,acquire,TRUE,,
+acq_count,:ACQ:COUN,,TRUE,int,TRUE,int,"[2,65536]",Number of averages when acquisition mode is AVER,acquire,TRUE,,
+acq_mode,:ACQ:MODE,,TRUE,str,TRUE,str,"['RTIM', 'SEGM']",Configures acquisition to real-time or segmented,acquire,TRUE,,
+acq_points,:ACQ:POIN,,TRUE,int,FALSE,float,,Returns the number of points the hardware will acquire from the input signal. This is not directly controllable,acquire,TRUE,,
+acq_segment_count,:ACQ:SEG:COUN,,TRUE,int,TRUE,int,"[2,1000]",,acquire,TRUE,,
+acq_segment_index,:ACQ:SEG:IND,,TRUE,int,TRUE,int,"[1,1000]",,acquire,TRUE,,
+acq_sample_rate,:ACQ:SRAT,,TRUE,float,FALSE,none,,acquistion sample rate,acquire,TRUE,,
+acq_type,:ACQ:TYPE,,TRUE,str,TRUE,str,"['NORM', 'AVER', 'HRES','PEAK']",acquistion mode,acquire,TRUE,,
+chan_bwlimit,:CHAN{chan}:BWL {value},,TRUE,int,TRUE,int,"[0,1]",Limit the badwidth of the channel,channel,TRUE,2,1
+chan_coupling,:CHAN{chan}:COUP,,TRUE,str,TRUE,str,"['AC','DC']",DC or AC input coupling of the channel,channel,TRUE,2,1
+chan_display,:CHAN{chan}:DISP,,TRUE,int,TRUE,int,"[0,1]",Turn on or off the channel display,channel,TRUE,2,1
+chan_impedance,:CHAN{chan}:IMP,,TRUE,str,TRUE,str,"['ONEMEG', 'FIFTY']",Input impedance of the channel ,channel,TRUE,2,1
+chan_invert,:CHAN{chan}:INV,,TRUE,int,TRUE,int,"[0,1]",Invert channel? ,channel,TRUE,2,1
+chan_label,:CHAN{chan}:LAB,,TRUE,str,TRUE,str,,Waveform label ,channel,TRUE,2,1
+chan_offset,:CHAN{chan}:OFFS,,TRUE,float,TRUE,float,,Voltage offset of the channel,channel,TRUE,2,1
+chan_probe,:CHAN{chan}:PROB,,TRUE,float,TRUE,float,,Attenuation of a probe,channel,TRUE,2,1
+chan_range,:CHAN{chan}:RANG,,TRUE,float,TRUE,float,,Vertical full-scale range value ,channel,TRUE,2,1
+chan_scale,:CHAN{chan}:SCAL,,TRUE,float,TRUE,float,,Vertical units per division,channel,TRUE,2,1
+chan_units,:CHAN{chan}:UNIT,,TRUE,float,TRUE,float,"['VOLT','AMP']",Units of vertical axis,channel,TRUE,2,1
+chan_vernier,:CHAN{chan}:VERN,,TRUE,int,TRUE,int,"[0,1]",Fine vertical control on/off,channel,TRUE,2,1
+demo_function,:DEMO:FUNC,,TRUE,str,TRUE,str,"['SIN', 'NOIS', 'PHAS', 'LFS', 'AM', 'RFB', 'FMB', 'HARM', 'COUP', 'RING', 'SING', 'CLK', 'RUNT']",,demo,TRUE,,
+demo_output,:DEMO:OUTP,,TRUE,int,TRUE,int,"[0,1]",Demo output on or off ,demo,TRUE,,
+display_annotate,:DISP:ANN:TEXT,,TRUE,str,TRUE,str,,ASCII string to display on the oscillosocope,display,FALSE,,
+display_data,:DISP:DATA,DISP:DATA? PNG COL,TRUE,pass_array,FALSE,none,,Download screenshot from the oscilloscope. Format options are forced to PNG and Color,display,FALSE,,
+run_acq,:RUN,,FALSE,str,TRUE,str,,run acquisition,root,FALSE,,
+single_acq,:SING,,FALSE,str,TRUE,str,,single-shot trigger,root,FALSE,,
+stop_acq,:STOP,,FALSE,str,TRUE,str,,stop acquisition,root,FALSE,,
+inksaver,:SAVE:IMAG:INKS,,TRUE,int,TRUE,int,"[0,1]",Invert graticule colors (change background to white),save,FALSE,,
+time_mode,:TIM:MODE,,TRUE,str,TRUE,int,"['MAIN', 'WIND', 'XY', 'ROLL']",Timebase mode ,time,TRUE,,
+time_pos,:TIM:POS,,TRUE,float,TRUE,int,,Time for the trigger event to the display reference point,time,TRUE,,
+time_range,:TIM:RANG,,TRUE,float,TRUE,int,,Time for 10 divisions in seconds,time,TRUE,,
+time_reference,:TIM:REF,,TRUE,str,TRUE,int,"['LEFT', 'CENT', 'RIGH']","One division from the left, center, or one division from the right",time,TRUE,,
+time_scale,:TIM:SCAL,,TRUE,float,TRUE,int,,time/div in seconds ,time,TRUE,,
+time_vernier,:TIM:VERN,,TRUE,int,TRUE,int,,Turn on or off fine adjustment,time,FALSE,,
+time_window_pos,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window position,time,TRUE,,
+time_window_range,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window range,time,TRUE,,
+time_window_scale,TIM:WIND:POS,,TRUE,float,TRUE,float,,zoomed window scale,time,TRUE,,
+trigger_sweep,:TRIG:SWE,,TRUE,str,TRUE,str,"['AUTO', 'NORM']",Trigger sweep mode,trigger,TRUE,,
+trigger_mode,:TRIG:MODE,,TRUE,str,TRUE,str,"['EDGE', 'GLIT', 'PATT']",Trigger pattern,trigger,TRUE,,
+trigger_force,:TRIG:FORC,,FALSE,none,TRUE,none,,Force a trigger,trigger,TRUE,,
+trigger_level,":TRIG:LEV {value}, CHAN{chan}",:TRIG:LEV? CHAN{chan},TRUE,float,TRUE,float,,Set level for triggering ,trigger,TRUE,2,1
+trigger_holdoff,:TRIG:HOLD,,TRUE,float,TRUE,float,,Trigge holdoff,trigger,TRUE,,
+trigger_hfreject,:TRIG:HFR,,TRUE,int,TRUE,int,,Trigger high-frequency reject,trigger,TRUE,,
+trigger_slope,:TRIG:SLOP,,TRUE,str,TRUE,str,"['NEG', 'POS', 'EITH', 'ALT']",Trigger slope,trigger,TRUE,,
+trigger_source,:TRIG:SOUR CHAN{value},,TRUE,int,TRUE,int,"[1,2,3,4]",Trigger source,trigger,TRUE,,
+waveform_points,:WAV:POIN,,TRUE,int,TRUE,int,,Set the number of points to be transferred,waveform,TRUE,,
+waveform_points_mode,:WAV:POIN:MODE,,TRUE,str,TRUE,str,"['NORM','MAX','RAW']",The :WAVeform:POINts:MODE command sets the data record to be transferred with the :WAVeform:DATA? query,waveform,TRUE,,
+waveform_data,:WAV:DATA,,TRUE,composite?,FALSE,str,,download raw data from instrument,waveform,FALSE,,
+clear,*CLS,,FALSE,none,TRUE,none,,Clear instrument,system,FALSE,,
+reset,*RST,,FALSE,none,TRUE,none,,Reset instrument,system,FALSE,,
+operation_complete,*OPC,,TRUE,int,TRUE,int,,Check if operation is complete,system,FALSE,,
+is_running,:OPER:COND,,TRUE,bit3_set,FALSE,none,,Check operation status register for if oscilloscope is running ,system,FALSE,,
+wait_trig,:OPER:COND,,TRUE,bit5_set,FALSE,none,,Trigger is armed,system,FALSE,,
+id,*IDN,,TRUE,str,FALSE,none,,retrieve instrument id ,system,TRUE,,
+meas,:MEAS:{meas_type} {chan},:MEAS:{meas_type}? CHAN{chan},TRUE,float,FALSE,none,,Generic measure command,measure,FALSE,2,1
+meas_vpp,:MEAS:VPP {chan},:MEAS:VPP? CHAN{chan},TRUE,float,FALSE,none,,Measure peak-peak voltage,measure,FALSE,,1
+meas_freq,:MEAS:FREQ {chan},:MEAS:FREQ? CHAN{chan},TRUE,float,FALSE,none,,Measure frequency,measure,FALSE,,1
+meas_vavg,:MEAS:VAV {chan},:MEAS:VAV? CHAN{chan},TRUE,float,FALSE,none,,Measure average voltage,measure,FALSE,,1
+meas_phase,":MEAS:PHAS CHAN{chan1}, CHAN{chan2}",":MEAS:PHAS? CHAN{chan1}, CHAN{chan2}",TRUE,float,FALSE,none,,Measure phase between two signals,measure,FALSE,,2
+meas_config,:MEAS:{meas_type} {info} {chan},:MEAS:{meas_type}? {info} CHAN{chan},TRUE,float,FALSE,none,,Measure command with extra config field,measure,FALSE,,3
