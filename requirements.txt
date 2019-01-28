@@ -14,4 +14,3 @@ pyserial
 wrapt
 PyYAML
 pytest
-pytest-cov
