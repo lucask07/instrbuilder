@@ -4,6 +4,7 @@ python:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - pip install coverage
   - python setup.py install
   - git clean -xfd
 # command to run tests
