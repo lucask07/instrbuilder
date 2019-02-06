@@ -24,13 +24,12 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial" href="tutorial.html" />
-    <link rel="prev" title="System Requirements" href="system_requirements.html" /> 
+    <link rel="prev" title="Installation" href="installation.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -86,6 +85,7 @@
               <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Adding Instruments</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#intialize-yaml">Intialize YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#detect-instruments">Detect Instruments</a></li>
@@ -193,15 +193,15 @@
 </div>
 <p><em>detect_instruments()</em> requests user input to configure the YAML file</p>
 <p>The <strong>resulting</strong> <em>config.yaml</em> file looks like:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">csv_directory</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments</span>
-<span class="l l-Scalar l-Scalar-Plain">cmd_name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">commands.csv</span>
-<span class="l l-Scalar l-Scalar-Plain">lookup_name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">lookup.csv</span>
-<span class="l l-Scalar l-Scalar-Plain">instruments</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">old_fg</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">address</span><span class="p p-Indicator">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">pyvisa</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">USB0::0x0957::0x0407::MY44060286::INSTR</span>
-    <span class="l l-Scalar l-Scalar-Plain">python_class</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">KeysightFunctionGen</span>
-    <span class="l l-Scalar l-Scalar-Plain">csv_folder</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">keysight/function_gen/33500B</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">csv_directory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/Users/koer2434/Google Drive/UST/research/instrbuilder/instruments</span>
+<span class="nt">cmd_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">commands.csv</span>
+<span class="nt">lookup_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lookup.csv</span>
+<span class="nt">instruments</span><span class="p">:</span>
+  <span class="nt">old_fg</span><span class="p">:</span>
+    <span class="nt">address</span><span class="p">:</span>
+      <span class="nt">pyvisa</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">USB0::0x0957::0x0407::MY44060286::INSTR</span>
+    <span class="nt">python_class</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeysightFunctionGen</span>
+    <span class="nt">csv_folder</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">keysight/function_gen/33500B</span>
 </pre></div>
 </div>
 </div>
@@ -218,7 +218,7 @@
         <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="system_requirements.html" class="btn btn-neutral" title="System Requirements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -227,7 +227,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Lucas J. Koerner.
+        &copy; Copyright 2018, Lucas J. Koerner
 
     </p>
   </div>
@@ -246,28 +246,17 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1a',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

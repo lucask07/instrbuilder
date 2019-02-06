@@ -1,7 +1,7 @@
 System Requirements 
 **************************
 
-Follow system requirements for PyVISA. A VISA driver is required, a convenient option is the driver available from National Instruments:
+Follow system requirements for `PyVISA <https://pyvisa.readthedocs.io/en/stable/getting_nivisa.html#getting-nivisa>`_. A VISA driver is required, a convenient option is the driver available from National Instruments:
 
 * `Windows <http://www.ni.com/download/ni-visa-18.0/7597/en/>`_
 
@@ -9,4 +9,10 @@ Follow system requirements for PyVISA. A VISA driver is required, a convenient o
 
 * `Linux <http://www.ni.com/download/ni-visa-16.0/6185/en/>`_
 
-Instrbuilder has been tested on Mac OS X with Python 3. Testing of other operating systems is in progress.
+**Tested**:
+
+* Instrbuilder has been tested on Mac OS X with Python 3. 
+ 
+* Testing of other operating systems is on the TODO. 
+
+* We are also testing the native Python VISA driver package `PyVISA-py <https://pyvisa-py.readthedocs.io/en/latest/>`_.

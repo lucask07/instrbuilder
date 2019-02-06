@@ -14,7 +14,7 @@ and are interfaced to with Python packages such as `pyvisa <https://pyvisa.readt
 Instrbuilder allows you to:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Generate a new driver** without writing python code.
+* **Generate a new "driver"** without writing python code.
 * **Automatically test commands** and create reports of communication errors or unexpected return values.
 * **View help** on each command sorted by subsytem. 
 * **Capture and save complete instrument configurations**. 

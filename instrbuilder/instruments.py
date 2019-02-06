@@ -270,6 +270,7 @@ class TestInstrument(SCPI):
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
 
+    
 
 try:
     # for Aardvark SPI control

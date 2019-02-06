@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -86,6 +85,7 @@
               <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="example_instrument.html">Example Instrument</a><ul class="current">
@@ -339,86 +339,71 @@ digital lock-in amplifier are used to explain the format of an instrument <cite>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>The name of the command, used as lookup key 
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">The name of the command, used as lookup key 
 to the instrument’s dictionary of commands</p>
-</div></blockquote>
-<p><strong>ascii_str</strong> : string</p>
-<blockquote>
-<div><p>What is sent to the instrument.</p>
-</div></blockquote>
-<p><strong>ascii_str_get</strong> : string, optional</p>
-<blockquote>
-<div><p>What is sent to the instrument when getting a value.
+</dd>
+<dt><strong>ascii_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">What is sent to the instrument.</p>
+</dd>
+<dt><strong>ascii_str_get</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">What is sent to the instrument when getting a value.
 If not specified ‘ascii_str’ will be used.</p>
-</div></blockquote>
-<p><strong>getter</strong> : Boolean</p>
-<blockquote>
-<div><p>Is this command a getter?</p>
-</div></blockquote>
-<p><strong>getter_type</strong> : function, float</p>
-<blockquote>
-<div><p>Converts the instrument returned value to a new type for processing.
+</dd>
+<dt><strong>getter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Boolean</span></dt>
+<dd><p class="first last">Is this command a getter?</p>
+</dd>
+<dt><strong>getter_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function, float</span></dt>
+<dd><p class="first last">Converts the instrument returned value to a new type for processing.
 Example: float</p>
-</div></blockquote>
-<p><strong>setter</strong> : Boolean</p>
-<blockquote>
-<div><p>Is this command a setter?</p>
-</div></blockquote>
-<p><strong>limits</strong> : list</p>
-<blockquote>
-<div><p>Minimum and maximum allowed values for the set operation.</p>
-</div></blockquote>
-<p><strong>setter_type</strong> : function, float</p>
-<blockquote>
-<div><p>Currently not used; may be used to check if set value is the proper type</p>
-</div></blockquote>
-<p><strong>doc</strong> : string, optional</p>
-<blockquote>
-<div><p>Documentation for this command; will be printed with help.</p>
-</div></blockquote>
-<p><strong>subsystem</strong> : string, optional</p>
-<blockquote>
-<div><p>The subsystem (of the instrument) that this command fits into
+</dd>
+<dt><strong>setter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Boolean</span></dt>
+<dd><p class="first last">Is this command a setter?</p>
+</dd>
+<dt><strong>limits</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">Minimum and maximum allowed values for the set operation.</p>
+</dd>
+<dt><strong>setter_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function, float</span></dt>
+<dd><p class="first last">Currently not used; may be used to check if set value is the proper type</p>
+</dd>
+<dt><strong>doc</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">Documentation for this command; will be printed with help.</p>
+</dd>
+<dt><strong>subsystem</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">The subsystem (of the instrument) that this command fits into
 Used for organization help information.</p>
-</div></blockquote>
-<p><strong>getter_inputs</strong> : list (of strings), optional</p>
-<blockquote>
-<div><p>For non-conventional get functions (long getters) that send extra parameters.
+</dd>
+<dt><strong>getter_inputs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list (of strings), optional</span></dt>
+<dd><p class="first last">For non-conventional get functions (long getters) that send extra parameters.
 This is a list of the input parameters that are needed. These are keys to 
 the config dictionary.</p>
-</div></blockquote>
-<p><strong>setter_inputs</strong> : list (of strings), optional</p>
-<blockquote>
-<div><p>For non-conventional set functions (long setters) that send extra parameters (beyond ‘value’).
+</dd>
+<dt><strong>setter_inputs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list (of strings), optional</span></dt>
+<dd><p class="first last">For non-conventional set functions (long setters) that send extra parameters (beyond ‘value’).
 This is a list of the input parameters that are needed. These are keys to 
 the config dictionary.</p>
-</div></blockquote>
-<p><strong>lookup</strong> : dictionary, optional</p>
-<blockquote>
-<div><p>A lookup table for values that can be mapped to more human-readable results. 
+</dd>
+<dt><strong>lookup</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dictionary, optional</span></dt>
+<dd><p class="first last">A lookup table for values that can be mapped to more human-readable results. 
 E.g. lookup = <cite>{‘SLOW’: 0, ‘FAST’: 1}</cite>
 The keys are the human-readable names, the dictionary values are what is sent and 
 received from the instrument.</p>
-</div></blockquote>
-<p><strong>is_config</strong> : bool, optional</p>
-<blockquote>
-<div><p>is a “configuration” variable that should be measured and logged at the start 
+</dd>
+<dt><strong>is_config</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">is a “configuration” variable that should be measured and logged at the start 
 and end of an experiment.</p>
-</div></blockquote>
-<p><strong>getter_override</strong> : function, optional</p>
-<blockquote>
-<div><p>run this upon get</p>
-</div></blockquote>
-<p><strong>setter_override: function</strong></p>
-<blockquote>
-<div><p>runs this upon set</p>
-</div></blockquote>
-<p><strong>returns_image: bool, optional (defaults to False)</strong></p>
-<blockquote class="last">
-<div><p>does this command return an array or image (a value that cannot be stored in the NoSQL database)</p>
-</div></blockquote>
+</dd>
+<dt><strong>getter_override</strong> <span class="classifier-delimiter">:</span> <span class="classifier">function, optional</span></dt>
+<dd><p class="first last">run this upon get</p>
+</dd>
+<dt><strong>setter_override: function</strong></dt>
+<dd><p class="first last">runs this upon set</p>
+</dd>
+<dt><strong>returns_image: bool, optional (defaults to False)</strong></dt>
+<dd><p class="first last">does this command return an array or image (a value that cannot be stored in the NoSQL database)</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -448,7 +433,7 @@ and end of an experiment.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Lucas J. Koerner.
+        &copy; Copyright 2018, Lucas J. Koerner
 
     </p>
   </div>
@@ -467,28 +452,17 @@ and end of an experiment.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1a',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

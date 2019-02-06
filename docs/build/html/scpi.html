@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -86,6 +85,7 @@
               <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
@@ -172,351 +172,6 @@
             
   <div class="section" id="module-scpi">
 <span id="scpi-class"></span><h1>SCPI Class<a class="headerlink" href="#module-scpi" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="scpi.SCPI">
-<em class="property">class </em><code class="descclassname">scpi.</code><code class="descname">SCPI</code><span class="sig-paren">(</span><em>cmd_list</em>, <em>comm_handle</em>, <em>name='not named'</em>, <em>unconnected=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>A SCPI (or SCPI like) instrument with a list of commands. The instrument has methods to get and set info of each command.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cmd_list</strong> : Command</p>
-<blockquote>
-<div><p>A list of commands. Each command is an object of the class Command</p>
-</div></blockquote>
-<p><strong>comm_handle</strong> : Communication object</p>
-<blockquote>
-<div><p>handle to the (general) hardware interface
-Example is the pyvisa instrument object: inst
-Needed when commands are overriden
-must have a:</p>
-<blockquote>
-<div><p>write method (Examples are pySerial write() or pyvisa inst.write())
-and an ask method (Examples are pySerial ask() and pyvisa inst.query())</p>
-</div></blockquote>
-</div></blockquote>
-<p><strong>name</strong> : str, optional</p>
-<blockquote>
-<div><p>Name of the instrument</p>
-</div></blockquote>
-<p><strong>unconnected</strong> : bool, optional</p>
-<blockquote class="last">
-<div><p>For simulation &amp; testing without instruments
-If true a “fake” ask and write command are configured. Ask always returns the same value (getter_debug_value).</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="12%" />
-<col width="88%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>unconnected</strong></td>
-<td>(bool) if True the instrument is unconnected and returns appropriately configured garbage values just for testing</td>
-</tr>
-<tr class="row-even"><td><strong>vendor_id</strong></td>
-<td>(str) id returned by the identification command</td>
-</tr>
-<tr class="row-odd"><td><strong>name</strong></td>
-<td>(str) name the user assigns</td>
-</tr>
-<tr class="row-even"><td><strong>comm_handle</strong></td>
-<td>(object) the communication object (could be from pyvisa or pyserial)</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="46%" />
-<col width="54%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>get(name, configs={}) :</strong></td>
-<td>get the value for the command of a given name</td>
-</tr>
-<tr class="row-even"><td><strong>set(name, value=None, configs={}) :</strong></td>
-<td>set a value for the command of name</td>
-</tr>
-<tr class="row-odd"><td><strong>list_cmds() :</strong></td>
-<td>print all cmds</td>
-</tr>
-<tr class="row-even"><td><strong>help_all(subsystem_list=None) :</strong></td>
-<td>list help for all commands (or for commands within a list of subsystems)</td>
-</tr>
-<tr class="row-odd"><td><strong>help(name):</strong></td>
-<td>print help on a command of the provided name</td>
-</tr>
-<tr class="row-even"><td><strong>log_all_getters(filename=None, suppress_stdout=False):</strong></td>
-<td>write all values that can be read to a file or to stdout</td>
-</tr>
-<tr class="row-odd"><td><strong>test_command(name, set_vals=None, get_configs={}, set_configs={}):</strong></td>
-<td>test a specific command by sending a value and checking the readback of that value</td>
-</tr>
-<tr class="row-even"><td><strong>test_all(skip_subsystem=[‘setup’, ‘status’, ‘system’],</strong></td>
-<td>skip_commands=[‘fast_transfer’, ‘reset’]) : test all commands</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="scpi.SCPI.check_set_range">
-<code class="descname">check_set_range</code><span class="sig-paren">(</span><em>value</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.check_set_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.check_set_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>check if the value to be set is within range</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>name of the command (first column in the csv file)</p>
-</div></blockquote>
-<p><strong>value</strong> : Union[str, int, float, None]</p>
-<blockquote>
-<div><p>the value to set</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
-<blockquote class="last">
-<div><p>True if in range</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.help">
-<code class="descname">help</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.help" title="Permalink to this definition">¶</a></dt>
-<dd><p>print help for a single command</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
-<blockquote class="last">
-<div><p>the name of the command</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.help_all">
-<code class="descname">help_all</code><span class="sig-paren">(</span><em>subsystem_list=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.help_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.help_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>print help for all commands</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>subsystem_list</strong> : list, optional</p>
-<blockquote>
-<div><p>a list of subsystems to limit the printing to</p>
-</div></blockquote>
-<p><strong>name</strong> : string</p>
-<blockquote class="last">
-<div><p>name of the command (first column in the csv file)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.list_cmds">
-<code class="descname">list_cmds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.list_cmds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.list_cmds" title="Permalink to this definition">¶</a></dt>
-<dd><p>list all commands</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.log_all_getters">
-<code class="descname">log_all_getters</code><span class="sig-paren">(</span><em>filename=None</em>, <em>suppress_stdout=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.log_all_getters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.log_all_getters" title="Permalink to this definition">¶</a></dt>
-<dd><p>save all gettable values to a file and send to stdout</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filename</strong> : str, optional</p>
-<blockquote>
-<div><p>name of the file (if None no file is saved)</p>
-</div></blockquote>
-<p><strong>suppress_stdout</strong> : bool, optional</p>
-<blockquote>
-<div><p>if True the getters will not be printed to stdout</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict</p>
-<blockquote class="last">
-<div><p>dictionary with the command name as keys and the results as values</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.out_of_range_warning">
-<code class="descname">out_of_range_warning</code><span class="sig-paren">(</span><em>value</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.out_of_range_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.out_of_range_warning" title="Permalink to this definition">¶</a></dt>
-<dd><p>throw a warning</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>value</strong> : Union[str, int, float, None]</p>
-<blockquote>
-<div><p>the value to set</p>
-</div></blockquote>
-<p><strong>name</strong> : string</p>
-<blockquote>
-<div><p>name of the command (first column in the csv file)</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">UserWarning</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.read_comm_err">
-<code class="descname">read_comm_err</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.read_comm_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.read_comm_err" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Read if the instrument has flagged a communciation error </dt>
-<dd>The csv command file must have a getter with name comm_error that returns a bool</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
-<blockquote class="last">
-<div><p>if True a comm error was detected</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.set">
-<code class="descname">set</code><span class="sig-paren">(</span><em>name</em>, <em>value=None</em>, <em>configs={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.set" title="Permalink to this definition">¶</a></dt>
-<dd><p>set a value</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>name of the command (first column in the csv file)</p>
-</div></blockquote>
-<p><strong>value</strong> : Union[str, int, float, None]</p>
-<blockquote>
-<div><p>the value to set</p>
-</div></blockquote>
-<p><strong>configs</strong> : dict, optional</p>
-<blockquote>
-<div><p>special configurations beyond the ‘value’; specified in the csv file</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str</p>
-<blockquote class="last">
-<div><div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">check this and fix?</p>
-</div>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.test_all">
-<code class="descname">test_all</code><span class="sig-paren">(</span><em>skip_subsystem=['setup', 'status', 'system'], skip_commands=['fast_transfer', 'reset']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.test_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.test_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test all commands by setting and getting to determine if: 
-1) the instrument reports a communcation error
-2) the return value is of an unexpected type or an error threshold away from what was set</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>skip_subsystem</strong> : list (of strings), default = [‘setup’, ‘status’]</p>
-<blockquote>
-<div><p>subsystems to skip, an example might be commands in the status subsystem
-that reset the instrument</p>
-</div></blockquote>
-<p><strong>skip_commands</strong> : list (of strings), default = [‘fast_transfer’, ‘reset’]</p>
-<blockquote>
-<div><p>Commands to skip</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict</p>
-<blockquote class="last">
-<div><p>Keys are each commands tested, value is True (command succeeded) or False (command errored)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="scpi.SCPI.test_command">
-<code class="descname">test_command</code><span class="sig-paren">(</span><em>name</em>, <em>set_vals=None</em>, <em>get_configs={}</em>, <em>set_configs={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scpi.html#SCPI.test_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scpi.SCPI.test_command" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test a command by setting and getting to determine if: 
-1) the instrument reports a communcation error
-2) the return value is of an unexpected type or an error threshold away from what was set</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
-<blockquote>
-<div><p>Name of the command</p>
-</div></blockquote>
-<p><strong>set_vals</strong> : list, optional</p>
-<blockquote>
-<div><p>A list of values to test by a sequence of set and get.
-If not provided the low and high limits are used</p>
-</div></blockquote>
-<p><strong>get_configs</strong> : dict, optional</p>
-<blockquote>
-<div><p>A dictionary of configs to send the get command</p>
-</div></blockquote>
-<p><strong>set_configs</strong> : dict, optional</p>
-<blockquote>
-<div><p>A dictionary of configs to send the set command</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">bool</p>
-<blockquote class="last">
-<div><p>True if the command is successful, False otherwise.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
@@ -539,7 +194,7 @@ If not provided the low and high limits are used</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Lucas J. Koerner.
+        &copy; Copyright 2018, Lucas J. Koerner
 
     </p>
   </div>
@@ -558,28 +213,17 @@ If not provided the low and high limits are used</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1a',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
