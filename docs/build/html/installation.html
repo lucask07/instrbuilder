@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; instrbuilder 0.1a documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Adding Instruments" href="adding_instruments.html" />
+    <link rel="prev" title="System Requirements" href="system_requirements.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-your-yaml">Create Your YAML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-installation-steps-if-using-the-bluesky-suite-from-nsls-ii">Extra Installation Steps if Using the Bluesky Suite from NSLS-II</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registers.html">Integrated Circuit Registers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_demo.html">Interfacing an Instrbuilder Instrument to Bluesky</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_utils.html">Bluesky Lab Utilities</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li>Install a VISA driver (National Instruments provides free downloads). The PyVISA documentation page is an excellent resource to locate a VISA driver for your system:</li>
+</ol>
+<ul class="simple">
+<li><a class="reference external" href="https://pyvisa.readthedocs.io/en/stable/getting_nivisa.html#getting-nivisa">NI-VISA downloads</a> links to downloads separated by OS.</li>
+<li><a class="reference external" href="https://pyvisa.readthedocs.io/en/stable/getting.html#backend">PyVISA backends</a>: an explanation of what is needed.</li>
+</ul>
+<ol class="arabic simple" start="2">
+<li>Install <em>instrbuilder</em> using pip.</li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">username$ python -m pip instrbuilder</span>
+</pre></div>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Command lists for Keysight oscilloscopes, function generator, DMM; Rigol DC Power Supply (<em>commands.csv</em>) are included in the package at: <a class="reference external" href="https://github.com/lucask07/instrbuilder/tree/master/instrbuilder/instruments">instrbuilder/instruments/</a></li>
+</ol>
+<p>Locate the instrument command files on your system using the following python commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">instrbuilder</span>
+<span class="n">init_file_loc</span> <span class="o">=</span> <span class="n">instrbuilder</span><span class="o">.</span><span class="vm">__file__</span>
+<span class="n">instrument_cmds</span> <span class="o">=</span> <span class="n">init_file_loc</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__init__.py&#39;</span><span class="p">,</span> <span class="s1">&#39;instruments/&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Instrument commmands (csv files) are at: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instrument_cmds</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note that you can move the command csv files (and probably should). The location of these needs to be specified in the YAML configuration file.</p>
+<ol class="arabic simple" start="2">
+<li>A YAML file is used to track your specific system configurations and instrument addresses (e.g. USB0::0x0957::0x0407::MY44060286::INSTR). Create your system YAML file using the steps below. This will be generated at <em>~/.instrbuilder/</em> (where <em>~</em> indicates your home directory). See the <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/example_yaml/config.yaml">example YAML</a> on GitHub.</li>
+<li>Try an example in the source code at <a class="reference external" href="https://github.com/lucask07/instrbuilder/tree/master/instrbuilder/examples">instrbuilder/examples/</a>. A Keysight and Rigol Oscilloscope is demonstrated in: <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/examples/oscilloscope.py">oscilloscope.py</a>.</li>
+</ol>
+<p>Locate the example directory using the following python commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">instrbuilder</span>
+<span class="n">init_file_loc</span> <span class="o">=</span> <span class="n">instrbuilder</span><span class="o">.</span><span class="vm">__file__</span>
+<span class="n">examples</span> <span class="o">=</span> <span class="n">init_file_loc</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;__init__.py&#39;</span><span class="p">,</span> <span class="s1">&#39;examples/&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Examples are at: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">examples</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-your-yaml">
+<h2>Create Your YAML<a class="headerlink" href="#create-your-yaml" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Initialize a YAML (specify the first parameter, the other 3 should always be default):</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">instrbuilder</span> <span class="k">import</span> <span class="n">instrument_opening</span>
+<span class="n">instrument_opening</span><span class="o">.</span><span class="n">init_yaml</span><span class="p">(</span><span class="n">csv_dir</span> <span class="o">=</span> <span class="s1">&#39;where/your/commands_csv/files/are&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>To <strong>add instruments</strong> to the YAML function use the script found in <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/examples/add_instruments_to_config.py">instrbuilder/examples/add_instruments_to_config.py</a>. This will prompt the user for information. Note that it may be helpful to have only one instrument connected/powered at a time so that there is no ambiguity:</li>
+<li>An example YAML is available here <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/example_yaml/config.yaml">on GitHub</a>.</li>
+</ol>
+</div>
+<div class="section" id="extra-installation-steps-if-using-the-bluesky-suite-from-nsls-ii">
+<h2>Extra Installation Steps if Using the Bluesky Suite from NSLS-II<a class="headerlink" href="#extra-installation-steps-if-using-the-bluesky-suite-from-nsls-ii" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>If using the Bluesky suite uninstall ophyd and re-install from a git fork:</li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">username$ python -m pip uninstall ophyd</span>
+<span class="go">username$ python -m pip install git+https://github.com/lucask07/ophyd@master#egg=ophyd</span>
+</pre></div>
+</div>
+<p>To check if the correct <em>ophyd</em> fork was installed try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd.ee_instruments</span> <span class="k">import</span> <span class="n">generate_ophyd_obj</span>
+</pre></div>
+</div>
+<p>This warning:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Error:  &lt;class &#39;ImportError&#39;&gt;
+IC (integrated circuit imports failed)
+The aardvark.so or dll must be in the cwd or an importable path
+Continuing anyways, since many may not use this portion...
+</pre></div>
+</div>
+<p>is <strong>OK</strong>. A module import error is not.</p>
+<p>A basic Bluesky demo is at <a class="reference external" href="https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py">instrbuilder/bluesky_demo/fg_oscilloscope_basics.py</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="adding_instruments.html" class="btn btn-neutral float-right" title="Adding Instruments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="system_requirements.html" class="btn btn-neutral" title="System Requirements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
