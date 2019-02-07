@@ -62,6 +62,11 @@ def init_yaml(csv_dir = '/Users/koer2434/Google Drive/UST/research/instrbuilder/
     configs['cmd_name'] = cmd_name 
     configs['lookup_name'] = lookup_name 
 
+    try: 
+        os.mkdir(home)
+    except FileExistsError:
+        pass
+
     # write to YAML file
     with open(os.path.join(home, filename), 'w+') as f:
         # see: https://pyyaml.org/wiki/PyYAMLDocumentation (for default_flow_style)
