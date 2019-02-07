@@ -33,6 +33,8 @@ Instrbuilder allows you to:
    scpi
    command_testing
    registers
+   contributing
+   
 
 **Instrbuilder is designed with the data acquisition and management library from NSLS-II in mind**. Below are examples that interface instruments controlled by Instrbuilder to Bluesky. 
 

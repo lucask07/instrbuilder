@@ -32,9 +32,9 @@ copyright = '2018, Lucas J. Koerner'
 author = 'Lucas J. Koerner'
 
 # The short X.Y version
-version = '0.1'
+version = '0.1.7'
 # The full version, including alpha/beta/rc tags
-release = '0.1a'
+release = '0.1.7a'
 
 
 # -- General configuration ---------------------------------------------------
