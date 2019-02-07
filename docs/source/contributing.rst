@@ -2,12 +2,9 @@ Contributing and Issues
 **************************************************
 Contributors are very welcome! 
 
-Navigate to the GitHub repo at:
-
-`instrbuilder <https://github.com/lucask07/instrbuilder>`_
+Navigate to the GitHub repo at: `instrbuilder <https://github.com/lucask07/instrbuilder>`_
 
 You could: 
-
 * Add python code 
 * Add a new interface 
 * Contribute a new instrument commands.csv file 
@@ -16,6 +13,4 @@ You could:
 Issues
 ====================
 
-File issues at:
-
-`Issues <https://github.com/lucask07/instrbuilder/issues>`_
+File issues at: `Issues <https://github.com/lucask07/instrbuilder/issues>`_
