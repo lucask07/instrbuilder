@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Interfacing an Instrbuilder Instrument to Bluesky" href="bluesky_demo.html" />
+    <link rel="next" title="Contributing and Issues" href="contributing.html" />
     <link rel="prev" title="Command Testing" href="command_testing.html" /> 
 
   
@@ -86,12 +86,15 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linux_visa.html">VISA Installation on Linux</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Integrated Circuit Registers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command.html">Command</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul>
@@ -175,8 +178,38 @@
 <p>A Class is available for organizing, reading, and writing registers as would be found in an integrated circuit.</p>
 <span class="target" id="module-command"></span><dl class="class">
 <dt id="command.Register">
-<em class="property">class </em><code class="descclassname">command.</code><code class="descname">Register</code><a class="reference internal" href="_modules/command.html#Register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#command.Register" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">class </em><code class="descclassname">command.</code><code class="descname">Register</code><span class="sig-paren">(</span><em>name</em>, <em>address</em>, <em>read_write='R/W'</em>, <em>is_config=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/command.html#Register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#command.Register" title="Permalink to this definition">¶</a></dt>
+<dd><p>A register of an integrated circuit to read or set
+The register is an address value pair and can be R or R/W</p>
+<dl class="docutils">
+<dt>todo:</dt>
+<dd>handle values that are sub-registers or expand over multiple registers (might be another class)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">The name of the register, used as lookup key
+to the dictionary of registers</p>
+</dd>
+<dt><strong>address</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">address value</p>
+</dd>
+<dt><strong>read_write</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">‘R’ ‘R/W’, ‘W’</p>
+</dd>
+<dt><strong>is_config</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">if True the register should have a constant value once written
+if False the chip may update the register (e.g. by ADC readings) and the value could change</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 
@@ -188,7 +221,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="bluesky_demo.html" class="btn btn-neutral float-right" title="Interfacing an Instrbuilder Instrument to Bluesky" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing and Issues" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="command_testing.html" class="btn btn-neutral" title="Command Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
