@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>VISA Installation on Linux &mdash; instrbuilder 0.1.7a documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Adding Instruments" href="adding_instruments.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> instrbuilder
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VISA Installation on Linux</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scpi.html">SCPI Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registers.html">Integrated Circuit Registers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command.html">Command</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_demo.html">Interfacing an Instrbuilder Instrument to Bluesky</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bluesky_utils.html">Bluesky Lab Utilities</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Collection</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/bluesky">bluesky</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/ophyd">ophyd</a></li>
+</ul>
+<p class="caption"><span class="caption-text">NSLS-II Data Access and Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/databroker">databroker</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">instrbuilder</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>VISA Installation on Linux</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/linux_visa.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="visa-installation-on-linux">
+<h1>VISA Installation on Linux<a class="headerlink" href="#visa-installation-on-linux" title="Permalink to this headline">¶</a></h1>
+<p>The National Instruments VISA driver does not support certain Linux distributions, specifically Ubuntu. The <a class="reference external" href="https://pyvisa.readthedocs.io/en/latest">pyvisa-py</a> VISA backend is pure Python and can be used to run PyVISA and <em>instrbuilder</em> on Ubuntu.</p>
+<p>The installation steps are as follows:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">username$ python -m pip install pyvisa-py</span>
+<span class="go">username$ python -m pip install pyusb</span>
+</pre></div>
+</div>
+<p>Check VISA status:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">username$ python -m visa info</span>
+</pre></div>
+</div>
+<p>Ubuntu requires “rules” to be added for a user to fully access the USB device.</p>
+<p>Add the following line to /etc/udev/rules.d/99-com.rules:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SUBSYSTEM==&quot;usb&quot;, MODE=&quot;0666&quot;, GROUP=&quot;usbusers&quot;</span>
+</pre></div>
+</div>
+<p>Create the 99-com.rules file if necessary.</p>
+<p>Then add your user to the usbusers group</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo groupadd usbusers</span>
+<span class="go">sudo usermod -a -G usbusers USERNAME</span>
+</pre></div>
+</div>
+<p>Reboot your system</p>
+<p>Finally check to see if you can detect a USB connected instrument using PyVISA:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">visa</span>
+<span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">(</span><span class="s1">&#39;@py&#39;</span><span class="p">)</span>
+<span class="n">address</span> <span class="o">=</span> <span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the Python code returns a device address you are now good to go!</p>
+<p>For more info regarding USB permissions and the udev rules see <a class="reference external" href="https://stackoverflow.com/questions/52256123/unable-to-get-full-visa-address-that-includes-the-serial-number">this stackoverflow question</a></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="adding_instruments.html" class="btn btn-neutral float-right" title="Adding Instruments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Lucas J. Koerner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
