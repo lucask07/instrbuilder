@@ -9,8 +9,8 @@ import os
 import sys
 import inspect
 
-from .scpi import init_instrument
-from . import instruments
+from instrbuilder.scpi import init_instrument
+from instrbuilder import instruments
 
 home = os.path.join(os.path.expanduser("~"), '.instrbuilder')
 

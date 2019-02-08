@@ -25,8 +25,8 @@ import visa
 from pyvisa.constants import StatusCode
 
 # local package imports
-from .command import Command
-from . import utils
+from instrbuilder.command import Command
+from instrbuilder import utils
 
 # -----------------------------------------
 # a dictionary of functions that are used to convert return values from getters

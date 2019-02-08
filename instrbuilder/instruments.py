@@ -9,7 +9,7 @@ import sys
 import time
 
 # local package imports
-from .scpi import SCPI
+from instrbuilder.scpi import SCPI
 
 
 class RigolPowerSupply(SCPI):

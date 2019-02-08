@@ -85,6 +85,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="system_requirements.html">System Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linux_visa.html">VISA Installation on Linux</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adding_instruments.html">Adding Instruments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_instrument.html">Example Instrument</a></li>
@@ -92,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="command_testing.html">Command Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="registers.html">Integrated Circuit Registers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing and Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command.html">Command</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul>
@@ -173,19 +175,49 @@
 
 <div class="genindex-jumpbox">
  <a href="#C"><strong>C</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  
 </div>
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="command.html#command.Command">Command (class in command)</a>
+      <li><a href="scpi.html#scpi.SCPI.check_set_range">check_set_range() (scpi.SCPI method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="command.html#command.Command">Command (class in command)</a>
+</li>
       <li><a href="command.html#module-command">command (module)</a>, <a href="registers.html#module-command">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.help">help() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.help_all">help_all() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.list_cmds">list_cmds() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.log_all_getters">log_all_getters() (scpi.SCPI method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -198,8 +230,20 @@
   </ul></td>
 </tr></table>
 
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.out_of_range_warning">out_of_range_warning() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.read_comm_err">read_comm_err() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="registers.html#command.Register">Register (class in command)</a>
 </li>
@@ -209,11 +253,25 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="command_testing.html#scpi.SCPI">SCPI (class in scpi)</a>
+      <li><a href="scpi.html#scpi.SCPI">SCPI (class in scpi)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="command_testing.html#module-scpi">scpi (module)</a>, <a href="scpi.html#module-scpi">[1]</a>
+      <li><a href="scpi.html#module-scpi">scpi (module)</a>
+</li>
+      <li><a href="scpi.html#scpi.SCPI.set">set() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.test_all">test_all() (scpi.SCPI method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="scpi.html#scpi.SCPI.test_command">test_command() (scpi.SCPI method)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>scpi &mdash; instrbuilder 0.1a documentation</title>
+  <title>scpi &mdash; instrbuilder 0.1.7a documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -57,7 +56,7 @@
             
             
               <div class="version">
-                0.1
+                0.1.7
               </div>
             
           
@@ -84,12 +83,16 @@
               <p class="caption"><span class="caption-text">Stand-Alone Usage</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../system_requirements.html">System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../linux_visa.html">VISA Installation on Linux</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../adding_instruments.html">Adding Instruments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../example_instrument.html">Example Instrument</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../scpi.html">SCPI Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../command_testing.html">Command Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../registers.html">Integrated Circuit Registers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing and Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../command.html">Command</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Usage with Bluesky from NSLS-II</span></p>
 <ul>
@@ -194,8 +197,8 @@
 <span class="kn">from</span> <span class="nn">pyvisa.constants</span> <span class="k">import</span> <span class="n">StatusCode</span>
 
 <span class="c1"># local package imports</span>
-<span class="kn">from</span> <span class="nn">command</span> <span class="k">import</span> <span class="n">Command</span>
-<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">instrbuilder.command</span> <span class="k">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">instrbuilder</span> <span class="k">import</span> <span class="n">utils</span>
 
 <span class="c1"># -----------------------------------------</span>
 <span class="c1"># a dictionary of functions that are used to convert return values from getters</span>
@@ -270,7 +273,7 @@
         <span class="n">i</span>
     <span class="p">)]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_bit</span><span class="p">,</span> <span class="n">bit</span><span class="o">=</span><span class="n">i</span><span class="p">)(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
 <span class="c1">#### -----------------------------------------</span>
-<span class="n">divider_string</span> <span class="o">=</span> <span class="s1">&#39;=====================================</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="n">divider_string</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">80</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 <span class="n">getter_debug_value</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span>  <span class="c1"># when running headless (no instruments attached) all getters return this arbitrary value</span>
 
 
@@ -344,7 +347,7 @@
         <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write</span> <span class="o">=</span> <span class="n">comm_handle</span><span class="o">.</span><span class="n">write</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ask</span> <span class="o">=</span> <span class="n">comm_handle</span><span class="o">.</span><span class="n">ask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ask</span> <span class="o">=</span> <span class="n">comm_handle</span><span class="o">.</span><span class="n">query</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unconnected</span> <span class="o">=</span> <span class="n">unconnected</span>
 
         <span class="c1"># get the vendor ID, which often includes firmware revision and other useful info.</span>
@@ -438,6 +441,10 @@
         <span class="c1"># allow for a setter with no value (e.g. &#39;*RST&#39;)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># is the value is None</span>
             <span class="n">cmd_str</span> <span class="o">=</span> <span class="n">cmd_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+        <span class="c1"># for pytests </span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unconnected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">_unconnected_val</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># send the command to the instrument</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">cmd_str</span><span class="p">)</span></div>
@@ -1143,14 +1150,15 @@
     <span class="c1"># unattached instrument</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">unconnected</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">unconnected</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">unconnected</span><span class="p">:</span> <span class="c1">#Targeting a PyVISA like instrument</span>
         <span class="c1"># allow for debugging without instruments attached:</span>
         <span class="c1">#   print command to stdout, always return getter_debug_value</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">divider_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Note!! Running in debug mode without instrument attached&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All commands sent to the instrument will be printed to stdout&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running in debug mode without instrument attached&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All commands sent to the instrument will be printed to stdout.&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s1">&#39;Getters will always return </span><span class="si">{}</span><span class="s1"> (set by variable getter_debug_value)&#39;</span><span class="o">.</span>
+            <span class="s1">&#39;Unless specified by cmd attribute _unconnected_val&#39;</span> <span class="o">+</span>  
+            <span class="s1">&#39; </span><span class="se">\n</span><span class="s1">getters will always return </span><span class="si">{}</span><span class="s1"> (getter_debug_value)&#39;</span><span class="o">.</span>
             <span class="nb">format</span><span class="p">(</span><span class="n">getter_debug_value</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">divider_string</span><span class="p">)</span>
 
@@ -1167,7 +1175,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
 
         <span class="n">inst_comm</span><span class="o">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">write</span>
-        <span class="n">inst_comm</span><span class="o">.</span><span class="n">ask</span> <span class="o">=</span> <span class="n">ask</span>
+        <span class="n">inst_comm</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">ask</span>
 
     <span class="k">return</span> <span class="n">cmd_list</span><span class="p">,</span> <span class="n">inst_comm</span><span class="p">,</span> <span class="n">unconnected</span>
 </pre></div>
@@ -1182,7 +1190,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Lucas J. Koerner.
+        &copy; Copyright 2018, Lucas J. Koerner
 
     </p>
   </div>
@@ -1201,28 +1209,17 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1a',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

@@ -27,6 +27,7 @@ Instrbuilder allows you to:
 
    system_requirements
    installation
+   linux_visa
    adding_instruments
    tutorial
    example_instrument
@@ -34,6 +35,7 @@ Instrbuilder allows you to:
    command_testing
    registers
    contributing
+   command
    
 
 **Instrbuilder is designed with the data acquisition and management library from NSLS-II in mind**. Below are examples that interface instruments controlled by Instrbuilder to Bluesky. 
