@@ -2,10 +2,12 @@
 # 05/2018
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
-
+'''
+analysis of ADA2200 phase resolution
+paper Figure 4
+'''
 # standard library imports
 import os
-
 # imports that may need installation
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,7 +19,8 @@ from plot_configs import params, dpi, figure_dir
 rcParams.update(params)
 plt.figure(dpi=dpi)
 
-db = Broker.named('local_file')  # a broker poses queries for saved data sets)
+SAVE_FIGS = False
+db = Broker.named('local_file')  # a broker poses queries for saved data sets
 
 '''
 |  0 | f31271f1-4231-4798-afe6-83e8647c0927 | 2018-07-06 15:29:07 | phase_dependence_offset | count       | ADA2200 |           10 |
@@ -25,14 +28,14 @@ db = Broker.named('local_file')  # a broker poses queries for saved data sets)
 |  2 | b270dad3-96fd-475a-ad1e-b2789db96ed0 | 2018-07-06 15:27:07 | phase_dependence        | scan        | ADA2200 |           60 |
 '''
 
-# get data into a pandas data-frame
+# get naub data into a pandas data-frame
 uid = 'b270dad3-96fd-475a-ad1e-b2789db96ed0'
 header = db[uid]
 print(header.table())
 df = header.table()
+
 # view the baseline data (i.e. configuration values)
 df_meta = header.table('baseline')
-
 print('These configuration values are saved to baseline data:')
 print(df_meta.columns.values)
 
@@ -53,4 +56,5 @@ plt.grid(True)
 plt.xlabel('Phase [deg]')
 plt.ylabel('Magnitude [V]')
 plt.grid(True)
-plt.savefig(os.path.join(figure_dir, 'phase_res_ada2200.eps'))
+if SAVE_FIGS:
+	plt.savefig(os.path.join(figure_dir, 'phase_res_ada2200.eps'))

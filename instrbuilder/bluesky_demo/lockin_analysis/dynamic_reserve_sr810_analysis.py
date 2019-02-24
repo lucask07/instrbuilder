@@ -4,17 +4,13 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from databroker import Broker
 from plot_configs import params, dpi, figure_dir
-
 rcParams.update(params)
 
-db = Broker.named('local_file')  # a broker poses queries for saved data sets)
-uid_baseline = '536d067b-b487-4cde-9991-be6a385f937b'
-uid_baseline = '8e3f2f50-a302-4442-ba50-ff4f4b58fdf2'
-# uid_baseline = '287efc60-4aa5-493e-a010-d8fcaf986f2b'  # short run around harmonics
-uid = '3061bdc5-aacb-4624-aecc-5d935ae9b4a9'
-uid = 'ffcd20b8-f7ca-4d90-9534-e68e68237156'
-# uid = '269560c5-f526-44de-9ecf-49dbeb625df7'  # short run around harmonics
+SAVE_FIGS = False
 
+db = Broker.named('local_file')  # a broker poses queries for saved data sets)
+uid_baseline = '8e3f2f50-a302-4442-ba50-ff4f4b58fdf2'
+uid = 'ffcd20b8-f7ca-4d90-9534-e68e68237156'
 
 baseline = db[uid_baseline].table()
 mean_baseline = np.mean(baseline['lockin_A'])
@@ -44,10 +40,7 @@ for config_name in ['tau', 'res_mode', 'sensitivity']:  # 'filt_slope'
 x = []
 y = []
 
-# revisit the definition of dynamic reserve. Should my signal be within 10% of full-scale?
-
 percent_error = 5
-
 for f in df['fgen2_freq'].unique():
     idx = (df['fgen2_freq'] == f)
 
@@ -66,5 +59,6 @@ plt.grid(True)
 plt.ylabel('Dynamic Reserve [dB]')
 plt.xlabel('Freq [Hz]')
 plt.grid(True)
-plt.savefig(os.path.join(figure_dir, 'dynamic_reserve_SR810.eps'))
+if SAVE_FIGS:
+	plt.savefig(os.path.join(figure_dir, 'dynamic_reserve_SR810.eps'))
 plt.show()

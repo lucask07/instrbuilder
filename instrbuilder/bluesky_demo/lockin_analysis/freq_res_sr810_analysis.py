@@ -1,3 +1,12 @@
+# Lucas J. Koerner
+# 05/2018
+# koerner.lucas@stthomas.edu
+# University of St. Thomas
+
+'''
+analysis of SR810 frequency resolution
+paper Figure 3
+'''
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -6,16 +15,11 @@ from databroker import Broker
 from scipy.interpolate import splev, splrep
 
 from plot_configs import params, dpi, figure_dir
-
 rcParams.update(params)
 
-SAVE_FIGS = True
-
+SAVE_FIGS = False
 db = Broker.named('local_file')  # a broker poses queries for saved data sets)
-uid = 'e70932a0-7b44-44e1-96cf-b3f9971693a2'
-uid = '19fb9f07-3edc-4082-b1c7-cfe1224e8865'
-uid = 'aa1fb303-c62a-4518-9ea0-49cc9cd08837'
-# test updated instrbuilder loading
+
 uid = '3de221b4-b9d5-470f-a2b8-a9c3e09a6e94'
 
 header = db[uid]  # db is a DataBroker instance
@@ -27,8 +31,6 @@ for fs in df['srs_lockin_filt_slope'].unique():
     plt.semilogy(df.loc[idx]['fg_freq'], df.loc[idx]['amp'],
                  marker='*',
                  label='Filter = {}'.format(fs.replace('-', ' ')))
-    # above remove the first measurement due to incomplete settling after stepping the filter slope
-    #       also remove the last element [for symmetry]
 
 plt.grid(True)
 plt.legend()

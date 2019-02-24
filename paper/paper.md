@@ -42,6 +42,6 @@ Documentation is online https://lucask07.github.io/instrbuilder/build/html/ and 
 
 # Acknowledgements
 
-We acknowledge laboratory start-up funds from the University of St. Thomas School of Engineering. 
+L. Koerner acknowledges laboratory start-up funds from the University of St. Thomas School of Engineering. 
 
 # References
