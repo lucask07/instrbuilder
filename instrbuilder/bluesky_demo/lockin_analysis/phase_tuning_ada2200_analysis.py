@@ -12,11 +12,15 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from databroker import Broker
 from plot_configs import params, dpi, figure_dir
+from metadata_parsing import print_meta
 
 rcParams.update(params)
 plt.figure(dpi=dpi)
 
-db = Broker.named('local_file')  # a broker poses queries for saved data sets)
+try:
+    db
+except NameError:
+    db = Broker.named('local_file') # a broker poses queries for saved data sets
 
 '''
 |  0 | f31271f1-4231-4798-afe6-83e8647c0927 | 2018-07-06 15:29:07 | phase_dependence_offset | count       | ADA2200 |           10 |
@@ -25,12 +29,16 @@ db = Broker.named('local_file')  # a broker poses queries for saved data sets)
 '''
 
 # get data into a pandas data-frame
-header = db['8a24caa4-8a72-454b-ae0b-4dfd71b7751d']  # db is a DataBroker instance
+uid = '8a24caa4-8a72-454b-ae0b-4dfd71b7751d'
+header = db[uid]  # db is a DataBroker instance
+print('UID = {}'.format(uid[0:6]))
+
 print(header.table())
 df = header.table()
 # view the baseline data (i.e. configuration values)
 h = db[-1]
 df_meta = h.table('baseline')
+print_meta(header, os.path.basename(__file__))
 
 phase_diff = np.array([])
 
@@ -44,7 +52,9 @@ plt.plot(df['fgen_freq'].unique(), phase_diff, marker='*')
 plt.ylabel('Degree/second')
 plt.xlabel('Freq [Hz]')
 plt.grid(True)
-plt.savefig(os.path.join(figure_dir, 'phase_tuning_ada2200.eps'))
+if SAVE_FIGS:
+	plt.savefig(os.path.join(figure_dir, 'phase_tuning_ada2200.eps'))
+plt.show()
 
 import scipy.interpolate
 y_interp = scipy.interpolate.interp1d(phase_diff, df['fgen_freq'].unique())

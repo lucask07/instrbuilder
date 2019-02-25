@@ -15,13 +15,20 @@ from databroker import Broker
 from scipy.interpolate import splev, splrep
 
 from plot_configs import params, dpi, figure_dir
+from metadata_parsing import print_meta
+
 rcParams.update(params)
 
 SAVE_FIGS = False
-db = Broker.named('local_file')  # a broker poses queries for saved data sets)
+SHOW_FIT = False
+
+try:
+    db
+except NameError:
+    db = Broker.named('local_file')
 
 uid = '3de221b4-b9d5-470f-a2b8-a9c3e09a6e94'
-
+print('UID = {}'.format(uid[0:6]))
 header = db[uid]  # db is a DataBroker instance
 df = header.table()
 
@@ -56,7 +63,8 @@ for fs in df['srs_lockin_filt_slope'].unique():
 
     spl = splrep(x, y)
     val_int = splev(f_search, spl)
-    plt.plot(f_search, val_int, marker='o')
+    if SHOW_FIT:
+        plt.plot(f_search, val_int, marker='o')
 
     amp_fref = np.max(val_int)
     max_f = f_search[np.where(val_int == amp_fref)][0]
@@ -70,10 +78,42 @@ for fs in df['srs_lockin_filt_slope'].unique():
         # print result, 1 octave; 2 octaves
         print('{} octave past cutoff {:.3f}; attenuation = {:.3f} dB'.format(octave,
                                                                      amp_fref_oct, 20*np.log10(amp_fref_oct/amp_fref)))
-
 # --------- metadata -----------------
-header['start']
-header['stop']
+print_meta(header, os.path.basename(__file__))
 
-# view the baseline data (i.e. configuration values)
-header.table('baseline')
+'''
+import datetime
+# start of the experiment: header['start']
+# end of the experiment: header['stop']
+print('-'*70)
+print('METADATA')
+print('-'*70)
+
+print('Parsing metadata for UID: {}; with exit status: {}'.format(header.start['uid'], header.stop['exit_status']))
+
+# time of experiment
+print('Experiment start time: {}'.format(datetime.datetime.fromtimestamp(header.start['time']).strftime('%Y-%m-%d %H:%M:%S') ))
+# experiment duration
+print('Experiment duration: {} [seconds]'.format(header.stop['time'] - header.start['time']))
+
+# Bluesky plan info 
+print('Bluesky plan type: {} '.format(header.start['plan_type']))
+print('Bluesky plan name: {} '.format(header.start['plan_name']))
+
+# number of FG configuration keys
+print('Metadata has {} stored function generator configuration values'.format(len(list(header.start['fg_config']))))
+
+# example Function generator configuration values 
+print('Example FG config values:')
+for cfg_key in ['fg_function', 'fg_freq', 'fg_v', 'fg_offset', 'fg_load']:
+    print('  Config value: {} = {}'.format(cfg_key, header.start['fg_config'][cfg_key]['value']))
+
+# number of lock-in amplifier configuration keys
+print('Metadata has {} stored lock-in configuration values'.format(len(list(header.start['lia_config']))))
+print('Example lock-in config values:')
+for cfg_key in ['srs_lockin_freq', 'srs_lockin_tau', 'srs_lockin_in_config', 'srs_lockin_sensitivity']:
+    print('  Config value: {} = {}'.format(cfg_key, header.start['lia_config'][cfg_key]['value']))
+
+'''
+
+plt.show()

@@ -16,17 +16,26 @@ from matplotlib import rcParams
 from databroker import Broker
 
 from plot_configs import params, dpi, figure_dir
+from metadata_parsing import print_meta
+
 rcParams.update(params)
-db = Broker.named('local_file')  # a broker poses queries for saved data sets
 SAVE_FIGS = False
+
+try:
+    db
+except NameError:
+    db = Broker.named('local_file') # a broker poses queries for saved data sets
+
 
 # get data into a pandas data-frame
 uid = 'f6e88efb-11d9-4c24-9921-0de7e2c0fb36'
 header = db[uid]
+print('UID = {}'.format(uid[0:6]))
 print(header.table())
 df = header.table()
 # view the baseline data (i.e. configuration values)
 df_meta = header.table('start')
+print_meta(header, os.path.basename(__file__))
 
 fig = plt.figure(dpi=dpi)
 ax = fig.add_subplot(2, 1, 1)
@@ -62,3 +71,4 @@ print('Noise (no input) = {} [mV]'.format(val_std[len(att)]*1000))
 
 # 2.71V Pk-pk, 1.6205 V avg over N-cycles; AC RMS 1.233
 header['start']['ada2200_config']
+plt.show()

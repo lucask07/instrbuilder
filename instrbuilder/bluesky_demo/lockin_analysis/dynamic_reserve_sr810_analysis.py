@@ -4,20 +4,30 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from databroker import Broker
 from plot_configs import params, dpi, figure_dir
+from metadata_parsing import print_meta
+
 rcParams.update(params)
 
 SAVE_FIGS = False
 
-db = Broker.named('local_file')  # a broker poses queries for saved data sets)
+# only open the broker database if needed 
+try:
+    db
+except NameError:
+    db = Broker.named('local_file') # a broker poses queries for saved data sets
+
 uid_baseline = '8e3f2f50-a302-4442-ba50-ff4f4b58fdf2'
 uid = 'ffcd20b8-f7ca-4d90-9534-e68e68237156'
 
 baseline = db[uid_baseline].table()
+print('UID Baseline = {}'.format(uid_baseline[0:6]))
 mean_baseline = np.mean(baseline['lockin_A'])
 print('Baseline measurement = {}'.format(mean_baseline))
 
 header = db[uid]  # db is a DataBroker instance
+print('UID = {}'.format(uid[0:6]))
 df = header.table()
+print_meta(header, os.path.basename(__file__))
 
 # determine signal amplitude
 sig_att = header['start']['attenuator_fg1'].replace('dB', '')  # units of dB, strip of units
