@@ -18,13 +18,13 @@ metadatastore:
     module: 'databroker.headersource.sqlite'
     class: 'MDS'
     config:
-        directory: '/Users/koer2434/Google Drive/UST/research/bluesky/data'
+        directory: 'data_directory'
         timezone: 'US/Eastern'
 assets:
     module: 'databroker.assets.sqlite'
     class: 'Registry'
     config:
-        dbpath: '/Users/koer2434/Google Drive/UST/research/bluesky/data/assets.sqlite'
+        dbpath: 'data_directory/assets.sqlite'
 ```
 
 The script ```run_all_analysis.py``` creates each figure for the paper under review at IEEE TIM. 
