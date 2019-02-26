@@ -8,7 +8,6 @@ def print_meta(header, script_name = ''):
     print('-'*70)
 
     print('Parsing metadata for UID: {}; with exit status: {}'.format(header.start['uid'], header.stop['exit_status']))
-
     # time of experiment
     print('Experiment start time: {}'.format(datetime.datetime.fromtimestamp(header.start['time']).strftime('%Y-%m-%d %H:%M:%S') ))
     # experiment duration
