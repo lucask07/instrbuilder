@@ -22,6 +22,7 @@ rcParams.update(params)
 plt.figure(dpi=dpi)
 
 SAVE_FIGS = False
+PLOT_FIT = False
 
 try:
     db
@@ -80,7 +81,6 @@ x_fit = np.linspace(x_sort[0], x_sort[-1], 100000)
 data = np.array(df['dmm_burst_volt_timer_mean'] - offset)
 s_fit = inter.UnivariateSpline (x_sort, data[x_idx], s=0.001)
 
-PLOT_FIT = True
 if PLOT_FIT:
 	plt.plot(x_fit, s_fit(x_fit), 'r')
 

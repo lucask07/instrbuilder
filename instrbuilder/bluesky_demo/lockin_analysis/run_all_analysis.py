@@ -7,11 +7,13 @@
 run all of the analysis code that produces each 
 figure in the paper submitted to TIM
 
-The folder without sqllite databases has many files. 
+The folder without sqlite databases has many files. 
 The OS file open limit may cause problems. 
 
-SYSTEM SETUP: (in terminal)
-ulimit -Sn 10000
+SYSTEM SETUP: (in terminal MacOS or Ubuntu)
+ulimit -Sn 4095
+
+MATPLOTLIB figures require latex and dvipng
 
 '''
 
