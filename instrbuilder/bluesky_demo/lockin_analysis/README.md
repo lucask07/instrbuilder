@@ -9,7 +9,9 @@ sudo apt-get install texlive-xetex
 sudo apt-get install dvipng
 ```
 
-Databroker requires a configuration file to locate the data. The data configuration file should be named *local_file.yml* to match the analysis scripts and placed within *~/.config/databroker/ 
+Databroker requires a configuration file to locate the data. The data configuration file should be named *local_file.yml* to match the analysis scripts and placed within *~/.config/databroker/*
+
+A YML configuration file is available on figshare. It should look like:
 
 ```yaml
 description: 'lightweight personal database'
