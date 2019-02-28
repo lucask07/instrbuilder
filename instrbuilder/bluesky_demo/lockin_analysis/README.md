@@ -1,17 +1,15 @@
-The analysis code for lock-in amplifier experiments executed with Bluesky and instrbuilder is found in this folder. 
+* The analysis code for lock-in amplifier experiments executed with Bluesky and instrbuilder is found in this folder. 
 
-The data is available via figshare at: <https://doi.org/10.6084/m9.figshare.7768352>
+* The data is available via figshare at: <https://doi.org/10.6084/m9.figshare.7768352>
 
-The analysis requires databroker, matplotlib, scipy and numpy. The matplotlib figures require latex and dvipng. Matplotlib helpers installation on Ubuntu:
+* The analysis requires databroker, matplotlib, scipy and numpy. The matplotlib figures require latex and dvipng. Matplotlib helpers installation on Ubuntu:
 
 ```terminal 
 sudo apt-get install texlive-xetex
 sudo apt-get install dvipng
 ```
 
-Databroker requires a configuration file to locate the data. The data configuration file should be named *local_file.yml* to match the analysis scripts and placed within *~/.config/databroker/*
-
-A YML configuration file is available on figshare. It should look like:
+Databroker requires a configuration file to locate the data. The data configuration file should be named *local_file.yml* to match the analysis scripts and placed within *~/.config/databroker/* A YML configuration file is available on figshare. It should look like:
 
 ```yaml
 description: 'lightweight personal database'
