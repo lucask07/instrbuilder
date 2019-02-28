@@ -1,3 +1,5 @@
+## Lock-in amplifier data analysis
+
 * The analysis code for lock-in amplifier experiments executed with Bluesky and instrbuilder is found in this folder. 
 
 * The data is available via figshare at: <https://doi.org/10.6084/m9.figshare.7768352>
