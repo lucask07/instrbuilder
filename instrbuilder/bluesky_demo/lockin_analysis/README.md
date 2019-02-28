@@ -9,7 +9,7 @@ sudo apt-get install texlive-xetex
 sudo apt-get install dvipng
 ```
 
-Databroker requires a configuration file to locate the data. The data configuration file should be named *local_file.yml* to match the analysis scripts and placed within *~/.config/databroker/* A YML configuration file is available on figshare. It should look like:
+* Databroker requires a configuration file to locate the data. The data configuration file should be named *local_file.yml* to match the analysis scripts and placed within *~/.config/databroker/* A YML configuration file is available on figshare. It should look like:
 
 ```yaml
 description: 'lightweight personal database'
@@ -26,9 +26,9 @@ assets:
         dbpath: 'data_directory/assets.sqlite'
 ```
 
-The script ```run_all_analysis.py``` creates each figure for the paper under review at IEEE TIM. 
+* The script ```run_all_analysis.py``` creates each figure for the paper under review at IEEE TIM. 
 
-The system file open limit may need to be modified:
+* The system file open limit may need to be modified for successful completion of ```run_all_analysis.py```:
 ```terminal
 ulimit -Sn 4095
 ```
