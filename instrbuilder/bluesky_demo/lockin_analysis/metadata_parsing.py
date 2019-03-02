@@ -1,3 +1,8 @@
+# Lucas J. Koerner
+# 2019
+# koerner.lucas@stthomas.edu
+# University of St. Thomas
+
 import datetime
 
 def print_meta(header, script_name = ''):
