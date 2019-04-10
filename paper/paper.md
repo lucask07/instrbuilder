@@ -38,7 +38,7 @@ Documentation is online https://lucask07.github.io/instrbuilder/build/html/ and 
 
 *instrbuilder* supports a Register class that targets registers of an IC. The IC class objects include a dictionary of the registers and have methods for reading and writing these registers via SPI or I2C. 
 
-*instrbuilder* is part of a Python software suite that uses Bluesky [@Arkilic2017] and associated modules created for x-ray science by a team at the NSLS-II (see https://nsls-ii.github.io/) to generate an instrument and experiment control environment that facilitates reproducible experiments. The use of *instrbuilder* and *Bluesky* is [documented online](https://lucask07.github.io/instrbuilder/build/html/bluesky_demo.html) and a [MWE is available](https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py). *instrbuilder* is available at (https://pypi.org/project/instrbuilder/) and can be installed with pip. 
+*instrbuilder* is part of a Python software suite that uses Bluesky [@Arkilic2017] and associated modules created for x-ray science by a team at the NSLS-II (see https://nsls-ii.github.io/). This combination generates an instrument and experiment control environment that facilitates reproducible experiments. The use of *instrbuilder* and *Bluesky* is [documented online](https://lucask07.github.io/instrbuilder/build/html/bluesky_demo.html) and a [MWE is available](https://github.com/lucask07/instrbuilder/blob/master/instrbuilder/bluesky_demo/fg_oscilloscope_basics.py). *instrbuilder* is available at (https://pypi.org/project/instrbuilder/) and can be installed with pip. 
 
 # Acknowledgements
 
