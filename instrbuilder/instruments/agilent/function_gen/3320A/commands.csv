@@ -1,6 +1,6 @@
 ﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
 function,FUNC,,TRUE,str,TRUE,str,"['SIN', 'SQU', 'RAMP', 'PULS', 'NOIS', 'DC', 'USER']","output function, sin; square, etc.",output,TRUE,,
-freq,FREQ,,TRUE,float,TRUE,float,"[0, 20e6]",output frequency in Hz,output,TRUE,,
+freq,FREQ,,TRUE,float,TRUE,float,"[0, 30e6]",output frequency in Hz,output,TRUE,,
 v,VOLT,,TRUE,float,TRUE,float,"[10e-3, 10]",voltage amplitude,output,TRUE,,
 offset,VOLT:OFFS,,TRUE,float,TRUE,float,"[-4.99, 4.99]","voltage offset, range depends on amplitude ",output,TRUE,,
 v_low,VOLT:LOW,,TRUE,float,TRUE,float,"[0,1]",need to check this one,output,TRUE,,

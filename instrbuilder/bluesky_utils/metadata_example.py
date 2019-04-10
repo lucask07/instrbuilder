@@ -17,7 +17,7 @@ print('Found {} runs with the purpose of {}'.format(len(list(headers)), purpose)
 run1 = list(headers)[18]  
 run2 = list(headers)[23]
 
-print('Comparing: \n  UID = {}to \n  UID = {}'.format(run1['start']['uid'], 
+print('Comparing: \n  UID = {} to \n  UID = {}'.format(run1['start']['uid'], 
 	run2['start']['uid']))
 
 equivalence_check(run1['descriptors'][0]['configuration'], 
