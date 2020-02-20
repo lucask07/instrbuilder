@@ -17,7 +17,7 @@ https://lucask07.github.io/instrbuilder/build/html/
 2. Install *instrbuilder* using pip.
 
 ```console
-username$ python -m pip instrbuilder 
+username$ python -m pip install instrbuilder 
 ```
 
 ### Getting Started 
