@@ -12,7 +12,7 @@ https://lucask07.github.io/instrbuilder/build/html/
 1. Install a VISA driver (National Instruments provides free downloads). The PyVISA documentation page is an excellent resource to locate a VISA driver for your system: 
 
 * [NI-VISA downloads](https://pyvisa.readthedocs.io/en/stable/getting_nivisa.html#getting-nivisa): links to downloads separated by OS.
-* [PyVISA backends](https://pyvisa.readthedocs.io/en/stable/getting.html#backend): an explanation of what is needed.
+* [PyVISA backends](https://pyvisa.readthedocs.io/en/stable/introduction/configuring.html): an explanation of what is needed.
 
 2. Install *instrbuilder* using pip.
 
