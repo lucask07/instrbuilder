@@ -9,7 +9,7 @@ Installation
 
 .. code-block:: console
 
-	username$ python -m pip instrbuilder 
+	username$ python -m pip install instrbuilder 
 
 
 Getting Started 
