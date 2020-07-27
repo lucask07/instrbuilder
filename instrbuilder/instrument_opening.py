@@ -14,6 +14,8 @@ from instrbuilder import instruments
 
 home = os.path.join(os.path.expanduser("~"), '.instrbuilder')
 
+INSTR_PREFIXES = ["GPIB", "PXI", "TCPIP", "USB", "VXI"]
+
 
 def find_visa_connected():
     """
@@ -29,7 +31,7 @@ def find_visa_connected():
     resources = mgr.list_resources()
     print('Found VISA devices: ')
     for d in resources:
-        if 'USB0' in d:
+        if any([d.startswith(prefix) for prefix in INSTR_PREFIXES]):
             print(d)
     return resources
 
@@ -196,9 +198,9 @@ def detect_instruments(filename='config.yaml'):
         configs['instruments'] = []
 
     device_addrs = find_visa_connected()
-    usb_addrs = [k for k in device_addrs if 'USB0' in k]
+    instr_addrs = [k for k in device_addrs if any([k.startswith(prefix) for prefix in INSTR_PREFIXES])]
 
-    for addr in usb_addrs:
+    for addr in instr_addrs:
         mgr = visa.ResourceManager()
         obj = mgr.open_resource(addr)
         try:
@@ -222,7 +224,7 @@ def detect_instruments(filename='config.yaml'):
 
     # look for instruments that are not in the configuration file
     not_in_config = []
-    for addr in usb_addrs:
+    for addr in instr_addrs:
         if addr not in config_addr:
             add_yes_no = input('Addr: {} is not in your system configuration file.\n Should we add it? [Y/N]'.format(addr))
 
@@ -231,7 +233,7 @@ def detect_instruments(filename='config.yaml'):
                 append_to_yaml(new_config)
             not_in_config.append(addr)
 
-    return usb_addrs, not_in_config
+    return instr_addrs, not_in_config
 
 
 def open_by_name(name, name_attached=None, filename='config.yaml'):
