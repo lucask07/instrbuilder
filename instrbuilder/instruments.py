@@ -261,6 +261,51 @@ class KeysightMultimeter(SCPI):
 
         return data_array
 
+
+class KeysightNetworkAnalyzer(SCPI):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='pna',
+                 unconnected=True,
+                 channels=(1, 2, 3, 4)):
+        self._channels = channels
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
+
+        self._cmds['snp_port_data'].getter_override = self.snp_port_data
+
+    def snp_port_data(self):
+        # data format lookups
+        datatypes = {32: 'f', 64: 'd'}
+        dtypes = {32: np.float32, 64: np.float64}
+
+        # 1 frequency channel + N^2 complex vectors
+        n_vec = 1 + 2 * len(self._channels) ** 2;
+
+        # retrieve format setting
+        fd = int(self.get("form_data").split(",")[-1])
+
+        # trigger reading
+        self.set("immediate")
+
+        # wait for operation complete
+        while (self.get("opc") & 0x1) == 0:
+            pass
+   
+        # retrieve binary data
+        raw = self.comm_handle.query_binary_values(
+            'CALCulate:DATA:SNP:PORTs? "{}"'.format(
+                ",".join([str(chan) for chan in self._channels])),
+            datatype=datatypes[fd])
+
+        # flat array of data format
+        flat = np.array(raw, dtype=dtypes[fd])
+
+        # reshape into components
+        return flat.reshape((n_vec, int(flat.size / n_vec)))
+
+
 class TestInstrument(SCPI):
     def __init__(self,
                  cmd_list,
