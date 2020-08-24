@@ -3,6 +3,12 @@
 
 *instrbuilder* is an open-source Python package for control of electrical instruments. This package eases the development of high-level "drivers" to interface with oscilloscopes, power supplies, function generators, multimeters, or any instrument that uses ASCII textual string communication (such as SCPI). *instrbuilder* is particularly suited for prototying and automating experiments in research laboratory setups within an IPython terminal. Our goals are to accelerate the development of automated data collection and improve the reproducibility of laboratory experiments.
 
+## Related Journal Papers
+
+* L. Koerner "Instrbuilder: A Python package for electrical instrument control" The Journal of Open Source Software: [doi](https://doi.org/10.21105/joss.01172)
+* L. Koerner, T. Caswell, D. Allan, and S. Campbell "A Python instrument control and data acquisition suite for reproducible research" IEEE Transactions on Instrumentation and Measurement [doi](https://doi.org/10.1109/TIM.2019.2914711)
+
+
 ## Documentation 
 
 https://lucask07.github.io/instrbuilder/build/html/
