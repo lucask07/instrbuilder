@@ -236,7 +236,7 @@ def detect_instruments(filename='config.yaml'):
     return instr_addrs, not_in_config
 
 
-def open_by_name(name, name_attached=None, filename='config.yaml'):
+def open_by_name(name, name_attached=None, filename='config.yaml', **kwargs):
     """
     Use the system configuration file to open an instrument by name
 
@@ -271,7 +271,8 @@ def open_by_name(name, name_attached=None, filename='config.yaml'):
                                configs['lookup_name'])
 
     cmd_list, inst_comm, unconnected = init_instrument(
-        cmd_map, addr=configs['instruments'][name]['address'], lookup=lookup_file)
+        cmd_map, addr=configs['instruments'][name]['address'], lookup=lookup_file,
+        **kwargs)
 
     if name_attached is not None:
         name = name_attached
@@ -282,7 +283,7 @@ def open_by_name(name, name_attached=None, filename='config.yaml'):
 
 def open_by_address(addr, csv_dir = None, csv_folder = 'tester', 
                     instr_class = 'TestInstrument', cmd_name = 'commands.csv', 
-                    lookup_name = 'lookup.csv'):
+                    lookup_name = 'lookup.csv', **kwargs):
     """
     Open an instrument by address and optionally use the system config file
 
@@ -324,7 +325,7 @@ def open_by_address(addr, csv_dir = None, csv_folder = 'tester',
                                configs['lookup_name'])
 
     cmd_list, inst_comm, unconnected = init_instrument(
-        cmd_map, addr=addr, lookup=lookup_file)
+        cmd_map, addr=addr, lookup=lookup_file, **kwargs)
 
     InstrumentClass = getattr(instruments, instr_class)
     name = 'tester'
