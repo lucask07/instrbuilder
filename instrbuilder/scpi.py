@@ -760,6 +760,7 @@ class Serial(object):
             parity=kwargs.get('parity', serial.PARITY_NONE),
             bytesize=kwargs.get('bytesize', serial.EIGHTBITS))
         self.terminator = kwargs.get('terminator', ' \n')
+        self.eol = kwargs.get('eol', b'\r')
         self.open()
 
         # some instruments need an initialization write,
@@ -796,14 +797,14 @@ class Serial(object):
 
     # https://stackoverflow.com/questions/16470903/pyserial-2-6-specify-end-of-line-in-readline
     def _readline(self):
-        eol = b'\r'
-        leneol = len(eol)
+        #eol = b'\r'
+        leneol = len(self.eol)
         line = bytearray()
         while True:
             c = self.ser.read(1)
             if c:
                 line += c
-                if line[-leneol:] == eol:
+                if line[-leneol:] == self.eol:
                     break
             else:
                 break
