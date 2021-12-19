@@ -21,7 +21,7 @@ import pandas as pd
 import colorama
 import numpy as np
 import serial
-import visa
+import pyvisa as visa
 from pyvisa.constants import StatusCode
 
 # local package imports

@@ -40,7 +40,7 @@ Finally check to see if you can detect a USB connected instrument using PyVISA:
 
 .. code-block:: python
 
-	import visa
+	import pyvisa as visa
 	rm = visa.ResourceManager('@py')
 	address = rm.list_resources()
 

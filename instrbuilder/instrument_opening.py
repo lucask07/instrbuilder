@@ -3,7 +3,7 @@
 # koerner.lucas@stthomas.edu
 # University of St. Thomas
 
-import visa
+import pyvisa as visa
 import oyaml as yaml  # oyaml preserves ordering (installed oyaml)
 import os
 import sys
