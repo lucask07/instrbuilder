@@ -92,8 +92,9 @@ def user_input(address, interface=None, name=None, filename='config.yaml'):
         The configuration dictionary that will be used to append the YAML
     """
     # read current YAML
-    yaml_config = open(os.path.join(home, filename), 'r+')
-    current_configs = yaml.safe_load(yaml_config)
+    current_configs = None
+    with open(os.path.join(home, filename), 'r+') as yaml_config:
+        current_configs = yaml.safe_load(yaml_config)
 
     ok = False
     if name is None:
@@ -154,8 +155,9 @@ def append_to_yaml(new_configs, filename='config.yaml'):
 
     """
     # read current YAML
-    yaml_config = open(os.path.join(home, filename), 'r+')
-    configs = yaml.safe_load(yaml_config)
+    configs = None
+    with open(os.path.join(home, filename), 'r+') as yaml_config:
+        configs = yaml.safe_load(yaml_config)
 
     if 'instruments' in new_configs.keys():
         print('Error: instruments key is in the new configuration dictionary')
@@ -189,9 +191,10 @@ def detect_instruments(filename='config.yaml'):
         a list of all PyVISA addresses found that are not in the config file
     """
 
+    configs = None
     try:
-        yaml_config = open(os.path.join(home, filename), 'r')
-        configs = yaml.safe_load(yaml_config)
+        with open(os.path.join(home, filename), 'r') as yaml_config:
+            configs = yaml.safe_load(yaml_config)
     except OSError as e: 
         print('except')
         configs = {}
@@ -255,8 +258,9 @@ def open_by_name(name, name_attached=None, filename='config.yaml', **kwargs):
     An instrument object
 
     """
-    yaml_config = open(os.path.join(home, filename), 'r')
-    configs = yaml.safe_load(yaml_config)
+    configs = None
+    with open(os.path.join(home, filename), 'r') as yaml_config:
+        configs = yaml.safe_load(yaml_config)
 
     # confirm name is in the configs
     if name not in configs['instruments']:
