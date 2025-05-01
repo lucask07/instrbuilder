@@ -175,6 +175,7 @@ def append_to_yaml(new_configs, filename='config.yaml'):
     with open(os.path.join(home, filename), 'w+') as f:
         # see: https://pyyaml.org/wiki/PyYAMLDocumentation (for default_flow_style)
         yaml.dump(configs, f, default_flow_style=False)
+    os.remove(os.path.join(home, filename).replace('.yaml', '_backup.yaml'))
     return
 
 
