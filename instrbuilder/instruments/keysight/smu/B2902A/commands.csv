@@ -1,0 +1,13 @@
+﻿name,ascii_str,ascii_str_get,getter,getter_type,setter,setter_type,setter_range ,doc,subsystem,is_config,setter_inputs,getter_inputs
+meas_curr,MEAS:CURR:{ac_dc},,TRUE,float,FALSE,float,None,Sets all measurement parameters and trigger parameters to their default values for AC or DC current measurements and immediately triggers a measurement. The results are sent directly to the instruments output buffer.,meas,FALSE,,1
+meas_volt,MEAS:VOLT:{ac_dc},,TRUE,float,FALSE,float,None,Sets all measurement parameters and trigger parameters to their default values for AC or DC voltage measurements and immediately triggers a measurement. The results are sent directly to the instruments output buffer.,meas,FALSE,,1
+trig,*TRG,,FALSE,str,TRUE,str,None,Trigger via Bus ,trigger,FALSE,,
+id,*IDN,,TRUE,str,FALSE,str,None,Get instrument id ,system,TRUE,,
+comm_error,SYST:ERR,,TRUE,keysight_error,FALSE,str,None,Get an error from the communication module.  True if Error,system,FALSE,,
+comm_error_details,SYST:ERR,,TRUE,str,FALSE,str,None,Get an error from the communication module.  Return the full string,system,FALSE,,
+reset,*RST,,FALSE,str,TRUE,str,None,Reset ,system,FALSE,,
+operation_complete,*OPC,,TRUE,int,FALSE,str,None,Returns 1 if init operation is complete,trigger,FALSE,,
+clear_status,*CLS,,FALSE,none,TRUE,int,"[0,255]",clear the event register in all register groups,status,FALSE,,
+v,:SOUR{chan}:VOLT,,TRUE,none,TRUE,float,None,,,FALSE,,
+i,:SOUR{chan}:CURR,,TRUE,none,TRUE,float,None,,,FALSE,,
+output,:OUTP{chan} ,,TRUE,int,TRUE,int,None,,,FALSE,,

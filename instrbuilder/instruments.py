@@ -43,6 +43,14 @@ class KeysightFunctionGen(SCPI):
         super().__init__(
             cmd_list, comm_handle, name=name, unconnected=unconnected)
 
+class KeysightSMU(SCPI):
+    def __init__(self,
+                 cmd_list,
+                 comm_handle,
+                 name='smu',
+                 unconnected=False):
+        super().__init__(
+            cmd_list, comm_handle, name=name, unconnected=unconnected)
 
 class RigolOscilloscope(SCPI):
     def __init__(self,
